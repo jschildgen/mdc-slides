@@ -1,0 +1,409 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>MDC - Chapter 1 - Big-Data Management</title>
+
+		<link rel="stylesheet" href="reveal.js/dist/reset.css">
+		<link rel="stylesheet" href="reveal.js/dist/reveal.css">
+
+        <link rel="stylesheet" href="src/slides.css">
+        <link rel="stylesheet" href="src/sql.css">
+
+		<link rel="stylesheet" href="src/layout.css">
+        <link rel="stylesheet" href="lib/joint.min.css" />
+        <link rel="stylesheet" href="src/erd.css" />
+        <link rel="stylesheet" href="src/poll.css" />
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="src/rainbow.css">
+
+        <!--<script defer src="lib/fontawesome.all.min.js"/>-->
+        <link href="lib/fontawesome.all.min.css" rel="stylesheet">
+        <style> .reveal i.fa { font-family:FontAwesome; font-style: normal; } </style>
+	</head>
+	<body>
+		<div class="reveal">
+            <div id="header"></div>
+            <div id="footer"></div>
+			<div class="slides">
+                <section>
+                    <h4 style="text-align:center"><b>Prof. Dr.-Ing. Johannes Schildgen</b><br>
+                    <a href="mailto:johannes.schildgen@oth-regensburg.de">johannes.schildgen@oth-regensburg.de</a></h4>
+                    <h2>Modern Database Concepts</h2>
+                    <h4 style="text-align:center">&nbsp;</h4>
+                    <h3>Chapter 1: Big-Data Management</h3>
+                    <h4 style="text-align:center">&nbsp;<br>&nbsp;</h4>
+                    <img src="img/ccby.png" height="60px" style="position: absolute; left:0px; border:0; bottom:-160px;">
+                    <img src="img/oth.png" height="60px" style="position: absolute; right:0px; border:0; bottom:-160px; box-shadow:none">
+                </section>
+                <section>
+								<h2>Lecture and Exercises</h2>
+								<div style="position: absolute; top: 120px; right:50px; font-size:230px"><!--<i class="fas fa-university green">--><i class="fab fa-youtube green"></i></div>
+                <h4>Lecture (starting 2021-03-16)</h4>
+                <ul>
+                    <li>Thu, 13:45 Uhr (on YouTube Live)</li>
+                </ul>
+								
+								<h3>&nbsp;</h3>
+
+								<h4 class="fragment" data-fragment-index="1">Exercises (starting 2021-03-26)</h4>
+                <ul class="fragment" data-fragment-index="1">
+                    <li>Weekly exercises sheets (published after lecture)</li>
+										<li>12 exercise sheets in total</li>
+                    <li>Fri, 11:45 - 13:15 Uhr (7-minute Slots on Zoom)</li>
+                </ul>
+								</section>
+								
+                <section>
+								<h2>Exam</h2>
+								<h4>Oral or written exam</h4>
+                <ul>
+                    <li>More details later this semester.</li>
+                </ul>
+                <div style="position: absolute; top: 100px; right:50px; font-size:230px"><i class="fas fa-edit green"></i><div>
+                </section>
+                
+                <section>
+                <h2>Contents</h2>
+								<div class="columns">
+									<div>
+										<h4>Big Data</h4>
+										<ul>
+											<li>Big-Data Platforms</li>
+											<li>MapReduce</li>
+											<li>NoSQL Databases</li>
+											<li>Data Formats<br>(CSV, XML, JSON)</li>
+											<li>RDF, Graphs</li>
+									</ul>
+									</div>
+									<div>
+										<h4>Advanced SQL</h4>
+										<ul>
+											<li>User-defined Types</li>
+											<li>Composite Types</li>
+											<li>SQL/XML, SQL/JSON</li>
+											<li>Recursive SQL</li>
+											<li>Spatial Data</li>
+											<li>Temporal Data</li>
+									</ul>
+									</div>
+								</div>	
+								</section>
+
+								<section>
+									<h2>Relational Databases</h2>
+									<p class="small fragment">Oracle, MySQL, Microsoft SQL Server, PostgreSQL, IBM Db2, SQLite, MariaDB, ...</p>
+									<table class="small" style="margin-left: 0cm;">
+										<thead><tr><th>product_id</th><th>description</th><th>price</th></tr></thead>
+										<tbody>
+											<tr><td>17</td><td>chocolate bar</td><td>0.89</td></tr> 
+											<tr><td>29</td><td>dishwasher tabs</td><td>3.99</td></tr>  
+										</tbody>
+									</table>
+
+									<p></p>
+									<ul class="small fragment">
+										<li>normalized tables (3NF), free of redundancy</li>
+										<li>fixed schema (<code>CREATE TABLE ...</code>)</li>
+										<li>joins &bowtie;</li>
+										<li>ACID transactions (atomicity, consistency, isolation, durability)
+										</li>
+										<li>SQL</li>
+									</ul>
+
+									<img src="img/1/postgres.png" class="noborder" style="position: absolute; width: 5cm; right: 1cm; top: 4cm">
+								</section>
+
+								<section>
+									<h3>Current Trends</h3>
+									<ul class="small">
+										<li><b>Big Data</b><br>Data-Analytic Platforms, Stream-Processing, ...<br>&nbsp;</li>
+										<li><b>Cloud</b><br>IaaS / PaaS / SaaS (everything as a service)<br>&nbsp;</li>
+										<li><b>Real-Time Data-Processing</b></li>
+										<li><b>Unknown / flexible data formats</b></li>
+										<li><b>Strong consistency is no longer mission critical</b></li>
+										<li><b>NoSQL Databases</b></li>
+										<li><b>Distributed File Systems</b></li>
+										<li><b>Data Warehouses / Data Lakes</b></li>
+										<li><b>Large-Scale Machine Learning, Data Mining</b></li>
+									</ul>
+								</section>
+
+								<section>
+									<h2>Big Data</h2>
+
+									<div class="columns">
+										<div>
+											<h4 class="fragment" data-fragment-index="2">4 Vs</h4>
+											<ul class="fragment" data-fragment-index="2">
+												<li>Volume</li>
+												<li>Velocity</li>
+												<li>Variety</li>
+												<li>Veracity</li>
+											</ul>
+										</div>
+										<div class="fragment" data-fragment-index="3">
+											<img src="img/1/Big_Data.png" alt="Big Data" class="noborder">
+											<p style="font-size: small; margin-top: -10mm;"><a href="https://commons.wikimedia.org/wiki/File:Big_Data.png" target="_blank" style="color:black">https://commons.wikimedia.org/wiki/File:Big_Data.png</a></p>
+										</div>
+									</div>
+
+									<div class="poll fragment fade-in-then-out" style="bottom:-120px" data-fragment-index="1">
+										<h1>When is data Big Data?</h1>
+												<ul>
+														<li>&gt; 1 GB</li>
+														<li>&gt; 1 TB</li>
+														<li>&gt; 1 EB</li>
+														<li data-poll="correct">I don't know</li>
+												</ul>
+										<h2>https://frage.space</h2>
+									</div>
+
+									<aside class="notes">Big Data is characterized by the 4 Vs (in other definitions 3, 5, ...). It is large (<b>Volume</b>), is created at a high <b>Velocity</b>, can have heterogeneous structures (<b>Variety</b>; structured, semi-structured, unstructured, multi-media data), and its information is often uncertain and not trustworthy (<b>Veracity</b>).</aside>
+								</section>
+
+								<section>
+									<img src="img/1/4Vs.jpg" alt="4Vs" class="stretch noborder">
+									<p style="font-size: small; margin-top: -5mm;"><a href="https://www.flickr.com/photos/84593672@N05/9427663067/in/photostream/" target="_blank" style="color:black">https://www.flickr.com/photos/84593672@N05/9427663067/in/photostream/</a></p>
+								</section>
+
+								<section>
+									<img src="img/1/internet_minute.jpg" alt="4Vs" class="stretch noborder">
+									<p style="font-size: small; margin-top: -5mm;"><a href="https://www.flickr.com/photos/intelfreepress/6780720740" target="_blank" style="color:black">https://www.flickr.com/photos/intelfreepress/6780720740</a></p>
+								</section>
+
+								<section>
+									<h2>4Vs</h2>
+									<h4>Volume</h4>
+									<p class="small fragment" style="margin-top: -5mm;">Too large data sets to handle with traditional approaches</p>
+									<p class="small fragment" style="margin-top: -5mm;">&Rightarrow; Scaling up / out, distributed storage / processing</p>
+
+									<h4>Velocity</h4>
+									<p class="small fragment" style="margin-top: -5mm;">Many inserts; demand on (near) real-time processing</p>
+									<p class="small fragment" style="margin-top: -5mm;">&Rightarrow; NoSQL-Databases, Stream-Processing Frameworks</p>
+
+									<h4>Variety</h4>
+									<p class="small fragment" style="margin-top: -5mm;">Data without a fixed schema</p>
+									<p class="small fragment" style="margin-top: -5mm;">&Rightarrow; XML, JSON, NoSQL-Databases</p>
+
+									<h4>Veracity</h4>
+									<p class="small fragment" style="margin-top: -5mm;">Not clear whether the data contains true or false information</p>
+									<p class="small fragment" style="margin-top: -5mm;">&Rightarrow; ML-Algorithms (Machine Learning), Natural-Language-Processing (NLP), ...</p>
+								</section>
+
+								<section>
+									<h3>Scaling up</h3>
+									<div style="position: absolute; top: 120px; right:50px; font-size:230px"><i class="fas fa-arrows-alt-v green"></i></div>
+
+									<p class="small">Scaling vertically:</p>
+									<ul style="list-style-type:none;">
+										<li><i class="fas fa-microchip"></i> add CPUs</li>
+										<li><i class="fas fa-memory"></i> add memory</li>
+										<li><i class="fas fa-hdd"></i> add HDDs / SSDs</li>
+									</ul>
+									
+									<p class="small fragment" >(+) easy, no changes in software</p>
+									<p class="small fragment" >(-) expensive, limited</p>
+
+									<h1 class="fragment grow"><i class="fas fa-server blue"></i></h1>
+								</section>
+
+								<section>
+									<h3>Scaling out</h3>
+									<div style="position: absolute; top: 120px; right:50px; font-size:230px"><i class="fas fa-arrows-alt-h green"></i></div>
+									<p class="small">Scaling horizontally: adding more nodes (machines) to a cluster</p>
+									<h1 style="margin-left: -10cm;"><i class="fas fa-server blue"></i>&nbsp;<span class="fragment" data-fragment-index="1"><i class="fas fa-server blue"></i></span>&nbsp;<span class="fragment" data-fragment-index="2"><i class="fas fa-server blue"></i></span></h1>
+									
+									<div class="fragment" data-fragment-index="3">
+										<h4>Replication</h4>
+										<p class="small" style="margin-top: -5mm;">Storing copies of the same data on multiple nodes</p>
+									</div>
+
+									<div class="fragment" data-fragment-index="5">
+										<h4>Partitioning / Sharding</h4>
+										<p class="small" style="margin-top: -5mm;">Distributed storage of data across the cluster nodes</p>
+									</div>					
+									
+									<div class="poll fragment" style="bottom:-120px" data-fragment-index="4">
+										<h1>What's the benefit of replication?</h1>
+												<ul>
+														<li>high availability</li>
+														<li>load balancing</li>
+														<li data-poll="correct">both</li>
+												</ul>
+										<h2>https://frage.space</h2>
+									</div>
+								</section>
+
+								<section data-auto-animate>
+									<h3>Replication</h3>
+									<p class="small" style="margin-top: -5mm;">Storing copies of the same data on multiple nodes</p>
+									<pre><code class="sql dontexecutesql">UPDATE products SET price = 4.50 WHERE product_id = 29;
+COMMIT;</code></pre>
+									<p class="small">Example: Replication factor = 3</p>
+									<div class="columns">
+										<div><h1><i class="fas fa-server blue"></i></h1><p style="margin-top: -10mm;" class="fragment fade-out" data-fragment-index="1">price = 3.99</p><p style="margin-top: -10mm;" class="fragment" data-fragment-index="1">price = 4.50</p></div>
+										<div><h1><i class="fas fa-server blue"></i></h1><p style="margin-top: -10mm;" class="fragment fade-out" data-fragment-index="3">price = 3.99</p><p style="margin-top: -10mm;" class="fragment" data-fragment-index="3">price = 4.50</p></div>
+										<div><h1><i class="fas fa-server blue"></i></h1><p style="margin-top: -10mm;" class="fragment fade-out" data-fragment-index="2">price = 3.99</p><p style="margin-top: -10mm;" class="fragment" data-fragment-index="2">price = 4.50</p></div>
+									</div>
+									<p class="fragment small">(+) High availability, load balancing, distributed computing</p>
+									<aside class="notes">The main benefit of replication is high availability. This means that the system stays available (accepts and answers queries) even when one (or even multiple) node(s) in the cluster is/are down. Load balancing is a technique where clients read data from different nodes so that each individual cluster node handles less queries. This results in a higher read speed (also a higher write speed as the nodes are less busy with reading). Distributed computing is efficient when replication is used because less data has to be moved to another node. Often, replicas (the replication nodes) are geographically distributed, e.g. one in the USA, one in Europe. This increases the high availability even when a whole computing center goes down. Furthermore, clients can connect to their closest replica to improve performance.</aside>
+								</section>
+
+								<section>
+									<section data-auto-animate>
+										<h3>Master-Slave Replication</h3>
+										<pre><code class="sql dontexecutesql">UPDATE products SET price = 4.50 WHERE product_id = 29;
+COMMIT;</code></pre>
+										<div><h1><i class="fas fa-server blue"></i></h1></div>
+										<div class="columns">
+											<div><h2 style="margin-top: -10mm; margin-bottom: -5mm; margin-left: 4cm;" class="fragment">&swarr;</h2><h1><i class="fas fa-server blue"></i></h1></div>
+											<div><h2 style="margin-top: -10mm; margin-bottom: -5mm; margin-left: -6cm;" class="fragment">&searr;</h2><h1><i class="fas fa-server blue"></i></h1></div>
+										</div>
+										<aside class="notes">A Master-Master or Multi-Master Replication allows writes on multiple nodes which then synchronize those write across the cluster. As this behavior can cause inconsistencies - which write wins? - a common approach is Master-Slave replication. A master node is either selected manually when configuring the cluster or it is automatically elected by the nodes themselves (this is the case in MongoDB). </aside>
+								</section>
+
+								<section data-auto-animate>
+									<h3>Synchronous vs. Async. Replication</h3>
+									<pre><code class="sql dontexecutesql">UPDATE products SET price = 4.50 WHERE product_id = 29;
+COMMIT;</code></pre>
+									<div class="columns">
+										<div><h1><i class="fas fa-server blue"></i></h1></div>
+										<div><h1><i class="fas fa-server blue"></i></h1></div>
+										<div><h1><i class="fas fa-server blue"></i></h1></div>
+									</div>
+									<div class="fragment">
+										<h4>Synchronous Replication</h4>
+										<p class="small" style="margin-top: -5mm;">The client's <code>COMMIT</code> gets acknowledged when the replication is finished.</p>
+									</div>
+									<div class="fragment">
+										<h4>Asynchronous Replication</h4>
+										<p class="small" style="margin-top: -5mm;">Replication is not part of the transaction.<br><code>COMMIT</code> is acknowledged when the changes are written to one node.</p>
+									</div>
+
+									<div class="poll fragment" style="bottom:-70px" data-fragment-index="4">
+										<h1>What happens when a node is down and asynchronous replication is used?</h1>
+												<ul>
+														<li data-poll="correct">Everything is fine</li>
+														<li>The system is unavailable</li>
+														<li>The transaction will be aborted</li>
+														<li>The commit takes a very long time</li>
+												</ul>
+										<h2>https://frage.space</h2>
+									</div>
+
+									<aside class="notes">The drawback of Synchronous replication is that it decreases the performance of writing transactions. When one replica is unavailable, the whole system is unavailable. The drawback of asynchronous replication is that strong consistency is not guaranteed (see next slide).</aside>
+								</section>
+
+								<section>
+									<h3>Consistency Levels</h3>
+									<h4>Strong Consistency</h4>
+									<p class="small" style="margin-top: -5mm;">Clients read up-to-date data</p>
+
+									<h4>Eventual Consistency</h4>
+									<p class="small" style="margin-top: -5mm;">Clients may read stale data</p>
+
+									<div class="columns">
+										<div style="width: 12cm;">
+												<pre style="width: 12cm;"><code>SET price = 4.50</code></pre></div>
+										<div>
+												<pre style="width: 12cm;"><code class="fragment">
+GET preis;           -- 3.99
+
+</code><code class="fragment">
+GET preis;           -- 3.99	
+	
+	
+GET preis;           -- 4.50
+</code></pre>
+										</div>
+									</div>
+									<aside class="notes">In traditional databases, strong consistency is often a must. The ACID paradigm says that each committed transaction has to durably (D) write all its changes atomic (A) into the database. Transactions have to run in an isolated (I) fashion so that multi-user anomalies are avoided, and each transaction has to remain the database in a consistent state (C). In modern NoSQL databases, ACID and strong consistency is not a must anymore. For a lot of applications (e.g., social media apps), eventual consistent is enough.<br>
+									Eventual consistency means that eventually, at some point in the future, a consistent state of the database is reached. </aside>
+								</section>
+
+								<section>
+									<h3>Partitioning / Sharding</h3>
+									<p class="small" style="margin-top: -5mm;">Distributed storage of data across the cluster nodes</p>
+									<h4>Range Partitioning</h4>
+									<div class="columns">
+										<div><h1><i class="fas fa-server yellow"></i></h1><p class="small" style="margin-top: -10mm;">product_id &in; [-&infin;, 999]</p></div>
+										<div><h1><i class="fas fa-server green"></i></h1><p class="small" style="margin-top: -10mm;">&nbsp;[1000, 1999]</p></div>
+										<div><h1><i class="fas fa-server blue"></i></h1><p class="small" style="margin-top: -10mm;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[2000, &infin;]</p></div>
+									</div>
+									<p class="small">(+) supports = and range queries (&lt;, &ge;, ...) on the shard key</p>
+									<p class="small">(-) hot spots can occur</p>
+									
+									<aside class="notes">A hot spot is a key or a range of keys which are much more often accessed than others. When data is partitioned by dates or timestamps, this is often the case because typically, most queries access the current data. Less often, historical data is accessed. </aside>
+								</section>
+
+								<section>
+									<h3>Partitioning / Sharding</h3>
+									<p class="small" style="margin-top: -5mm;">Distributed storage of data across the cluster nodes</p>
+									<h4>Hash Partitioning / Consistent Hashing</h4>
+									<p>$h(k) = \dots ~ mod ~ 2^{32}$</p>
+									<div class="columns">
+										<div style="margin-left: -6cm;"><h1><i class="fas fa-server yellow"></i></h1><p class="small" style="margin-top: -10mm;">h(MAC_ADDR) = 858&thinsp;993&thinsp;459</p></div>
+										<div style="margin-left: -11cm;"><h1><i class="fas fa-server green"></i></h1><p class="small" style="margin-top: -10mm;">&nbsp;2&thinsp;576&thinsp;980&thinsp;378</p></div>
+										<div style="margin-left: -11cm;"><h1><i class="fas fa-server blue"></i></h1><p class="small" style="margin-top: -10mm;">&nbsp;3&thinsp;435&thinsp;973&thinsp;827</p></div>
+									</div>
+								
+								<p class="small">Store a data item with key $k$ on the node whose hash is closest to $h(k)$</p>
+
+								<div class="poll fragment" style="bottom:-120px" data-fragment-index="4">
+									<h1>Let h(K) = 123^45 mod 2^32. On which node will product number 29 be stored?</h1>
+											<ul>
+													<li>on the green one</li>
+													<li>on no node</li>
+													<li data-poll="correct">on the yellow one</li>
+													<li>on the red one</li>
+											</ul>
+									<h2>https://frage.space</h2>
+								</div>
+
+								<aside class="notes">A primitive hash-partitioning approach would be choosing $h(k) = k ~ mod ~ n as a hash function, with $n$ being the number of nodes in the cluster (in our example: 3). This would lead to an immense effort in repartitioning when a node is added because the hash function needs to be adjusted. Consistent hashing is an approach which uses the same hash function even when the cluster changes. With this hash function, the home node of each data item can be computed. Different from range partitioning, this approach does not support range queries on the partition key.</aside>
+								</section>		
+
+			<section>
+							<h2>Summary</h2>
+							<ul>
+								<li>Big Data</li>
+								<li>4 Vs: Volume, Velocity, Variety, Veracity</li>
+								<li>Scale up / Scale out</li>
+								<li>Replication: Master-Slave, (a)synchronous Repl.</li>
+								<li>Strong consistency / Eventual consistency</li>
+								<li>Sharding: Range Partitioning, Hash Partitioning</li>
+							</ul>
+			</section>
+
+			</div>
+		</div>
+
+		<script src="reveal.js/dist/reveal.js"></script>
+		<script src="reveal.js/plugin/markdown/markdown.js"></script>
+		<script src="reveal.js/plugin/highlight/highlight.js"></script>
+		<script src="reveal.js/plugin/zoom/zoom.js"></script>
+		<script src="reveal.js/plugin/math/math.js"></script>
+		<script src="reveal.js/plugin/notes/notes.js"></script>
+		<script src="reveal.js/plugin/search/search.js"></script>
+        <script src="lib/jquery.js"></script>
+        <script src="lib/lodash.js"></script>
+        <script src="lib/backbone.js"></script>
+        <script src="lib/joint.min.js"></script>
+				<script src="lib/deflate.js"></script>
+
+		<script src="src/init_reveal.js"></script>
+
+        <script>
+        if(window.location.search.match( /print-pdf/gi )) {
+                document.getElementById('header').style="display:none";
+                document.getElementById('footer').style="display:none";
+        }
+        </script>
+
+
+	</body>
+</html>
