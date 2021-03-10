@@ -1,0 +1,7 @@
+<!ELEMENT products (product*)>
+<!ELEMENT product (description,price,sold_out?)>
+<!ATTLIST product id CDATA #REQUIRED>
+<!ELEMENT description (#PCDATA)>
+<!ELEMENT price (#PCDATA)>
+<!ATTLIST price currency CDATA #IMPLIED>
+<!ELEMENT sold_out EMPTY>

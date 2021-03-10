@@ -1,0 +1,122 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>MDC - Chapter 3 - SQL Types for Complex Data, XML, JSON</title>
+
+		<link rel="stylesheet" href="reveal.js/dist/reset.css">
+		<link rel="stylesheet" href="reveal.js/dist/reveal.css">
+
+        <link rel="stylesheet" href="src/slides.css">
+        <link rel="stylesheet" href="src/sql.css">
+
+		<link rel="stylesheet" href="src/layout.css">
+        <link rel="stylesheet" href="lib/joint.min.css" />
+        <link rel="stylesheet" href="src/erd.css" />
+        <link rel="stylesheet" href="src/poll.css" />
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="src/rainbow.css">
+
+        <!--<script defer src="lib/fontawesome.all.min.js"/>-->
+        <link href="lib/fontawesome.all.min.css" rel="stylesheet">
+        <style> .reveal i.fa { font-family:FontAwesome; font-style: normal; } </style>
+	</head>
+	<body>
+		<div class="reveal">
+            <div id="header"></div>
+            <div id="footer"></div>
+			<div class="slides">
+                <section>
+                    <h4 style="text-align:center"><b>Prof. Dr.-Ing. Johannes Schildgen</b><br>
+                    <a href="mailto:johannes.schildgen@oth-regensburg.de">johannes.schildgen@oth-regensburg.de</a></h4>
+                    <h2>Modern Database Concepts</h2>
+                    <h4 style="text-align:center">&nbsp;</h4>
+                    <h3>Chapter 3: SQL Types for<br>Complex Data, XML, JSON</h3>
+                    <h4 style="text-align:center">&nbsp;<br>&nbsp;</h4>
+                    <img src="img/ccby.png" height="60px" style="position: absolute; left:0px; border:0; bottom:-100px;">
+                    <img src="img/oth.png" height="60px" style="position: absolute; right:0px; border:0; bottom:-100px; box-shadow:none">
+                </section>
+                <section>
+									<h2>SQL Extensions</h2>
+									<h4>UDT - User-Defined Data Types</h4>
+									<p class="small">SQL:1999: <code>CREATE TYPE ...</code></p>
+									<pre style="width: 100%;"><code class="sql">CREATE TYPE ADDRESS AS (street VARCHAR(200), city VARCHAR(80));
+CREATE TABLE people (name VARCHAR(200), address ADDRESS);
+INSERT INTO people VALUES ('Peter', ('Highway 5', 'Berlin'));
+SELECT (address).city FROM people;</code></pre>
+
+									<div class="fragment">
+									<h4>Composite Types</h4>
+									<p class="small">SQL:1999: <code>ARRAY</code>, <code>MULTISET</code>, <code>ROW</code>, ... data types</p>
+
+									<pre style="width: 100%;"><code class="sql">CREATE TABLE people (name VARCHAR(200), hobbies VARCHAR(100) ARRAY[3]);
+INSERT INTO people VALUES ('Peter', '{ piano, yoga }');
+SELECT hobbies[2] FROM people;
+SELECT * FROM people WHERE 'piano' = ANY(hobbies);</code></pre>
+									</div>
+										<aside class="notes">The example queries on this slides are using the PostgreSQL dialect. PostgreSQL does not fully follow the SQL Standard and only supports the composite type <code>ARRAY</code>. </aside>
+								</section>
+								<section>
+									<h2>SQL Extensions</h2>
+									<h4>SQL/XML</h4>
+									<p class="small">SQL:2003: <code>XML</code> data type, mappings, predicates, functions</p>
+									<pre style="width: 100%;"><code class="sql">CREATE TABLE people (name VARCHAR(200), address XML);
+INSERT INTO people VALUES ('Peter', '<address>
+<street>Highway 5</street><city zip="10123">Berlin</city></address>');
+SELECT xpath('//city/text()', address) FROM people;
+SELECT * FROM people WHERE xpath_exists('//city[@zip=10123]', address);</code></pre>
+
+									<div class="fragment">
+									<h4>SQL/JSON</h4>
+									<p class="small">SQL:2016: <code>JSON</code> data type, mappings, predicates, functions</p>
+<pre style="width: 100%;"><code class="sql">CREATE TABLE people (name VARCHAR(200), hobbies JSONB);
+INSERT INTO people VALUES ('Peter', '["piano","yoga"]');
+SELECT hobbies->>0 FROM people;
+SELECT * FROM people WHERE hobbies ? 'yoga';</code></pre>
+									</div>
+								<aside class="notes">Again, these examples are in PostgreSQL. The JSON operators <code>->></code>, <code>?</code> and so on are not standard-compliant.</aside>							
+								</section>
+								
+
+			<section>
+							<h2>Summary</h2>
+							<ul>
+								<li>Structured Data, semi-structured data, unstructured data</li>
+								<li>CSV</li>
+								<li>XML: DTD, XSD, XPath, XQuery</li>
+								<li>JSON: JSONiq, JSONPath, BSON</li>
+								<li>YAML</li>
+							</ul>
+			</section>
+
+			</div>
+		</div>
+
+		<script src="reveal.js/dist/reveal.js"></script>
+		<script src="reveal.js/plugin/markdown/markdown.js"></script>
+		<script src="reveal.js/plugin/highlight/highlight.js"></script>
+		<script src="reveal.js/plugin/zoom/zoom.js"></script>
+		<script src="reveal.js/plugin/math/math.js"></script>
+		<script src="reveal.js/plugin/notes/notes.js"></script>
+		<script src="reveal.js/plugin/search/search.js"></script>
+        <script src="lib/jquery.js"></script>
+        <script src="lib/lodash.js"></script>
+        <script src="lib/backbone.js"></script>
+        <script src="lib/joint.min.js"></script>
+				<script src="lib/deflate.js"></script>
+
+		<script src="src/init_reveal.js"></script>
+
+        <script>
+        if(window.location.search.match( /print-pdf/gi )) {
+                document.getElementById('header').style="display:none";
+                document.getElementById('footer').style="display:none";
+        }
+        </script>
+
+
+	</body>
+</html>

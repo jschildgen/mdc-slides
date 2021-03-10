@@ -1,0 +1,12 @@
+<?xml version="1.1" encoding="UTF-8"?>
+<products>
+  <product id="17">
+    <description>chocolate bar</description>
+    <price>0.89</price>              <!-- Todo: Increase price-->
+  </product>
+  <product id="29">
+    <description>dishwasher tabs</description>
+    <price currency="EUR">3.99</price>
+    <sold_out/>
+  </product>
+</products>

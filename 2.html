@@ -1,0 +1,382 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>MDC - Chapter 2 - Data Formats</title>
+
+		<link rel="stylesheet" href="reveal.js/dist/reset.css">
+		<link rel="stylesheet" href="reveal.js/dist/reveal.css">
+
+        <link rel="stylesheet" href="src/slides.css">
+        <link rel="stylesheet" href="src/sql.css">
+
+		<link rel="stylesheet" href="src/layout.css">
+        <link rel="stylesheet" href="lib/joint.min.css" />
+        <link rel="stylesheet" href="src/erd.css" />
+        <link rel="stylesheet" href="src/poll.css" />
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="src/rainbow.css">
+
+        <!--<script defer src="lib/fontawesome.all.min.js"/>-->
+        <link href="lib/fontawesome.all.min.css" rel="stylesheet">
+        <style> .reveal i.fa { font-family:FontAwesome; font-style: normal; } </style>
+	</head>
+	<body>
+		<div class="reveal">
+            <div id="header"></div>
+            <div id="footer"></div>
+			<div class="slides">
+                <section>
+                    <h4 style="text-align:center"><b>Prof. Dr.-Ing. Johannes Schildgen</b><br>
+                    <a href="mailto:johannes.schildgen@oth-regensburg.de">johannes.schildgen@oth-regensburg.de</a></h4>
+                    <h2>Modern Database Concepts</h2>
+                    <h4 style="text-align:center">&nbsp;</h4>
+                    <h3>Chapter 2: Data Formats</h3>
+                    <h4 style="text-align:center">&nbsp;<br>&nbsp;</h4>
+                    <img src="img/ccby.png" height="60px" style="position: absolute; left:0px; border:0; bottom:-160px;">
+                    <img src="img/oth.png" height="60px" style="position: absolute; right:0px; border:0; bottom:-160px; box-shadow:none">
+                </section>
+                <section>
+								<h2>Classifications of Data</h2>
+								<div class="columns">
+									<div style="width: 25cm; text-align: left;"><h4>Structured Data</h4></div>
+									<div class="fragment">
+										<table class="small" style="margin-left: 0cm;">
+										<thead><tr><th>product_id</th><th>description</th><th>price</th></tr></thead>
+										<tbody>
+											<tr><td>17</td><td>chocolate bar</td><td>0.89</td></tr> 
+											<tr><td>29</td><td>dishwasher tabs</td><td>3.99</td></tr>  
+										</tbody>
+									</table>
+								</div>
+								</div>
+
+								<div class="columns">
+									<div style="width: 25cm;"><h4>Semi-Structured Data</h4></div>
+									<div class="fragment">
+										<pre style="width: 14cm;"><code class="javascript">{ "product_id": 17, 
+  "description" : "chocolate bar", 
+  "price": 0.89 }</code></pre>
+								</div>
+								</div>
+
+								<div class="columns">
+									<div style="width: 25cm;"><h4>Unstructured Data</h4></div>
+									<div class="fragment">
+										<p class="small">&quot;A chocolate bar costs 0.89 Euro. This product has the product ID 17.&quot;</p>
+								</div>
+								</div>
+								
+								<aside class="notes">Structured data is easy to query as it follows a fixed data structure. The meta data (here: the column names) describes the data. In semi-structured data, the metadata is part of the data itself. So, the JSON document shown in the example describes itself. It is easy for machines to search and extract information from this document, but applications have to cope with a flexible schema. Other documents can have other attributes, and in other documents, other data types can be used. In unstructured data, there is no structure at all. What we have is a text from which we first have to extract the information. This is not so easy and safe as for the other two classes of data.</aside>
+								</section>
+								
+								<section>
+									<h3>Data Formats for<br>Semi-Structured Data</h3>
+									<ul>
+										<li>CSV - Comma-separated Values
+											<br><pre style="width: 100%; margin-top: 0mm;"><code>17,chocolate bar,0.89</code></pre>
+										</li>
+										<li>XML - Extensible Markup Language
+											<br><pre style="width: 100%; margin-top: 0mm;"><code class="xml"><product id="17">chocolate bar<price>0.89</price></product></code></pre>
+										</li>
+										<li>JSON - JavaScript Object Notation</li>
+										<li>BSON - Binary JSON</li>
+										<li>YAML - YAML Ain’t Markup Language</li>
+										<li>RDF - Resource Description Framework
+											<br><pre style="width: 100%; margin-top: 0mm;"><code class="xml">&lt;http://product/17> &lt;http://product#costs> "0.89"</code></pre>
+										</li>
+									</ul>
+								</section>
+
+								<section>
+									<h2>CSV</h2>
+									<p>Comma-Separated Values</p>
+
+									<pre style="width: 100%;"><code>product_id,description,price
+17,chocolate bar,0.89
+29,"dishwasher tabs, 100 pack",3.99
+88,"cat food ""Catcat"""</code></pre>
+
+									<p class="small">Properties:</p>
+									<ul class="small">
+										<li>Column Separator, e.g, <code>,</code></li>
+										<li>Column Delimiter, e.g. <code>"</code></li>
+										<li>With or without header row (column names)</li>
+										<li>Encoding, e.g. UTF-8</li>
+									</ul>
+									<aside class="notes">When the column separator or the column delimiter is required within a column value, this value is written between column-delimiter characters. When the column delimiter (here: <code>"</code>) is needed, it is doubled.</aside>
+								</section>
+
+								<section>
+									<h2>XML</h2>
+									<p>Extensible Markup Language</p>
+
+									<p class="small">Data Model: Tree<br>
+									Node Types: <code>&lt;Element></code>, <code>Attribute=""</code>, <code>Text</code>,<br><code>&lt?Processing Instruction></code>, <code>&lt;!-- Comment --></code></p>
+
+									<pre style="width: 100%;"><code class="xml" data-sample="code/products.xml"></code></pre>
+
+							
+									<aside class="notes">The XML document starts with a prolog which contains the XML version and more.</aside>
+								</section>
+
+								<section>
+									<h3>XML Elements and Attributes</h3>
+									<h4>&lt;Elements></h4>
+									<ul class="small">
+										<li>start with an opening tag, end with a closing tag<br><code class="xml">&lt;price>0.89&lt;/price></code>
+										<br>abbreviation for empty elements: <code class="xml">&lt;sold_out/></code><br>&nbsp;</li>
+										<li>have a <em>set</em> of attributes<br><code class="xml">&lt;price currency="EUR">0.89&lt;/price></code><br>&nbsp;</li>
+										<li>have contents (children):
+											<ul>
+												<li>text: <code class="xml">0.89</code></li>
+												<li>elements (<em>sequence</em> of nested elements)</li>
+												<li>mixed content (text and elements)</li>
+											</ul>
+										</li>
+									</ul>
+									<aside class="notes"><code class="xml">&lt;sold_out/></code> is an abbreviation for <code class="xml">&lt;sold_out>&lt;/sold_out></code><br>
+									The attributes of an element are unordered, the children of an element have an order.
+									</aside>
+								</section>
+
+								<section>
+									<h3>Well-formed, valid, DTD</h3>
+									<p class="small">When a document follows all rules of XML (e.g., each opening tag has to be closed), it is <b>well-formed</b>.</p>
+									<p class="small">When a document matches a given schema (e.g., a DTD or an XML Schema (XSD)), it is <b>valid</b>.</p>
+									<h4>DTD (Document Type Definition)</h4>
+									<pre><code data-sample="code/products.dtd"></code></pre>
+<aside class="notes"><code>ELEMENT</code> defines which elements are allowed to exist in the XML document and which content they can have. | is an or-choice, ? stands for optional, * arbitrary many times, + at least once. #PCDATA stands for text content, CDATA is text content for attributes.</aside>
+								</section>
+
+								<section>
+									<h3>XML Schema (XSD)</h3>
+									<pre class="stretch"><code data-sample="code/products.xsd"></code></pre>
+									<aside class="notes">XSD (XML Schema Definition) is a more powerful language for defining a schema than DTD. In contrast to DTD, an XSD is a well-formed and valid XML document. XML schema supports data types, namespaces (e.g. <code>xs:</code>), user-defined data types, keys and key references, and much more.</aside>
+								</section>
+
+								<section>
+									<h3>BaseX (XML DBMS)</h3>
+									<img src="img/2/basex.png" alt="BaseX" class="stretch noborder">
+									<aside class="notes">After creating a database (Database &rightarrow; New) by selecting an XML file, this XML database can be queried using XPath or XQuery (see next slides). The XQuery example in this screenshot shows how to validate an XML document to a DTD. With <code>validate:xsd</code>, the same can be done for an XML Schema. Mind that it is required to drop and re-create the database, when the XML file is changed.</aside>
+								</section>
+
+								<section>
+									<h3>XPath</h3>
+									<p class="small">Query language to traverse an XML document tree step by step.</p>
+									<p class="small">Data Model: List of Nodes (Elements, Attributes, Texts, ...)</p>
+									<ul class="small">
+										<li><b>Path Expression</b>: <code>/step/step/step/...</code></li>
+										<li><b>step</b>: <code>axis::node-test[predicate]</code></li>
+										<li><b>axis</b>: <code>child</code> (default), <code>descendant-or-self</code> (<code>//</code>), <code>parent</code> (<code>..</code>), ...</li>
+										<li><b>node-test</b>: name test, <code>*</code>, <code>text()</code>, ..</li>
+										<li><b>predicate</b>, e.g. <code>[@id="17" or description="cat food"]</code></li>
+									</ul>
+
+									<pre><code class="xml">//product[price>1]/description/text()</code></pre>
+
+									<div class="fragment">
+									<p class="small" style="text-align: center;">&wedgeq;</p>
+									<pre><code class="xml">/descendant-or-self::product[child::price/child::text()>1]
+ /child::description/child::text()</code></pre>
+									</div>
+
+									<aside class="notes">The axis defines the traversal direction for each step, the default axis is traversing to a child node of the current node. <code>//</code> finds the current node, its children, grand-children, and so on. The example expression on this slide finds all descriptions of products that cost more than 1 EUR (or USD, ...).<br>
+										<code>@id</code> stands for the attribute <code>id</code> and <code>description</code> for the child element <code>description</code>.<br>
+										The result on an XPath expression is a list of nodes. For the given example, the result is a list of one text node <code>dishwasher tabs</code>.</aside>
+								</section>
+
+								<section>
+									<h3>XQuery</h3>
+									<h4>FLWOR Expressions</h4>
+									<pre><code class="plaintext">for $forvar in &lt;Expr>
+let $letvar := &lt;Expr>
+where &lt;BoolExpr>
+order by &lt;Expr> ascending|descending
+return &lt;Expr></code></pre>
+
+<p class="small">Descriptions of products that cost more than 1 EUR (or USD,...)</p>
+<pre><code class="xquery">let $doc := db:open('products') 
+for $p in $doc//product
+where $p/price > 1
+return $p/description/text()</code></pre>
+
+<aside class="notes"><code>for</code> and <code>let</code> can be used multiple times in any order. <code>for</code> iterates over the nodes found by the given expression, and binds one node in each iteration to the given variable. <code>let</code> just binds the whole result to the variable. An optional <code>where</code> and <code>order by</code> clause can be used in the same way as in SQL, the <code>return</code> clause defines how to build the result.</aside>
+								</section>
+								
+								<section>
+									<h3>XQuery</h3>
+									<pre><code class="xquery"><expensive_products>
+{
+  let $doc := db:open('products') 
+  for $p in $doc//product
+  let $price := switch($p/price/@currency) 
+                case "EUR" return $p/price*1.19 
+                default return $p/price
+  where $price > 0.5
+  order by $p/description
+  return <product price="{fn:round($price,2)}">
+      { $p/description/text() }</product>
+}
+</expensive_products></code></pre>
+<p class="small">Result:</p>
+<pre><code class="xml"><expensive_products>
+  <product price="0.89">chocolate bar</product>
+  <product price="4.75">dishwasher tabs</product>
+</expensive_products></code></pre>
+
+<aside class="notes">This query finds all products that cost more than 0.50 USD and creates a new XML document as its output.</aside>
+								</section>
+
+			<section>
+				<h2>JSON</h2>
+				<p class="small">JavaScript Object Notation</p>
+				<div class="columns">
+					<div><p class="small">Data Types:</p>
+						<ul class="small">
+							<li><code>string</code></li>
+							<li><code>number</code></li>
+							<li><code>boolean</code></li>
+							<li><code>array</code></li>
+							<li><code>object</code></li>
+							<li><code>null</code></li>
+						</ul>
+					</div>
+					<div style="width: 20cm;"><pre><code class="javascript">{
+  "product_id": 17,
+  "description": "chocolate bar",
+  "price": 0.89,
+  "categories": ["food", "sweets"],
+  "manufacturer": { 
+    "company": "Monsterfood", 
+    "country": "USA" 
+  },
+  "available": true,
+  "size": null 
+}
+					</code></pre></div>
+				</div>
+			</section>
+
+			<section>
+				<h3>JSONiq</h3>
+				<pre><code>jsoniq version "1.0";
+[
+  let $products :=
+  [
+    { "product_id": 17,	"description": "chocolate bar",	
+      "price": 0.89 },
+    { "product_id": 29, "description": "dishwasher tabs", 
+      "price": 3.99 }
+  ]
+  for $p in $products()
+  where $p.price gt 0.5
+  order by $p.description
+  return $p.description
+]</code></pre>
+			<p class="small">Try out at <a href="http://try.zorba.io/" target="_blank">http://try.zorba.io/</a></p>
+			<aside class="notes">There are many query languages for querying JSON data. The language shown here is called JSONiq and uses FLWOR expressions similar to XQuery.</aside>
+			</section>
+
+			<section>
+				<h3>JSONPath</h3>
+				<pre><code class="plaintext">$[?(@.price>1)].description</code></pre>
+				<table style="border: 0;" class="small">
+					<tr><td><code>$</code></td><td>context element (e.g. root object or array)</td></tr>
+					<tr><td><code>.attr</code></td><td>access attribute in an object</td></tr>
+					<tr><td><code>[n]</code></td><td>access the n-th element in an array</td></tr>
+					<tr><td><code>*</code></td><td>access all attributes in an object or all elements in an array</td></tr>
+					<tr><td><code>..attr</code></td><td>recursively descendant search of an attribute</td></tr>
+					<tr><td><code>?(predicate))</code></td><td>filter expression</td></tr>
+					<tr><td><code>@</code></td><td>the current node (used in filter expressions)</td></tr>
+				</table>
+				<p class="small">Try out at <a href="https://jsonpath.curiousconcept.com/" target="_blank">https://jsonpath.curiousconcept.com/</a></p>
+				<aside class="notes">In the given example, we access an array of product objects. Within the <code>[brackets]</code>, we access those elements of the array that fulfill the filter predicate <code>@.price>1</code>. For the object that are found, we access the description attribute. The result is an array of descriptions of products that have a price greater than 1.</aside>
+			</section>
+
+			<section>
+				<h2>BSON</h2>
+				<p class="small">Binary JSON</p>
+				<p class="small">More efficient storage and scan-speed than JSON strings</p>
+				<pre><code class="javascript">{ "_id": 17, "description": "chocolate bar" }</code></pre>
+				<table class="small">
+					<tr><td>length</td><td>type</td><td>field</td><td>value</td><td>type</td><td>field</td><td>length</td><td>value</td><td>EOD</td></tr>
+					<tr style="font-family: monospace; font-size: 16pt;"><td>0</td><td>16</td><td>_id\0</td><td>17</td><td>2</td><td>description\0</td><td>14</td><td>chocolate bar\0</td><td>\0</td></tr>
+					<tr><td>4 Bytes</td><td>1</td><td>4</td><td>4</td><td>1</td><td>12</td><td>4</td><td>14</td><td>1</td></tr>
+				</table>
+				<div class="poll fragment fade-in-then-out" style="top:10px; height: 9.5cm;" data-fragment-index="1">
+					<h1>How much less space does the shown BSON document consume compared to the JSON string?</h1>
+							<ul>
+									<li>27% less</li>
+									<li data-poll="correct">same</li>
+									<li>11% more</li>
+							</ul>
+					<h2>https://frage.space</h2>
+				</div>
+			</section>
+
+			<section>
+				<h2>YAML</h2>
+				<p class="small">YAML Ain’t Markup Language (human-readable data-serialization language)</p>
+				<p class="small">3 data types, nesting via indentation</p>
+				<ul class="small">
+					<li>scalar: numeric (integer, float, Boolean) or string</li>
+					<li>list</li>
+					<li>dictionary</li>
+				</ul>
+				<pre><code class="yaml">---
+product_id: 17
+description: chocolate bar
+price: 0.89
+categories:
+  - food
+  - sweets
+manufacturer:  
+  company: Monsterfood
+  country: USA
+available: true,
+size: null</code></pre>
+			</section>
+
+			<section>
+							<h2>Summary</h2>
+							<ul>
+								<li>Structured Data, semi-structured data, unstructured data</li>
+								<li>CSV</li>
+								<li>XML: DTD, XSD, XPath, XQuery</li>
+								<li>JSON: JSONiq, JSONPath, BSON</li>
+								<li>YAML</li>
+							</ul>
+			</section>
+
+			</div>
+		</div>
+
+		<script src="reveal.js/dist/reveal.js"></script>
+		<script src="reveal.js/plugin/markdown/markdown.js"></script>
+		<script src="reveal.js/plugin/highlight/highlight.js"></script>
+		<script src="reveal.js/plugin/zoom/zoom.js"></script>
+		<script src="reveal.js/plugin/math/math.js"></script>
+		<script src="reveal.js/plugin/notes/notes.js"></script>
+		<script src="reveal.js/plugin/search/search.js"></script>
+        <script src="lib/jquery.js"></script>
+        <script src="lib/lodash.js"></script>
+        <script src="lib/backbone.js"></script>
+        <script src="lib/joint.min.js"></script>
+				<script src="lib/deflate.js"></script>
+
+		<script src="src/init_reveal.js"></script>
+
+        <script>
+        if(window.location.search.match( /print-pdf/gi )) {
+                document.getElementById('header').style="display:none";
+                document.getElementById('footer').style="display:none";
+        }
+        </script>
+
+
+	</body>
+</html>
