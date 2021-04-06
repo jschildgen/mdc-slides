@@ -4,7 +4,7 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<title>MDC - Chapter 3 - SQL Types for Complex Data, XML, JSON</title>
+		<title>MDC - Chapter 3 - SQL Features for Semi-Structured Data</title>
 
 		<link rel="stylesheet" href="reveal.js/dist/reset.css">
 		<link rel="stylesheet" href="reveal.js/dist/reveal.css">
@@ -34,61 +34,995 @@
                     <a href="mailto:johannes.schildgen@oth-regensburg.de">johannes.schildgen@oth-regensburg.de</a></h4>
                     <h2>Modern Database Concepts</h2>
                     <h4 style="text-align:center">&nbsp;</h4>
-                    <h3>Chapter 3: SQL Types for<br>Complex Data, XML, JSON</h3>
+                    <h3>Chapter 3: SQL Features for<br>Semi-Structured Data</h3>
                     <h4 style="text-align:center">&nbsp;<br>&nbsp;</h4>
                     <img src="img/ccby.png" height="60px" style="position: absolute; left:0px; border:0; bottom:-100px;">
                     <img src="img/oth.png" height="60px" style="position: absolute; right:0px; border:0; bottom:-100px; box-shadow:none">
                 </section>
+
+								<section>
+									<h3>History of SQL</h3>
+									<div class="sl-block" data-block-type="line" data-name="line-0821d2" data-block-id="e002be3b7da8b1840aa3baa21ee7203f" style="width: auto; height: auto; min-width: 0px; min-height: 0px; left: 27.5px; top: 409px;">
+										<div class="sl-block-content" data-line-x1="0" data-line-y1="0" data-line-x2="905" data-line-y2="0" data-line-color="#000000" data-line-start-type="none" data-line-end-type="line-arrow" style="z-index: 10;" data-line-width="4px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="905" height="1" viewBox="0 0 905 1">
+														<line stroke="rgba(0,0,0,0)" stroke-width="15" x1="0" y1="0" x2="902" y2="0"></line>
+														<line class="line-element" stroke="#000000" stroke-width="4" x1="0" y1="0" x2="902" y2="0"></line>
+														<path style="fill: rgba(0,0,0,0);" stroke="#000000" stroke-width="4" transform="translate(902,0) rotate(90)" d="M 9 9 L 0 0 L -9 9"></path>
+												</svg></div>
+								</div>
+								<div class="sl-block" data-block-type="line" data-name="line-dd8fef" data-block-id="4d109dfa66955a7b188be188a7a6abeb" style="width: auto; height: auto; min-width: 0px; min-height: 0px; left: 401.5px; top: 387.5px;">
+										<div class="sl-block-content" data-line-x1="0" data-line-y1="45" data-line-x2="0" data-line-y2="0" data-line-color="#000000" data-line-start-type="none" data-line-end-type="none" style="z-index: 11;" data-line-width="4px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="1" height="45" viewBox="0 0 1 45">
+														<line stroke="rgba(0,0,0,0)" stroke-width="15" x1="0" y1="45" x2="0" y2="0"></line>
+														<line class="line-element" stroke="#000000" stroke-width="4" x1="0" y1="45" x2="0" y2="0"></line>
+												</svg></div>
+								</div>
+								<div class="sl-block" data-block-type="line" style="width: auto; height: auto; min-width: 0px; min-height: 0px; left: 561.5px; top: 387.5px;" data-block-id="0ee7af9e7c05b48bd6b8f021554a2cad" data-name="line-ecbaa2">
+										<div class="sl-block-content" data-line-x1="0" data-line-y1="45" data-line-x2="0" data-line-y2="0" data-line-color="#000000" data-line-start-type="none" data-line-end-type="none" style="z-index: 12;" data-line-width="4px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="1" height="45" viewBox="0 0 1 45">
+														<line stroke="rgba(0,0,0,0)" stroke-width="15" x1="0" y1="45" x2="0" y2="0"></line>
+														<line class="line-element" stroke="#000000" stroke-width="4" x1="0" y1="45" x2="0" y2="0"></line>
+												</svg></div>
+								</div>
+								<div class="sl-block" data-block-type="line" style="width: auto; height: auto; min-width: 0px; min-height: 0px; left: 720.5px; top: 387.5px;" data-block-id="a40a600bfdab6c36be0f81545233074b" data-name="line-5eaf3e">
+										<div class="sl-block-content" data-line-x1="0" data-line-y1="45" data-line-x2="0" data-line-y2="0" data-line-color="#000000" data-line-start-type="none" data-line-end-type="none" style="z-index: 13;" data-line-width="4px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="1" height="45" viewBox="0 0 1 45">
+														<line stroke="rgba(0,0,0,0)" stroke-width="15" x1="0" y1="45" x2="0" y2="0"></line>
+														<line class="line-element" stroke="#000000" stroke-width="4" x1="0" y1="45" x2="0" y2="0"></line>
+												</svg></div>
+								</div>
+								<div class="sl-block" data-block-type="line" style="width: auto; height: auto; min-width: 0px; min-height: 0px; left: 240.5px; top: 387.5px;" data-block-id="ea0526c11b486633baba6f8ecadb4331" data-name="line-ae048c">
+										<div class="sl-block-content" data-line-x1="0" data-line-y1="45" data-line-x2="0" data-line-y2="0" data-line-color="#000000" data-line-start-type="none" data-line-end-type="none" style="z-index: 14;" data-line-width="4px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="1" height="45" viewBox="0 0 1 45">
+														<line stroke="rgba(0,0,0,0)" stroke-width="15" x1="0" y1="45" x2="0" y2="0"></line>
+														<line class="line-element" stroke="#000000" stroke-width="4" x1="0" y1="45" x2="0" y2="0"></line>
+												</svg></div>
+								</div>
+								<div class="sl-block" data-block-type="line" style="width: auto; height: auto; min-width: 0px; min-height: 0px; left: 81.5px; top: 387.5px;" data-block-id="42d233a4d61ec0190d56e5f2e28d2cf5" data-name="line-a3ad34">
+										<div class="sl-block-content" data-line-x1="0" data-line-y1="45" data-line-x2="0" data-line-y2="0" data-line-color="#000000" data-line-start-type="none" data-line-end-type="none" style="z-index: 15;" data-line-width="4px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="1" height="45" viewBox="0 0 1 45">
+														<line stroke="rgba(0,0,0,0)" stroke-width="15" x1="0" y1="45" x2="0" y2="0"></line>
+														<line class="line-element" stroke="#000000" stroke-width="4" x1="0" y1="45" x2="0" y2="0"></line>
+												</svg></div>
+								</div>
+								<div class="sl-block" data-block-type="line" style="width: auto; height: auto; min-width: 0px; min-height: 0px; left: 879px; top: 387.5px;" data-block-id="752c0478e81006d0a5f697f2a1356cfd" data-name="line-5a6c3b">
+										<div class="sl-block-content" data-line-x1="0" data-line-y1="45" data-line-x2="0" data-line-y2="0" data-line-color="#000000" data-line-start-type="none" data-line-end-type="none" style="z-index: 16;" data-line-width="4px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="1" height="45" viewBox="0 0 1 45">
+														<line stroke="rgba(0,0,0,0)" stroke-width="15" x1="0" y1="45" x2="0" y2="0"></line>
+														<line class="line-element" stroke="#000000" stroke-width="4" x1="0" y1="45" x2="0" y2="0"></line>
+												</svg></div>
+								</div>
+								<div class="sl-block" data-block-type="text" data-name="text-7ba98c" data-block-id="469c600c9b5ff6d323398d958133d755" style="height: auto; width: 91px; left: 34.5px; top: 432.5px;">
+										<div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 17;">
+												<p style="font-size: 70%; text-align:center;">1970</p>
+										</div>
+								</div>
+								<div class="sl-block" data-block-type="text" style="height: auto; width: 91px; left: 675px; top: 432.5px;" data-block-id="211195ee410be8d840cc638aef7e6f63" data-name="text-8f6fa5">
+										<div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 18;">
+												<p style="font-size: 70%; text-align:center;">2010</p>
+										</div>
+								</div>
+								<div class="sl-block" data-block-type="text" style="height: auto; width: 91px; left: 516px; top: 432.5px;" data-block-id="2c5c75602fe96ff83653192df15fa845" data-name="text-e4043f">
+										<div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 19;">
+												<p style="font-size: 70%; text-align:center;">2000</p>
+										</div>
+								</div>
+								<div class="sl-block" data-block-type="text" style="height: auto; width: 91px; left: 354.5px; top: 432.5px;" data-block-id="8176619f833a65f79e9383f4e0347ec9" data-name="text-760e6a">
+										<div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 20;">
+												<p style="font-size: 70%; text-align:center;">1990</p>
+										</div>
+								</div>
+								<div class="sl-block" data-block-type="text" style="height: auto; width: 91px; left: 194.5px; top: 432.5px;" data-block-id="8ddcde985cc31e4889805ff6fbf5c448" data-name="text-25417f">
+										<div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 21;">
+												<p style="font-size: 70%; text-align:center;">1980</p>
+										</div>
+								</div>
+								<div class="sl-block" data-block-type="text" style="height: auto; width: 91px; left: 833.5px; top: 432.5px;" data-block-id="9b6948131a684e7eda3bd7bec0c0b0e5" data-name="text-3c994a">
+										<div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 22;">
+												<p style="font-size: 70%; text-align:center;">2020</p>
+										</div>
+								</div>
+								<div class="sl-block fragment" data-fragment-index="1" data-block-type="line" data-name="line-d24cf7" data-block-id="9d49038d01d953408e2616d0c8584d24" style="width: auto; height: auto; min-width: 0px; min-height: 0px; left: 48px; top: 328.5px;">
+										<div class="sl-block-content" data-line-x1="0" data-line-y1="59" data-line-x2="32" data-line-y2="0" data-line-color="#000000" data-line-start-type="line-arrow" data-line-end-type="none" style="z-index: 23;" data-line-width="3px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="32" height="59" viewBox="0 0 32 59">
+														<line stroke="rgba(0,0,0,0)" stroke-width="15" x1="1.5727168408502445" y1="57.522178324682365" x2="32.5" y2="0.5"></line>
+														<line class="line-element" stroke="#000000" stroke-width="3" x1="1.5727168408502445" y1="57.522178324682365" x2="32.5" y2="0.5"></line>
+														<path style="fill: rgba(0,0,0,0);" stroke="#000000" stroke-width="3" transform="translate(1.0727168408502445,57.022178324682365) rotate(28.474)" d="M -6.75 -6.75 L 0 0 L 6.75 -6.75"></path>
+												</svg></div>
+								</div>
+								<div class="sl-block fragment" data-fragment-index="1" data-block-type="text" style="height: auto; width: 141px; left: 9.5px; top: 250.5px;" data-block-id="c1291c78d0a5d02cde3b0f17a4986ec7" data-name="text-8351ae">
+										<div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 24;">
+												<p style="font-size: 70%; text-align:center;">Network Model</p>
+										</div>
+								</div>
+								<div class="sl-block fragment" data-fragment-index="2" data-block-type="line" style="width: auto; height: auto; min-width: 0px; min-height: 0px; left: 94.5px; top: 220px;" data-block-id="4f0b1a5282743c7de07c1190f03c2b40" data-name="line-f74c83">
+										<div class="sl-block-content" data-line-x1="0" data-line-y1="175.5" data-line-x2="78.75" data-line-y2="0" data-line-color="#000000" data-line-start-type="line-arrow" data-line-end-type="none" style="z-index: 25;" data-line-width="3px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="78.75" height="175.5" viewBox="0 0 78.75 175.5">
+														<line stroke="rgba(0,0,0,0)" stroke-width="15" x1="1.421131388356112" y1="173.94719290594924" x2="79.25" y2="0.5"></line>
+														<line class="line-element" stroke="#000000" stroke-width="3" x1="1.421131388356112" y1="173.94719290594924" x2="79.25" y2="0.5"></line>
+														<path style="fill: rgba(0,0,0,0);" stroke="#000000" stroke-width="3" transform="translate(0.921131388356112,173.44719290594924) rotate(24.167)" d="M -6.75 -6.75 L 0 0 L 6.75 -6.75"></path>
+												</svg></div>
+								</div>
+								<div class="sl-block fragment" data-fragment-index="2" data-block-type="text" style="height: auto; width: 141px; left: 102.75px; top: 142px;" data-block-id="c20239dea6b3ead83c99bd3245b162f0" data-name="text-9285c3">
+										<div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 26;">
+												<p style="font-size: 70%; text-align:center;">Relational Model</p>
+										</div>
+								</div>
+								<div class="sl-block fragment" data-fragment-index="3" data-block-type="line" style="width: auto; height: auto; min-width: 0px; min-height: 0px; left: 125.5px; top: 298.5px;" data-block-id="00be328f465c8f2eeabd198016ae2ec1" data-name="line-483d1e">
+										<div class="sl-block-content" data-line-x1="0" data-line-y1="89" data-line-x2="80" data-line-y2="0" data-line-color="#000000" data-line-start-type="line-arrow" data-line-end-type="none" style="z-index: 27;" data-line-width="3px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="80" height="89" viewBox="0 0 80 89">
+														<line stroke="rgba(0,0,0,0)" stroke-width="15" x1="2.0041315909016775" y1="87.82665360512189" x2="80.5" y2="0.5"></line>
+														<line class="line-element" stroke="#000000" stroke-width="3" x1="2.0041315909016775" y1="87.82665360512189" x2="80.5" y2="0.5"></line>
+														<path style="fill: rgba(0,0,0,0);" stroke="#000000" stroke-width="3" transform="translate(1.5041315909016775,87.32665360512189) rotate(41.952)" d="M -6.75 -6.75 L 0 0 L 6.75 -6.75"></path>
+												</svg></div>
+								</div>
+								<div class="sl-block fragment" data-fragment-index="3" data-block-type="text" style="height: auto; width: 141px; left: 160px; top: 220.5px;" data-block-id="6df5fd4a5ba5943a07a5f69f3cf98a59" data-name="text-1482e2">
+										<div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 28;">
+												<p style="font-size: 70%; text-align:center;">IBM<br>
+														System R</p>
+										</div>
+								</div>
+								<div class="sl-block fragment" data-fragment-index="4" data-block-type="line" style="width: auto; height: auto; min-width: 0px; min-height: 0px; left: 150.5px; top: 358px;" data-block-id="7bfc236a52867c39adf37347a0f23726" data-name="line-61a9df">
+										<div class="sl-block-content" data-line-x1="0" data-line-y1="29.5" data-line-x2="55" data-line-y2="0" data-line-color="#000000" data-line-start-type="line-arrow" data-line-end-type="none" style="z-index: 29;" data-line-width="3px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="55" height="29.5" viewBox="0 0 55 29.5">
+														<line stroke="rgba(0,0,0,0)" stroke-width="15" x1="2.4827937417691928" y1="28.936501538505613" x2="55.5" y2="0.5"></line>
+														<line class="line-element" stroke="#000000" stroke-width="3" x1="2.4827937417691928" y1="28.936501538505613" x2="55.5" y2="0.5"></line>
+														<path style="fill: rgba(0,0,0,0);" stroke="#000000" stroke-width="3" transform="translate(1.9827937417691928,28.436501538505613) rotate(61.793)" d="M -6.75 -6.75 L 0 0 L 6.75 -6.75"></path>
+												</svg></div>
+								</div>
+								<div class="sl-block fragment" data-fragment-index="4" data-block-type="text" style="height: auto; width: 141px; left: 182.5px; top: 307.75px;" data-block-id="03e21010d98d278fbf189869f69ec887" data-name="text-5f6ed1">
+										<div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 30;">
+												<p style="font-size: 70%; text-align:center;">SEQUEL<br>
+														/ SQL</p>
+										</div>
+								</div>
+								<div class="sl-block fragment" data-fragment-index="5" data-block-type="text" style="height: auto; width: 141px; left: 256.5px; top: 135px;" data-block-id="b0619d5cb34fdb1ca133924d34cf2a5a" data-name="text-478cdf">
+										<div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 31;">
+												<p style="font-size: 70%; text-align:center;">SQL-86<br>								
+												Standard</p>
+										</div>
+								</div>
+								<div class="sl-block fragment" data-fragment-index="5" data-block-type="line" style="width: auto; height: auto; min-width: 0px; min-height: 0px; left: 327px; top: 220.5px;" data-block-id="5fc5e0553d96ff3ccadedd80753c3cc8" data-name="line-a9b6a7">
+										<div class="sl-block-content" data-line-x1="0" data-line-y1="174.5" data-line-x2="0" data-line-y2="0" data-line-color="#000000" data-line-start-type="line-arrow" data-line-end-type="none" style="z-index: 32;" data-line-width="3px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="1" height="174.5" viewBox="0 0 1 174.5">
+														<line stroke="rgba(0,0,0,0)" stroke-width="15" x1="0.5" y1="172.75" x2="0.5" y2="0.5"></line>
+														<line class="line-element" stroke="#000000" stroke-width="3" x1="0.5" y1="172.75" x2="0.5" y2="0.5"></line>
+														<path style="fill: rgba(0,0,0,0);" stroke="#000000" stroke-width="3" transform="translate(0,172.25) rotate(0)" d="M -6.75 -6.75 L 0 0 L 6.75 -6.75"></path>
+												</svg></div>
+								</div>
+								<div class="sl-block fragment" data-fragment-index="6" data-block-type="text" style="height: auto; width: 141px; left: 365.5px; top: 241px;" data-block-id="d34379826355ea91a8156e0704238a3c" data-name="text-dc08ae">
+										<div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 33;">
+												<p style="font-size: 70%; text-align:center;">SQL-92<br>
+														(atomic values)</p>
+										</div>
+								</div>
+								<div class="sl-block fragment" data-fragment-index="6" data-block-type="line" style="width: auto; height: auto; min-width: 0px; min-height: 0px; left: 436px; top: 358px;" data-block-id="150215bb865150b5d668eda3b9b19638" data-name="line-770d74">
+										<div class="sl-block-content" data-line-x1="0" data-line-y1="37" data-line-x2="0" data-line-y2="0" data-line-color="#000000" data-line-start-type="line-arrow" data-line-end-type="none" style="z-index: 34;" data-line-width="3px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="1" height="37" viewBox="0 0 1 37">
+														<line stroke="rgba(0,0,0,0)" stroke-width="15" x1="0.5" y1="35.25" x2="0.5" y2="0.5"></line>
+														<line class="line-element" stroke="#000000" stroke-width="3" x1="0.5" y1="35.25" x2="0.5" y2="0.5"></line>
+														<path style="fill: rgba(0,0,0,0);" stroke="#000000" stroke-width="3" transform="translate(0,34.75) rotate(0)" d="M -6.75 -6.75 L 0 0 L 6.75 -6.75"></path>
+												</svg></div>
+								</div>
+								<div class="sl-block fragment" data-fragment-index="7" data-block-type="line" style="width: auto; height: auto; min-width: 0px; min-height: 0px; left: 546px; top: 241px;" data-block-id="afab0294effe1480d172f9acaabaf20e" data-name="line-d50cc4">
+										<div class="sl-block-content" data-line-x1="0" data-line-y1="155.5" data-line-x2="0" data-line-y2="0" data-line-color="#000000" data-line-start-type="line-arrow" data-line-end-type="none" style="z-index: 35;" data-line-width="3px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="1" height="155.5" viewBox="0 0 1 155.5">
+														<line stroke="rgba(0,0,0,0)" stroke-width="15" x1="0.5" y1="153.75" x2="0.5" y2="0.5"></line>
+														<line class="line-element" stroke="#000000" stroke-width="3" x1="0.5" y1="153.75" x2="0.5" y2="0.5"></line>
+														<path style="fill: rgba(0,0,0,0);" stroke="#000000" stroke-width="3" transform="translate(0,153.25) rotate(0)" d="M -6.75 -6.75 L 0 0 L 6.75 -6.75"></path>
+												</svg></div>
+								</div>
+								<div class="sl-block fragment" data-fragment-index="7" data-block-type="text" style="height: auto; width: 160px; left: 466px; top: 119.5px;" data-block-id="e890f2ffea17de9ffa9e5fdf103f432d" data-name="text-65f604">
+										<div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 36;">
+												<p style="font-size: 70%; text-align:center;">SQL:1999<br>
+														(UDTs,<br>
+														ARRAYs)</p>
+										</div>
+								</div>
+								<div class="sl-block fragment" data-fragment-index="8" data-block-type="line" style="width: auto; height: auto; min-width: 0px; min-height: 0px; left: 606px; top: 318.75px;" data-block-id="34291c3dce1f999a924f42641f3b6026" data-name="line-a72495">
+										<div class="sl-block-content" data-line-x1="0" data-line-y1="76.25" data-line-x2="1" data-line-y2="0" data-line-color="#000000" data-line-start-type="line-arrow" data-line-end-type="none" style="z-index: 37;" data-line-width="3px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="1" height="76.25" viewBox="0 0 1 76.25">
+														<line stroke="rgba(0,0,0,0)" stroke-width="15" x1="0.5295056593912792" y1="74.50019347141496" x2="1.5" y2="0.5"></line>
+														<line class="line-element" stroke="#000000" stroke-width="3" x1="0.5295056593912792" y1="74.50019347141496" x2="1.5" y2="0.5"></line>
+														<path style="fill: rgba(0,0,0,0);" stroke="#000000" stroke-width="3" transform="translate(0.029505659391279263,74.00019347141496) rotate(0.751)" d="M -6.75 -6.75 L 0 0 L 6.75 -6.75"></path>
+												</svg></div>
+								</div>
+								<div class="sl-block fragment" data-fragment-index="8" data-block-type="text" style="height: auto; width: 160px; left: 546px; top: 229.75px;" data-block-id="97ba74f45ff60ce87cca209eb8ed2b76" data-name="text-d7a454">
+										<div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 38;">
+												<p style="font-size: 70%; text-align:center;">SQL:2003<br>
+														(SQL/XML)</p>
+										</div>
+								</div>
+								<div class="sl-block fragment" data-fragment-index="9" data-block-type="line" style="width: auto; height: auto; min-width: 0px; min-height: 0px; left: 655px; top: 382px;" data-block-id="1aec42cadc3f487e2824de5a8b606215" data-name="line-7d4325">
+										<div class="sl-block-content" data-line-x1="0" data-line-y1="13" data-line-x2="20" data-line-y2="0" data-line-color="#000000" data-line-start-type="line-arrow" data-line-end-type="none" style="z-index: 39;" data-line-width="3px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="20" height="13" viewBox="0 0 20 13">
+														<line stroke="rgba(0,0,0,0)" stroke-width="15" x1="2.3864981366764333" y1="12.273776211160317" x2="20.5" y2="0.5"></line>
+														<line class="line-element" stroke="#000000" stroke-width="3" x1="2.3864981366764333" y1="12.273776211160317" x2="20.5" y2="0.5"></line>
+														<path style="fill: rgba(0,0,0,0);" stroke="#000000" stroke-width="3" transform="translate(1.8864981366764333,11.773776211160317) rotate(56.976)" d="M -6.75 -6.75 L 0 0 L 6.75 -6.75"></path>
+												</svg></div>
+								</div>
+								<div class="sl-block fragment" data-fragment-index="9" data-block-type="text" style="height: auto; width: 160px; left: 626px; top: 304px;" data-block-id="72de637b7cba3d0d3db90966b212cf51" data-name="text-7ca70c">
+										<div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 40;">
+												<p style="font-size: 70%; text-align:center;">SQL:2006<br>
+														(XQuery)</p>
+										</div>
+								</div>
+								<div class="sl-block fragment" data-fragment-index="10" data-block-type="line" style="width: auto; height: auto; min-width: 0px; min-height: 0px; left: 773.5px; top: 221px;" data-block-id="57ce740fd32af75c74c01f8e4b8c14c0" data-name="line-2c74c7">
+										<div class="sl-block-content" data-line-x1="40" data-line-y1="177.75" data-line-x2="0" data-line-y2="0" data-line-color="#000000" data-line-start-type="line-arrow" data-line-end-type="none" style="z-index: 41;" data-line-width="3px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="40" height="177.75" viewBox="0 0 40 177.75">
+														<line stroke="rgba(0,0,0,0)" stroke-width="15" x1="40.00602409666218" y1="176.05489457954258" x2="0.5" y2="0.5"></line>
+														<line class="line-element" stroke="#000000" stroke-width="3" x1="40.00602409666218" y1="176.05489457954258" x2="0.5" y2="0.5"></line>
+														<path style="fill: rgba(0,0,0,0);" stroke="#000000" stroke-width="3" transform="translate(39.50602409666218,175.55489457954258) rotate(-12.682)" d="M -6.75 -6.75 L 0 0 L 6.75 -6.75"></path>
+												</svg></div>
+								</div>
+								<div class="sl-block fragment" data-fragment-index="10" data-block-type="text" style="height: auto; width: 160px; left: 694px; top: 142px;" data-block-id="6607bb9421a8142b8321fc7faeac2de3" data-name="text-52d1a0">
+										<div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 42;">
+												<p style="font-size: 70%; text-align:center;">SQL:2016<br>
+														(SQL/JSON)</p>
+										</div>
+								</div>
+								<div class="sl-block fragment" data-fragment-index="11" data-block-type="line" style="width: auto; height: auto; min-width: 0px; min-height: 0px; left: 861.5px; top: 356.875px;" data-block-id="9e25d8e31583dcac7b5fe2aa952ce7b5" data-name="line-70ec99">
+										<div class="sl-block-content" data-line-x1="0" data-line-y1="40.375" data-line-x2="0" data-line-y2="0" data-line-color="#000000" data-line-start-type="line-arrow" data-line-end-type="none" style="z-index: 53;" data-line-width="3px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="1" height="40.375" viewBox="0 0 1 40.375">
+														<line stroke="rgba(0,0,0,0)" stroke-width="15" x1="0.5" y1="38.625" x2="0.5" y2="0.5"></line>
+														<line class="line-element" stroke="#000000" stroke-width="3" x1="0.5" y1="38.625" x2="0.5" y2="0.5"></line>
+														<path style="fill: rgba(0,0,0,0);" stroke="#000000" stroke-width="3" transform="translate(0,38.125) rotate(0)" d="M -6.75 -6.75 L 0 0 L 6.75 -6.75"></path>
+												</svg></div>
+								</div>
+								<div class="sl-block fragment" data-fragment-index="11" data-block-type="text" style="height: auto; width: 160px; left: 799px; top: 250.875px;" data-block-id="c9e8176c5fa7f5eaa2d9964d25b58fd1" data-name="text-95cd7b">
+										<div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 54;">
+											<p style="font-size: 70%; text-align:center;">SQL:2019<br>
+														(multidim. <br>arrays)</p>
+										</div>
+								</div>
+								<div class="sl-block" data-block-type="shape" data-name="shape-84004a" data-block-id="fae40275f0b7f7aa80be51f157f32de6" style="width: 17px; height: 16.75px; left: 537.5px; top: 401.625px;">
+										<div class="sl-block-content" data-shape-type="circle" data-shape-fill-color="#000000" data-shape-stretch="true" style="z-index: 43;"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" preserveAspectRatio="none" viewBox="0 0 17 17">
+														<ellipse rx="8.5" ry="8.375" cx="8.5" cy="8.375" class="shape-element" fill="#000000"></ellipse>
+												</svg></div>
+								</div>
+								<div class="sl-block" data-block-type="shape" style="width: 17px; height: 16.75px; left: 427.5px; top: 400px;" data-block-id="86e14dbc62c56c81e5d027e89ab42099" data-name="shape-d5e56c">
+										<div class="sl-block-content" data-shape-type="circle" data-shape-fill-color="#000000" data-shape-stretch="true" style="z-index: 44;"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" preserveAspectRatio="none" viewBox="0 0 17 17">
+														<ellipse rx="8.5" ry="8.375" cx="8.5" cy="8.375" class="shape-element" fill="#000000"></ellipse>
+												</svg></div>
+								</div>
+								<div class="sl-block" data-block-type="shape" style="width: 17px; height: 16.75px; left: 380px; top: 400px;" data-block-id="1007de8f088225e2e366558c2a54e57d" data-name="shape-497428">
+										<div class="sl-block-content" data-shape-type="circle" data-shape-fill-color="#000000" data-shape-stretch="true" style="z-index: 45;"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" preserveAspectRatio="none" viewBox="0 0 17 17">
+														<ellipse rx="8.5" ry="8.375" cx="8.5" cy="8.375" class="shape-element" fill="#000000"></ellipse>
+												</svg></div>
+								</div>
+								<div class="sl-block" data-block-type="shape" style="width: 17px; height: 16.75px; left: 318.5px; top: 400px;" data-block-id="2190daf6371d4ebdb0a1aebde4a3e229" data-name="shape-64bf8c">
+										<div class="sl-block-content" data-shape-type="circle" data-shape-fill-color="#000000" data-shape-stretch="true" style="z-index: 46;"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" preserveAspectRatio="none" viewBox="0 0 17 17">
+														<ellipse rx="8.5" ry="8.375" cx="8.5" cy="8.375" class="shape-element" fill="#000000"></ellipse>
+												</svg></div>
+								</div>
+								<div class="sl-block" data-block-type="shape" style="width: 17px; height: 16.75px; left: 597.5px; top: 400px;" data-block-id="11e0473132303bf2f81de9cc9dfee314" data-name="shape-98b2d5">
+										<div class="sl-block-content" data-shape-type="circle" data-shape-fill-color="#000000" data-shape-stretch="true" style="z-index: 47;"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" preserveAspectRatio="none" viewBox="0 0 17 17">
+														<ellipse rx="8.5" ry="8.375" cx="8.5" cy="8.375" class="shape-element" fill="#000000"></ellipse>
+												</svg></div>
+								</div>
+								<div class="sl-block" data-block-type="shape" style="width: 17px; height: 16.75px; left: 646.5px; top: 400px;" data-block-id="e20cf2b64077bf490b980f4f5e07c600" data-name="shape-46226b">
+										<div class="sl-block-content" data-shape-type="circle" data-shape-fill-color="#000000" data-shape-stretch="true" style="z-index: 48;"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" preserveAspectRatio="none" viewBox="0 0 17 17">
+														<ellipse rx="8.5" ry="8.375" cx="8.5" cy="8.375" class="shape-element" fill="#000000"></ellipse>
+												</svg></div>
+								</div>
+								<div class="sl-block" data-block-type="shape" style="width: 17px; height: 16.75px; left: 682.5px; top: 400px;" data-block-id="f27d7193f582cba30ba715c564ac046a" data-name="shape-df2bc2">
+										<div class="sl-block-content" data-shape-type="circle" data-shape-fill-color="#000000" data-shape-stretch="true" style="z-index: 49;"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" preserveAspectRatio="none" viewBox="0 0 17 17">
+														<ellipse rx="8.5" ry="8.375" cx="8.5" cy="8.375" class="shape-element" fill="#000000"></ellipse>
+												</svg></div>
+								</div>
+								<div class="sl-block" data-block-type="shape" style="width: 17px; height: 16.75px; left: 725px; top: 400px;" data-block-id="7690ddf0afd09d377684714ac2eb1d12" data-name="shape-2cdc89">
+										<div class="sl-block-content" data-shape-type="circle" data-shape-fill-color="#000000" data-shape-stretch="true" style="z-index: 50;"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" preserveAspectRatio="none" viewBox="0 0 17 17">
+														<ellipse rx="8.5" ry="8.375" cx="8.5" cy="8.375" class="shape-element" fill="#000000"></ellipse>
+												</svg></div>
+								</div>
+								<div class="sl-block" data-block-type="shape" style="width: 17px; height: 16.75px; left: 805px; top: 400px;" data-block-id="acb4531f7925e7f7fbe9655c96e6b443" data-name="shape-f7a4ef">
+										<div class="sl-block-content" data-shape-type="circle" data-shape-fill-color="#000000" data-shape-stretch="true" style="z-index: 51;"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" preserveAspectRatio="none" viewBox="0 0 17 17">
+														<ellipse rx="8.5" ry="8.375" cx="8.5" cy="8.375" class="shape-element" fill="#000000"></ellipse>
+												</svg></div>
+								</div>
+								<div class="sl-block" data-block-type="shape" style="width: 17px; height: 16.75px; left: 854px; top: 400px;" data-block-id="bdfedd20bfd2ce84b063d28a80b0484b" data-name="shape-d7ce60">
+										<div class="sl-block-content" data-shape-type="circle" data-shape-fill-color="#000000" data-shape-stretch="true" style="z-index: 52;"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" preserveAspectRatio="none" viewBox="0 0 17 17">
+														<ellipse rx="8.5" ry="8.375" cx="8.5" cy="8.375" class="shape-element" fill="#000000"></ellipse>
+												</svg></div>
+								</div>
+								<aside class="notes">Before 1970, hierarchical databases and network databases were the most prominent ones. They did not have a query language, you need to develop a program to query it. The relational data model supports relational-algebra operators, and later the query language SQL. This makes it possible for non-developers to query the database.<br>
+									Each dot in this chart is a revision of the SQL Standard. Up to SQL-92, each column value had an atomic type. Nonscalar types were firstly introduces in SQL:1999.</aside>
+								</section>
+
                 <section>
-									<h2>SQL Extensions</h2>
-									<h4>UDT - User-Defined Data Types</h4>
-									<p class="small">SQL:1999: <code>CREATE TYPE ...</code></p>
+									<h3>UDT - User-Defined Data Types</h3>
+									<p class="small">SQL:1999: <code>CREATE TYPE ...</code> (Structured Types, Subtyping, ...)</p>
 									<pre style="width: 100%;"><code class="sql">CREATE TYPE ADDRESS AS (street VARCHAR(200), city VARCHAR(80));
+CREATE TABLE people (name VARCHAR(200), address ADDRESS);
+INSERT INTO people VALUES ('Peter', NEW address('Highway 5','Berlin'));
+SELECT address.city FROM people;</code></pre>
+<div class="fragment">
+								<p class="small">In PostgreSQL:</p>
+<pre style="width: 100%;"><code class="sql">CREATE TYPE ADDRESS AS (street VARCHAR(200), city VARCHAR(80));
 CREATE TABLE people (name VARCHAR(200), address ADDRESS);
 INSERT INTO people VALUES ('Peter', ('Highway 5', 'Berlin'));
 SELECT (address).city FROM people;</code></pre>
-
-									<div class="fragment">
-									<h4>Composite Types</h4>
-									<p class="small">SQL:1999: <code>ARRAY</code>, <code>MULTISET</code>, <code>ROW</code>, ... data types</p>
-
-									<pre style="width: 100%;"><code class="sql">CREATE TABLE people (name VARCHAR(200), hobbies VARCHAR(100) ARRAY[3]);
-INSERT INTO people VALUES ('Peter', '{ piano, yoga }');
-SELECT hobbies[2] FROM people;
-SELECT * FROM people WHERE 'piano' = ANY(hobbies);</code></pre>
-									</div>
-										<aside class="notes">The example queries on this slides are using the PostgreSQL dialect. PostgreSQL does not fully follow the SQL Standard and only supports the composite type <code>ARRAY</code>. </aside>
+</div>
+<div class="poll fragment" style="bottom:-200px">
+	<h1>Values of which data type can you store in a column of type ADDRESS?</h1>
+			<ul>
+					<li>VARCHAR</li>
+					<li>ADDRESS</li>
+					<li data-poll="correct">ADDRESS and its subtypes</li>
+					<li>ADDRESS and its supertypes</li>
+			</ul>
+	<h2>https://fraage.de</h2>
+</div>
+<aside class="notes">User-Defined Data Types can be used as column types for tables and views, for parameters and return types of functions, and more. The PostgreSQL dialect is very close to the SQL Standard.</aside>
 								</section>
 								<section>
-									<h2>SQL Extensions</h2>
-									<h4>SQL/XML</h4>
-									<p class="small">SQL:2003: <code>XML</code> data type, mappings, predicates, functions</p>
-									<pre style="width: 100%;"><code class="sql">CREATE TABLE people (name VARCHAR(200), address XML);
-INSERT INTO people VALUES ('Peter', '<address>
-<street>Highway 5</street><city zip="10123">Berlin</city></address>');
-SELECT xpath('//city/text()', address) FROM people;
-SELECT * FROM people WHERE xpath_exists('//city[@zip=10123]', address);</code></pre>
+									<h3>Composite Types</h3>
 
-									<div class="fragment">
-									<h4>SQL/JSON</h4>
-									<p class="small">SQL:2016: <code>JSON</code> data type, mappings, predicates, functions</p>
-<pre style="width: 100%;"><code class="sql">CREATE TABLE people (name VARCHAR(200), hobbies JSONB);
-INSERT INTO people VALUES ('Peter', '["piano","yoga"]');
-SELECT hobbies->>0 FROM people;
-SELECT * FROM people WHERE hobbies ? 'yoga';</code></pre>
+									<div>
+										<div class="sl-block" data-block-type="text" style="height: auto; width: 531px; left: 517px; top: 136.75px;" data-block-id="bac83d9b29a51e3a4b046cfc6c3673e1">
+											<div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 10;">
+												<p style="font-size: 70%; text-align: center;"><span style="font-size:1.0em">homogeneous<br>
+																	elements?</span></p>
+											</div>
+									</div>								
+									
+									<div class="sl-block" data-block-type="line" style="width: auto; height: auto; left: 839.895px; top: 214.75px;" data-block-id="f9390255db7a3fd8f9456e054e64e4a3" data-name="line-91a770">
+											<div class="sl-block-style" style="z-index: 11; transform: rotate(-45deg);">
+													<div class="sl-block-content" data-line-x1="0" data-line-y1="0" data-line-x2="0" data-line-y2="68" data-line-color="#000000" data-line-start-type="none" data-line-end-type="arrow" style="z-index: 11;" data-line-width="4px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="1" height="68" viewBox="0 0 1 68">
+																	<line stroke="rgba(0,0,0,0)" stroke-width="15" x1="0" y1="0" x2="0" y2="62"></line>
+																	<line class="line-element" stroke="#000000" stroke-width="4" x1="0" y1="0" x2="0" y2="62"></line>
+																	<polygon fill="#000000" transform="translate(0,62) rotate(180)" points="0,-6 6,6 -6,6"></polygon>
+															</svg></div>
+											</div>
 									</div>
-								<aside class="notes">Again, these examples are in PostgreSQL. The JSON operators <code>->></code>, <code>?</code> and so on are not standard-compliant.</aside>							
+									<div class="sl-block" data-block-type="line" style="width: auto; height: auto; left: 719px; top: 214.75px;" data-block-id="98054ccbd7fb053b0cba0d51787b6f93" data-name="line-a51c0c">
+											<div class="sl-block-style" style="z-index: 12; transform: rotate(45deg);">
+													<div class="sl-block-content" data-line-x1="0" data-line-y1="0" data-line-x2="0" data-line-y2="68" data-line-color="#000000" data-line-start-type="none" data-line-end-type="arrow" style="z-index: 12;" data-line-width="4px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="1" height="68" viewBox="0 0 1 68">
+																	<line stroke="rgba(0,0,0,0)" stroke-width="15" x1="0" y1="0" x2="0" y2="62"></line>
+																	<line class="line-element" stroke="#000000" stroke-width="4" x1="0" y1="0" x2="0" y2="62"></line>
+																	<polygon fill="#000000" transform="translate(0,62) rotate(180)" points="0,-6 6,6 -6,6"></polygon>
+															</svg></div>
+											</div>
+									</div>
+									<div class="sl-block" data-block-type="text" style="height: auto; width: 531px; left: 429.605px; top: 268.75px;" data-block-id="69f3b125b557011a0c21af611f01e3a3" data-name="text-723ddc">
+											<div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 13;">
+												<p style="font-size: 70%; text-align: center;">ordered<br>
+															elements?</p>
+											</div>
+									</div>
+									<div class="sl-block" data-block-type="line" style="width: auto; height: auto; left: 742.5px; top: 337.145px;" data-block-id="0351d30066672d2a5405a18dcf2ada8d" data-name="line-5054f2">
+											<div class="sl-block-style" style="z-index: 14; transform: rotate(-45deg);">
+													<div class="sl-block-content" data-line-x1="0" data-line-y1="0" data-line-x2="0" data-line-y2="68" data-line-color="#000000" data-line-start-type="none" data-line-end-type="arrow" style="z-index: 14;" data-line-width="4px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="1" height="68" viewBox="0 0 1 68">
+																	<line stroke="rgba(0,0,0,0)" stroke-width="15" x1="0" y1="0" x2="0" y2="62"></line>
+																	<line class="line-element" stroke="#000000" stroke-width="4" x1="0" y1="0" x2="0" y2="62"></line>
+																	<polygon fill="#000000" transform="translate(0,62) rotate(180)" points="0,-6 6,6 -6,6"></polygon>
+															</svg></div>
+											</div>
+									</div>
+									<div class="sl-block" data-block-type="line" style="width: auto; height: auto; left: 631.105px; top: 337.145px;" data-block-id="9cb414f49f97fb0331f7d5f03f78214d" data-name="line-05361b">
+											<div class="sl-block-style" style="z-index: 15; transform: rotate(45deg);">
+													<div class="sl-block-content" data-line-x1="0" data-line-y1="0" data-line-x2="0" data-line-y2="68" data-line-color="#000000" data-line-start-type="none" data-line-end-type="arrow" style="z-index: 15;" data-line-width="4px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="1" height="68" viewBox="0 0 1 68">
+																	<line stroke="rgba(0,0,0,0)" stroke-width="15" x1="0" y1="0" x2="0" y2="62"></line>
+																	<line class="line-element" stroke="#000000" stroke-width="4" x1="0" y1="0" x2="0" y2="62"></line>
+																	<polygon fill="#000000" transform="translate(0,62) rotate(180)" points="0,-6 6,6 -6,6"></polygon>
+															</svg></div>
+											</div>
+									</div>
+									<div class="sl-block" data-block-type="text" style="height: auto; width: 531px; left: 336px; top: 388.75px;" data-block-id="62098b03dba1a722de67e488e8c6ca72" data-name="text-a66f0d">
+											<div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 16;">
+												<p style="font-size: 70%; text-align: center;">restricted<br>
+															cardinality?</p>
+											</div>
+									</div>
+									<div class="sl-block" data-block-type="text" style="height: auto; width: 531px; left: 533px; top: 408.25px;" data-block-id="91f75f047313f63d2ad8238566d2aaee" data-name="text-4abbe4">
+											<div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 17;">
+												<p style="font-size: 70%; text-align: center;">duplicates?</p>
+											</div>
+									</div>
+									<div class="sl-block" data-block-type="line" style="width: auto; height: auto; left: 751.105px; top: 450.355px;" data-block-id="8a91ffb7727a880e62460a285f3cbc40" data-name="line-f9f636">
+											<div class="sl-block-style" style="z-index: 18; transform: rotate(45deg);">
+													<div class="sl-block-content" data-line-x1="0" data-line-y1="0" data-line-x2="0" data-line-y2="68" data-line-color="#000000" data-line-start-type="none" data-line-end-type="arrow" style="z-index: 18;" data-line-width="4px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="1" height="68" viewBox="0 0 1 68">
+																	<line stroke="rgba(0,0,0,0)" stroke-width="15" x1="0" y1="0" x2="0" y2="62"></line>
+																	<line class="line-element" stroke="#000000" stroke-width="4" x1="0" y1="0" x2="0" y2="62"></line>
+																	<polygon fill="#000000" transform="translate(0,62) rotate(180)" points="0,-6 6,6 -6,6"></polygon>
+															</svg></div>
+											</div>
+									</div>
+									<div class="sl-block" data-block-type="line" style="width: auto; height: auto; left: 556.895px; top: 457.645px;" data-block-id="b721ab30d0b61010a43dcc49c846510b" data-name="line-efc202">
+											<div class="sl-block-style" style="z-index: 19; transform: rotate(45deg);">
+													<div class="sl-block-content" data-line-x1="0" data-line-y1="0" data-line-x2="0" data-line-y2="68" data-line-color="#000000" data-line-start-type="none" data-line-end-type="arrow" style="z-index: 19;" data-line-width="4px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="1" height="68" viewBox="0 0 1 68">
+																	<line stroke="rgba(0,0,0,0)" stroke-width="15" x1="0" y1="0" x2="0" y2="62"></line>
+																	<line class="line-element" stroke="#000000" stroke-width="4" x1="0" y1="0" x2="0" y2="62"></line>
+																	<polygon fill="#000000" transform="translate(0,62) rotate(180)" points="0,-6 6,6 -6,6"></polygon>
+															</svg></div>
+											</div>
+									</div>
+									<div class="sl-block" data-block-type="line" style="width: auto; height: auto; left: 631.105px; top: 457.145px;" data-block-id="fd9cc5d5acdca8841e007a93b4698cd3" data-name="line-9df729">
+											<div class="sl-block-style" style="z-index: 20; transform: rotate(-45deg);">
+													<div class="sl-block-content" data-line-x1="0" data-line-y1="0" data-line-x2="0" data-line-y2="68" data-line-color="#000000" data-line-start-type="none" data-line-end-type="arrow" style="z-index: 20;" data-line-width="4px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="1" height="68" viewBox="0 0 1 68">
+																	<line stroke="rgba(0,0,0,0)" stroke-width="15" x1="0" y1="0" x2="0" y2="62"></line>
+																	<line class="line-element" stroke="#000000" stroke-width="4" x1="0" y1="0" x2="0" y2="62"></line>
+																	<polygon fill="#000000" transform="translate(0,62) rotate(180)" points="0,-6 6,6 -6,6"></polygon>
+															</svg></div>
+											</div>
+									</div>
+									<div class="sl-block" data-block-type="line" style="width: auto; height: auto; left: 839.895px; top: 450.355px;" data-block-id="245dfe865eec569a85cee0ff38281299" data-name="line-e6f77e">
+											<div class="sl-block-style" style="z-index: 21; transform: rotate(-45deg);">
+													<div class="sl-block-content" data-line-x1="0" data-line-y1="0" data-line-x2="0" data-line-y2="68" data-line-color="#000000" data-line-start-type="none" data-line-end-type="arrow" style="z-index: 21;" data-line-width="4px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="1" height="68" viewBox="0 0 1 68">
+																	<line stroke="rgba(0,0,0,0)" stroke-width="15" x1="0" y1="0" x2="0" y2="62"></line>
+																	<line class="line-element" stroke="#000000" stroke-width="4" x1="0" y1="0" x2="0" y2="62"></line>
+																	<polygon fill="#000000" transform="translate(0,62) rotate(180)" points="0,-6 6,6 -6,6"></polygon>
+															</svg></div>
+											</div>
+									</div>
+									<div class="sl-block" data-block-type="text" style="height: auto; width: 120px; left: 635.105px; top: 204.75px;" data-block-id="2819366913ecda4625f7c9cbfbc5a9ad" data-name="text-834857">
+											<div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 22;">
+													<p><span style="font-size:0.5em; margin-left: 50px;">yes</span></p>
+											</div>
+									</div>
+									<div class="sl-block" data-block-type="text" style="height: auto; width: 120px; left: 678.5px; top: 437.75px;" data-block-id="ce78e4aa02a9edfe9e4a9259cf4fe70c" data-name="text-afd9d6">
+											<div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 23;">
+												<p><span style="font-size:0.5em; margin-left: 45px;">yes</span></p>
+											</div>
+									</div>
+									<div class="sl-block" data-block-type="text" style="height: auto; width: 120px; left: 467.21px; top: 446.75px;" data-block-id="28d62e5c969519a54b3bd0fa9188a703" data-name="text-604c62">
+											<div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 24;">
+												<p><span style="font-size:0.5em; margin-left: 50px;">yes</span></p>
+											</div>
+									</div>
+									<div class="sl-block" data-block-type="text" style="height: auto; width: 120px; left: 547.21px; top: 324.75px;" data-block-id="dd4208a505dca82c23d8c9f5c81f694c" data-name="text-f150b0">
+											<div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 25;">
+												<p><span style="font-size:0.5em; margin-left: 50px;">yes</span></p>
+											</div>
+									</div>
+									<div class="sl-block" data-block-type="text" style="height: auto; width: 120px; left: 807px; top: 209.355px;" data-block-id="cb406d79834a0698de822d0527c5ecef" data-name="text-714f78">
+											<div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 26;">
+												<p><span style="font-size:0.5em; margin-left: 40px;">no</span></p>
+											</div>
+									</div>
+									<div class="sl-block" data-block-type="text" style="height: auto; width: 120px; left: 596px; top: 447.25px;" data-block-id="b1637f1794f54b847b073ba8159eb4ca" data-name="text-81ba53">
+											<div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 27;">
+												<p><span style="font-size:0.5em; margin-left: 50px;">no</span></p>
+											</div>
+									</div>
+									<div class="sl-block" data-block-type="text" style="height: auto; width: 120px; left: 798.5px; top: 437.75px;" data-block-id="318a59cfb16f47b782ab18eba42f4c67" data-name="text-e913ff">
+											<div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 28;">
+												<p><span style="font-size:0.5em; margin-left: 40px;">no</span></p>
+											</div>
+									</div>
+									<div class="sl-block" data-block-type="text" style="height: auto; width: 120px; left: 702px; top: 324.75px;" data-block-id="b43ea886055863e13cc84eefd2204353" data-name="text-f2f0e6">
+											<div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 29;">
+												<p><span style="font-size:0.5em; margin-left: 40px;">no</span></p>
+											</div>
+									</div>
+									<div class="sl-block" data-block-type="text" style="height: auto; min-width: 30px; min-height: 30px; width: 145px; left: 689.5px; top: 522.25px;" data-block-id="c274a16f6943eb9b11a2048fff800bd5" data-name="text-39721d">
+											<div class="sl-block-content green" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 30; border-style: solid; border-width: 1px; border-color: rgb(34, 34, 34);" data-fragment-index="0" dir="ui">
+												<p style="font-size: 70%; text-align: center;" class="fragment" data-fragment-index="1">MULTISET</p>
+											</div>
+									</div>
+									<div class="sl-block" data-block-type="text" style="height: auto; min-width: 30px; min-height: 30px; width: 83.7098px; left: 600px; top: 522.25px;" data-block-id="318aeda816ab43e9485da18d235a3130" data-name="text-a22e5a">
+											<div class="sl-block-content red" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 31; border-style: solid; border-width: 1px; border-color: rgb(34, 34, 34);" data-fragment-index="0" dir="ui">
+												<p style="font-size: 70%; text-align: center;" class="fragment" data-fragment-index="1">LIST</p>
+											</div>
+									</div>
+									<div class="sl-block" data-block-type="text" style="height: auto; min-width: 30px; min-height: 30px; width: 100.855px; left: 492.572px; top: 522.25px;" data-block-id="5be30256de587272b9946e8ad3304181" data-name="text-af287f">
+											<div class="sl-block-content green" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 32; border-style: solid; border-width: 1px; border-color: rgb(34, 34, 34);" data-fragment-index="0" dir="ui">
+												<p style="font-size: 70%; text-align: center;" class="fragment" data-fragment-index="1">ARRAY</p>
+											</div>
+									</div>
+									<div class="sl-block" data-block-type="text" style="height: auto; min-width: 30px; min-height: 30px; width: 81.428px; left: 845.572px; top: 522.25px;" data-block-id="04c723344719ccc6d1508b2921812119" data-name="text-525b74">
+											<div class="sl-block-content red" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 33; border-style: solid; border-width: 1px; border-color: rgb(34, 34, 34);" data-fragment-index="0" dir="ui">
+												<p style="font-size: 70%; text-align: center;" class="fragment" data-fragment-index="1">SET</p>
+											</div>
+									</div>
+									<div class="sl-block" data-block-type="text" style="height: auto; min-width: 30px; min-height: 30px; width: 81.428px; left: 834.5px; top: 287.25px;" data-block-id="64417b4fea8d24c99d1c3d6026af9f76" data-name="text-303ee1">
+											<div class="sl-block-content green" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 34; border-style: solid; border-width: 1px; border-color: rgb(34, 34, 34);" data-fragment-index="0" dir="ui">
+												<p style="font-size: 70%; text-align: center;" class="fragment" data-fragment-index="1">ROW</p>
+											</div>
+									</div>
+									<div class="sl-block" data-block-type="text" style="height: auto; min-width: 30px; min-height: 30px; width: 115.428px; left: 822px; top: 339.75px;" data-block-id="05a00865fe6a729d7680eef292299eff" data-name="text-d0ef5d">
+											<div class="sl-block-content red" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 35; border-style: solid; border-width: 1px; border-color: rgb(34, 34, 34);" data-fragment-index="0" dir="ui">
+													<p style="font-size: 70%; text-align: center;" class="fragment" data-fragment-index="1">UNION</p>
+											</div>
+									</div>
+									</div>
+
+									<p class="small">SQL:1999: <code>ARRAY</code>, <code>MULTISET</code>, <code>ROW</code>, ... data types</p>
+<pre style="width: 13cm; margin-left: 0px;"><code class="sql">CREATE TABLE people (
+ name VARCHAR(200), 
+ address ROW(street VARCHAR(200), 
+             city VARCHAR(80)),
+ hobbies VARCHAR(100) ARRAY[3]);</code></pre>
+
+ <pre style="width: 13cm; margin-left: 0px; margin-top: -3mm;"><code class="sql">INSERT INTO people VALUES ('Peter',
+ ROW('Highway 5', 'Berlin'),
+ ARRAY['piano', 'yoga']);</code></pre>
+
+ <pre style="width: 13cm; margin-left: 0px; margin-top: -3mm;"><code class="sql">SELECT hobbies[2] FROM people
+ WHERE address.city = 'Berlin';</code></pre>
+
+ <pre style="width: 13cm; margin-left: 0px; margin-top: -3mm;"><code class="sql">SELECT p.name, h.hobby
+ FROM people p, 
+ UNNEST(p.hobbies) AS h(hobby);</code></pre>
+
+								<aside class="notes">The SQL Standard introduced three composite types for storing and working with collections of data values: ARRAY, MULTISET and ROW. UNION (a unification of two data-type domains), LIST, and SET were not introduced in the standard. Most RBDMSs do not supported these types. Instead, they recommend creating user-defined data types or using XML or JSON.</aside>
+								</section>
+
+								<section>
+									<h3>Composite Types</h3>
+									<p class="small"><code>ARRAY</code> type in PostgreSQL:</p>
+<pre style="width: 100%;"><code class="sql">CREATE TABLE people (name VARCHAR(200), hobbies VARCHAR(100) ARRAY);
+INSERT INTO people VALUES ('Peter', '{ piano, yoga }');
+SELECT hobbies[2] FROM people;
+SELECT name FROM people WHERE 'piano' = ANY(hobbies);
+SELECT p.name, h.hobby FROM people p, UNNEST(p.hobbies) AS h(hobby);</code></pre>
+<span data-sql-query="with t(name, hobby) as (values ('Peter','piano'), ('Peter','yoga')) select * from t"></span>
+
+<div class="poll fragment" style="bottom:-240px">
+	<h1>What do you think does the column i in the following expression show? UNNEST(p.hobbies) WITH ORDINALITY AS h(hobby, i)</h1>
+			<ul>
+					<li data-poll="correct">the element's position within the array</li>
+					<li>the number of elements in the array</li>
+					<li>the original array</li>
+					<li>an ordinary array element</li>
+			</ul>
+	<h2>https://fraage.de</h2>
+</div>
+
+<aside class="notes">PostgreSQL follows supports SQL Standard <code>INT ARRAY[3]</code>, but also <code>INT[3]</code>, and <code>INT[]</code>. In any case, the number of elements in the array is not limited, so PostgreSQL does not support size restrictions. The syntax for creating and working with array is similar to the SQL Standard.<br>Other composite types (ROW, MULTISET) are not supported by PostgreSQL.</aside>
+								</section>
+
+								<section>
+									<h2>SQL/XML</h2>
+									<p class="small">SQL:2003: <code>XML</code> data type, mappings, predicates, functions</p>
+									<pre style="width: 100%;"><code class="sql">CREATE TABLE people (name VARCHAR(200), address XML);</code></pre>
+
+										<pre style="width: 100%;" class="fragment"><code class="sql">INSERT INTO people VALUES ('Peter', '<address>
+<street>Highway 5</street><city zip="10123">Berlin</city></address>');</code></pre>
+
+<pre style="width: 100%;" class="fragment"><code class="sql">SELECT XMLQUERY('$addr//city/text()' PASSING BY REF address AS "addr") 
+FROM people;</code></pre>
+
+<pre style="width: 100%;" class="fragment"><code class="sql">SELECT * FROM people WHERE XMLEXISTS('$addr//city[@zip=10123]' 
+                           PASSING BY REF address AS "addr");</code></pre>
+
+													 <pre style="width: 100%;" class="fragment"><code class="sql">SELECT p.name, a.zip, a.city
+FROM people p, XMLTABLE('$addr/address' 
+PASSING BY REF address AS "addr" COLUMNS zip CHAR(5) PATH 'city/@zip'
+                                   city VARCHAR(100) PATH 'city') a;</code></pre>
+
+                <p class="small">Try out at <a href="https://dbfiddle.uk/?rdbms=db2_11.1&fiddle=c359607e840339a4b139e1e94c35b811" target="_blank">https://dbfiddle.uk/?rdbms=db2_11.1&fiddle=c359607e840339a4b139e1e94c35b811</a></p>												 
+								</section>
+
+								<section>
+									<h2>SQL/XML</h2>
+									<p class="small">XML type in PostgreSQL:</p>
+									<pre style="width: 100%;"><code class="sql">CREATE TABLE people (name VARCHAR(200), address XML);</code></pre>
+									<pre style="width: 100%;"><code class="sql">INSERT INTO people VALUES ('Peter', '<address>
+<street>Highway 5</street><city zip="10123">Berlin</city></address>');</code></pre>
+
+								<table style="font-size:0.7em">
+									<thead><tr><th style="padding-top:0px;">name</th><th style="padding-top:0px;">address</th></tr></thead>
+									<tbody><tr><td>Peter</td><td>&lt;address>&lt;street>Highway 5&lt;/street><br>&lt;city zip=&quot;10123&quot;>Berlin&lt;/city>&lt;/address></td></tr></tbody></table>
+<pre style="width: 100%;" class="fragment"><code class="sql">SELECT xpath('//city/text()', address) FROM people;</code></pre>
+<div class="poll fragment fade-in-then-out" style="bottom:-120px">
+	<h1>What's the data type of the column in the result of the SELECT xpath... query?</h1>
+			<ul>
+					<li>XML</li>
+					<li data-poll="correct">XML ARRAY</li>
+					<li>VARCHAR</li>
+					<li>VARCHAR ARRAY</li>
+			</ul>
+	<h2>https://fraage.de</h2>
+</div>
+	<pre style="width: 100%;" class="fragment"><code class="sql">SELECT * FROM people WHERE xpath_exists('//city[@zip=10123]', address);</code></pre>
+
+									<aside class="notes">The PostgreSQL syntax for working with XML data is quite similar to the SQL standard. PostgreSQL only supports XPath expressions, the SQL standard also allows XQuery FLWOR expressions. Mind that the return type of the <code>xpath</code> function in PostgreSQL is <code>XML ARRAY</code>. So, to get the city as a <code>VARCHAR</code>, the following expression would be needed: <code>CAST((xpath('//city/text()', address))[1] AS VARCHAR(100))</code></aside>
+								</section>
+									<section>
+										<h2>SQL/JSON</h2>
+									<p class="small">SQL:2016: <code>JSON</code> data type, mappings, predicates, functions</p>
+<pre style="width: 100%;"><code class="sql">CREATE TABLE people (name VARCHAR(200), hobbies JSON);
+INSERT INTO people VALUES ('Peter', '["piano","yoga"]');</code></pre>
+
+<table style="font-size:0.7em">
+	<thead><tr><th style="padding-top:0px;">name</th><th style="padding-top:0px;">hobbies</th></tr></thead>
+	<tbody><tr><td>Peter</td><td>["piano","yoga"]</td></tr></tbody></table>
+
+<pre style="width: 100%;"><code class="sql">SELECT JSON_VALUE(hobbies, '$[1]') FROM people;</code></pre>
+<pre style="width: 100%;"><code class="sql">SELECT * FROM people WHERE JSON_EXISTS(hobbies, '$?(@=="yoga")');</code></pre>
+
+<p class="small">Try out at <a href="https://dbfiddle.uk/?rdbms=oracle_18&fiddle=910c9ed0330cd634b0a3042e5923c42b" target="_blank">https://dbfiddle.uk/?rdbms=oracle_18&fiddle=910c9ed0330cd634b0a3042e5923c42b</a></p>
+								<aside class="notes">Similar to SQL/XML, the SQL Standard introduced a native <code>JSON</code> data type for storing JSON data. Within the functions, e.g. <code>JSON_VALUE</code>, JSONPath expressions are used (see previous chapter). <code>JSON_VALUE</code> returns a scalar value (here: <code>VARCHAR</code>), another function <code>JSON_QUERY</code> returns a value of type <code>JSON</code>.</aside>							
 								</section>
 								
+								<section>
+									<h3>SQL/JSON</h3>
+									<h4><code>JSON</code> data type</h4>
+									<p class="small">Implementation alternatives:</p>
+									<ul class="small">
+										<li class="fragment">native <code>JSON</code> type
+											<ul>
+												<li>PostgreSQL (<code>JSONB</code> type), MySQL</li>
+											</ul><br> </li>
+										<li class="fragment"><code>JSON</code> as an alias for a string type
+											<ul>
+												<li>PostgreSQL (<code>JSON</code> type), MariaDB (alias for <code>LONGTEXT</code>), SQLite</li>
+											</ul><br></li>
+										<li class="fragment">no <code>JSON</code> type; instead use <code>CLOB</code>, <code>VARCHAR</code>, <code>BLOB</code>
+											<ul>
+											<li>Microsoft SQL Server, Oracle: store strings</li>
+											<li>DB2: BSON storage</li>
+											</ul></li>
+									</ul>
+
+									<aside class="notes">SQL/JSON was introduces in the SQL:2016 standard. Different vendors implement their JSON functionality in different ways. Some offer a native JSON datatype, some store the JSON data as text. The SQL/Standard defines multiple functions on the JSON datatype.</aside>
+								</section>
+
+
+								<section>
+									<h3><code>JSON</code> / <code>JSONB</code> types in PostgreSQL</h3>
+									<h4><code>JSON</code></h4>
+									<ul class="small">
+										<li>introduced in PostgreSQL 9.2 (2012)</li>
+										<li>JSON data stored as a string (fast storage)</li>
+										<li>check for well-formedness</li>
+										<li>preserves the original formatting (whitespaces, duplicate keys, key ordering)</li>
+									</ul>
+
+									<h4 style="margin-top: 10mm;"><code>JSONB</code></h4>
+									<ul class="small">
+										<li>introduced in PostgreSQL 9.4 (2014)</li>
+										<li>&quot;JSON Binary&quot; (or &quot;JSON better&quot; ;-))</li>
+										<li>efficient querying</li>
+										<li>index support</li>
+									</ul>
+
+									<aside class="notes">For most use cases, it is recommended to use the <code>JSONB</code> data type. Using this data type, JSON data is internally stored in a binary format which supports much faster queries than querying <code>JSON</code> data stored as a string.</aside>
+								</section>
+
+								<section>
+									<h3>Well-formedness</h3>
+									<p class="small">The native JSON datatype only accepts well-formed JSON documents.</p>
+									<pre><code class="sql">-- PostgreSQL (also checks well-formedness for JSON data type)
+CREATE TABLE people (name VARCHAR(200), hobbies JSONB);
+INSERT INTO people VALUES ('Peter', '["piano","yoga"');</code></pre>
+<p class="small fragment" style="color: red;">ERROR: invalid input syntax for type json<br>Detail: The input string ended unexpectedly.</p>
+
+								<div class="fragment">
+								<p class="small"><code>CHECK</code> constraint for well-formedness:</p>
+
+								<pre><code class="sql">-- MariaDB
+CREATE TABLE people (name VARCHAR(200), 
+                     hobbies JSON CHECK (JSON_VALID(hobbies)));
+-- Oracle
+CREATE TABLE people (name VARCHAR(200), 
+                     hobbies CLOB CHECK (hobbies IS JSON));
+								</code></pre>
+							</div>
+
+								<aside class="notes">If a text column is used to store JSON data (<code>VARCHAR</code>, <code>CLOB</code>, in MariaDB also <code>JSON</code>, ...), is is possible to store non-well-formed JSON documents. It is recommended to use a <code>CHECK</code> constraint to avoid this.</aside>
+								</section>
+
+								<section>
+									<h3>Building JSON</h3>
+					
+					<!--
+					CREATE TABLE cities(city VARCHAR(100) PRIMARY KEY, population INT);
+					CREATE TABLE districts(city VARCHAR(100) REFERENCES cities(city),
+												 district VARCHAR(100), PRIMARY KEY(city, district));
+												
+					INSERT INTO cities VALUES ('Regensburg', 153094);
+					INSERT INTO cities VALUES ('Berlin', 3669491);
+					INSERT INTO districts VALUES ('Regensburg', 'Galgenberg');
+					INSERT INTO districts VALUES ('Regensburg', 'Kumpfmühl');
+					INSERT INTO districts VALUES ('Berlin', 'Wedding');
+					-->								
+									<div class="columns stretch" style="max-height: 6.5cm;">
+										<div style="margin-top:0px; text-align: center;"><b style="font-size: 80%;">cities</b>
+									<table style="font-size:0.7em">
+										<thead>
+											<tr><th><u>city</u></th><th>population</th></tr>
+											<tr><td>Regensburg</td><td>153094</td></tr>
+											<tr><td>Berlin</td><td>3669491</td></tr>
+									</table>
+								</div>
+								<div style="margin-top:0px; text-align: center;"><b style="font-size: 80%;">districts</b>
+										<table style="font-size:0.7em" >
+										<thead>
+											<tr><th><u>city</u></th><th><u>district</u></th></tr>
+											<tr><td>Regensburg</td><td>Galgenberg</td></tr>
+											<tr><td>Regensburg</td><td>Kumpfmühl</td></tr>
+											<tr><td>Berlin</td><td>Wedding</td></tr>
+									</table>	
+								</div>
+								</div>
+								<pre class="fragment" style="width: 100%;"><code class="sql">SELECT JSONB_BUILD_OBJECT('city', c.city, 'population', c.population, 
+                          'districts', JSONB_AGG(d.district))
+FROM cities c JOIN districts d ON c.city=d.city
+GROUP BY c.city, c.population;</code></pre>
+					
+					<table class="fragment" style="font-size:0.65em; margin-top: -5mm;">
+					<tr><td>{"city": "Berlin", "districts": ["Wedding"], "population": 3669491}</td></tr>
+					<tr><td>{"city": "Regensburg", "districts": ["Galgenberg", "Kumpfmühl"], "population": 153094}</td></tr>
+					</table>	
+									<aside class="notes">Relational databases support many functions to build JSON data. PostgreSQL's <code>JSONB_BUILD_OBJECT</code> takes a list of field names and their values to create an JSON object. The values can be of any type, also <code>JSON</code> or <code>JSONB</code>. <code>JSONB_AGG</code> is an aggregation function (like <code>SUM</code>, ...). It creates a JSON array with all elements of a group of values.</aside>
+								</section>
+
+								<section>
+									<h3>SQL/JSON in PostgreSQL</h3>
+<pre style="width: 100%;"><code class="sql">CREATE TABLE people (name VARCHAR(200), profile JSONB);
+INSERT INTO people VALUES ('Peter', '{"city":"Berlin", 
+                                      "hobbies":["piano","yoga"]}');
+SELECT profile->'hobbies'->>0 FROM people;
+SELECT * FROM people WHERE profile->'hobbies' ? 'yoga';</code></pre>
+
+<table style="font-size:0.7em">
+	<thead><tr><th style="padding-top:0px;">operator</th><th style="padding-top:0px;">return type</th><th style="padding-top:0px;">description</th></tr></thead>
+	<tbody>
+		<tr><td><code>->n</code></td><td><code>JSON</code></td><td><code>n</code>-th array element</td></tr>
+		<tr><td><code>->'x'</code></td><td><code>JSON</code></td><td>value of field <code>x</code></td></tr>
+		<tr><td><code>->>n</code></td><td><code>text</code></td><td><code>n</code>-th array element</td></tr>
+		<tr><td><code>->>'x'</code></td><td><code>text</code></td><td>value of field <code>x</code></td></tr>
+		<tr><td><code>? 'x'</code></td><td><code>boolean</code></td><td>does the array contain the value <code>'x'</code>?<br>does the object contain the field <code>x</code>?</tr>
+	</tbody></table>
+
+							<aside class="notes">PostgreSQL's JSON operators <code>->></code>, <code>?</code> and so on are not standard-compliant.</aside>							
+							</section>
+
+							<section>
+								<h3><code>@></code> Containment Operator</h3>
+								<table style="font-size:0.7em">
+									<thead><tr><th style="padding-top:0px; width: 8cm;">operator</th><th style="padding-top:0px;">return type</th><th style="padding-top:0px;">description</th></tr></thead>
+									<tbody>
+										<tr><td><code>'json' @> 'json'</code></td><td><code>boolean</code></td><td>Does the left JSON contain the entries of the right JSON?</td></tr>
+								</tbody></table>
+
+								<pre style="width: 100%;"><code class="sql">SELECT * FROM people WHERE profile @> '{"hobbies" : ["yoga"]}';</code></pre>
+							</section>
+
+
+							<section>
+								<h3>SQL/JSON Path Expressions</h3>
+								<table style="font-size:0.7em">
+									<thead><tr><th style="padding-top:0px;">operator</th><th style="padding-top:0px;">return type</th><th style="padding-top:0px;">description</th></tr></thead>
+									<tbody>
+										<tr><td><code>@? 'path'</code></td><td><code>boolean</code></td><td>Does the path expression return anything?</td></tr>
+										</tbody></table>
+
+										<pre style="width: 100%;"><code class="sql">SELECT profile @? '$.hobbies?(@=="yoga")' FROM people;</code></pre>
+										<p class="small" style="text-align: center; margin-top: -3mm; margin-bottom: -5mm;">&wedgeq;</p>
+										<pre style="width: 100%;"><code class="sql">SELECT jsonb_path_exists(profile, '$.hobbies?(@=="yoga")') FROM people;</code></pre>
+
+										<h4>Path Queries</h4>
+
+										<pre style="width: 100%;"><code class="sql">SELECT jsonb_path_query(profile, '$.hobbies[0]') FROM people;</code></pre>
+										
+										<div class="poll fragment" style="bottom:-200px">
+											<h1>Which expression is equivalent to the jsonb_path_query expression on this slide?</h1>
+													<ul>
+															<li>profile->'hobbies'->0</li>
+															<li data-poll="correct">profile->'hobbies'->>0</li>
+															<li>profile->>'hobbies'->0</li>
+															<li>profile->>'hobbies'->>0</li>
+													</ul>
+											<h2>https://fraage.de</h2>
+										</div>
+										<aside class="notes">The query at the bottom of this slide finds the first entry in the hobbies array. The query is equivalent to the first <code>SELECT</code> query on the previous slide. The <code>@?</code> operator and the functions <code>jsonb_path_exists</code> and <code>jsonb_path_query</code> only work for <code>JSONB</code> values (not <code>JSON</code>).</aside>
+							</section>	
+							
+							
+							<section>
+								<h3>Unnesting</h3>
+								<pre style="width: 100%;"><code class="sql">SELECT name, jsonb_path_query(profile, '$.hobbies[*]') AS hobby
+FROM people;</code></pre>
+
+								<span data-sql-query="with t(name, hobby) as (values ('Peter','piano'), ('Peter','yoga')) select * from t"></span>
+
+								<aside class="notes"><code>jsonb_path_query</code> returns a set of <code>JSON</code> values. So, when the function finds multiple matching items, each of them is returned as a separate row in the query result.</aside>
+							</section>
+
+							
+
+
+			<section>
+				<h3>Indexes on JSON</h3>
+
+				<p class="small">In PostgreSQL, <b>g</b>eneralized <b>i</b>nverted i<b>n</b>dexes (GIN) can be created on <code>JSONB</code>:</p>
+				<pre style="width: 100%;"><code class="sql">CREATE INDEX people_profile_idx ON people USING GIN (profile);</code></pre>
+				<ul class="small">
+					<li>index each key and value at the top level of the JSONB document<br>(see next slide)</li>
+					<li>supports existence (<code>?, ?|, ?&</code>) and path operators (<code>@>, @@, @?</code>)</li>
+				</ul>
+				<pre class="fragment" style="width: 100%;"><code class="sql">-- this query can make use of the index
+SELECT * FROM people WHERE profile @> '{"city" : "Berlin"}';  -- &check;
+
+-- for this query, the index cannot be used:
+SELECT * FROM people WHERE profile->>'city' = 'Berlin';       -- &cross;</code></pre>
+			</section>	
+			
+			<section>
+				<h3>GIN - <b>G</b>eneralized <b>I</b>nverted I<b>n</b>dex</h3>
+				<div class="sl-block" data-block-type="text" data-block-id="a0143290484a9a0f0bc8be7f756e140f" style="height: auto; min-width: 30px; min-height: 30px; width: 246px; left: 155px; top: 147.5px;">
+					<div class="sl-block-content blue" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 10; border-style: solid; border-width: 1px; border-color: rgb(34, 34, 34);" data-fragment-index="0">
+							<p style="font-size: 85%; text-align: center;">city Berlin</p>
+					</div>
+			</div>
+			
+			
+			<div class="sl-block" data-block-type="line" data-block-id="d9360602f0aea0a3af95301bbee5f026" style="width: auto; height: auto; min-width: 1px; min-height: 1px; left: 147px; top: 212px;">
+					<div class="sl-block-content" data-line-x1="0" data-line-y1="65" data-line-x2="112" data-line-y2="0" data-line-color="#000000" data-line-start-type="arrow" data-line-end-type="none" style="z-index: 11;" data-line-width="8px" data-fragment-index="0"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="112" height="65" viewBox="0 0 112 65">
+									<line stroke="rgba(0,0,0,0)" stroke-width="15" x1="10.37876518532045" y1="58.97660949066224" x2="112" y2="0"></line>
+									<line class="line-element" stroke="#000000" stroke-width="8" x1="10.37876518532045" y1="58.97660949066224" x2="112" y2="0"></line>
+									<polygon fill="#000000" transform="translate(10.37876518532045,58.97660949066224) rotate(59.871)" points="0,12 12,-12 -12,-12"></polygon>
+							</svg></div>
+			</div>
+			
+			
+			
+			
+			
+			
+			
+			<div class="sl-block" data-block-type="text" style="height: auto; min-width: 30px; min-height: 30px; width: 246px; left: 32px; top: 287.5px;" data-block-id="af520e9418933a80aadfdf00878e17e0" data-name="text-325145">
+					<div class="sl-block-content blue" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 12; border-style: solid; border-width: 1px; border-color: rgb(34, 34, 34);" data-fragment-index="0">
+							<p style="font-size: 85%;">born 1990<br>born 1995<br>born 1999<br>city Albuquerque</p>
+					</div>
+			</div>
+			<div class="sl-block" data-block-type="line" style="width: auto; height: auto; min-width: 1px; min-height: 1px; left: 321px; top: 212px;" data-block-id="71c6a3df290572135383ffdb4f0bcef3" data-name="line-55f42d">
+					<div class="sl-block-content" data-line-x1="98" data-line-y1="65" data-line-x2="0" data-line-y2="0" data-line-color="#000000" data-line-start-type="arrow" data-line-end-type="none" style="z-index: 13;" data-line-width="8px" data-fragment-index="0"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="98" height="65" viewBox="0 0 98 65">
+									<line stroke="rgba(0,0,0,0)" stroke-width="15" x1="87.99972521890287" y1="58.367164686007" x2="0" y2="0"></line>
+									<line class="line-element" stroke="#000000" stroke-width="8" x1="87.99972521890287" y1="58.367164686007" x2="0" y2="0"></line>
+									<polygon fill="#000000" transform="translate(87.99972521890287,58.367164686007) rotate(-56.445)" points="0,12 12,-12 -12,-12"></polygon>
+							</svg></div>
+			</div>
+			<div class="sl-block" data-block-type="text" style="height: auto; min-width: 30px; min-height: 30px; width: 246px; left: 306px; top: 288px;" data-block-id="314cfda02315c01f3963950ebfcca7d5" data-name="text-e5e4b8">
+					<div class="sl-block-content blue" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 14; background-color: border-style: solid; border-width: 1px; border-color: rgb(34, 34, 34);" data-fragment-index="0">
+							<p style="font-size: 85%;">city Berlin<br>
+								country UK<br>
+									hair_color black<br>
+									job programmer</p>
+					</div>
+			</div>
+			<div class="sl-block" data-block-type="line" style="width: auto; height: auto; min-width: 1px; min-height: 1px; left: 259px; top: 224px;" data-block-id="ad0df8e30def5920597091c2db495972" data-name="line-363639">
+					<div class="sl-block-content fragment" data-line-x1="332" data-line-y1="0" data-line-x2="0" data-line-y2="84" data-line-color="#000000" data-line-start-type="arrow" data-line-end-type="circle" style="z-index: 15;" data-line-width="3px" data-fragment-index="0"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="332" height="84" viewBox="0 0 332 84">
+									<line stroke="rgba(0,0,0,0)" stroke-width="15" x1="328.13746806811076" y1="1.6037731393936574" x2="4.805207579911046" y2="83.41073061231167"></line>
+									<line class="line-element" stroke="#000000" stroke-width="3" x1="328.13746806811076" y1="1.6037731393936574" x2="4.805207579911046" y2="83.41073061231167"></line>
+									<polygon fill="#000000" transform="translate(327.63746806811076,1.1037731393936574) rotate(255.801)" points="0,4.5 4.5,-4.5 -4.5,-4.5"></polygon>
+									<ellipse rx="4.5" ry="4.5" cx="4.305207579911046" cy="82.91073061231167" fill="#000000"></ellipse>
+							</svg></div>
+			</div>
+			<div class="sl-block" data-block-type="line" style="width: auto; height: auto; min-width: 1px; min-height: 1px; left: 259px; top: 318px;" data-block-id="73e20c595e45d754eeadaee66411c5eb" data-name="line-848de7">
+					<div class="sl-block-content fragment" data-line-x1="332" data-line-y1="0" data-line-x2="0" data-line-y2="32" data-line-color="#000000" data-line-start-type="arrow" data-line-end-type="circle" style="z-index: 16;" data-line-width="3px" data-fragment-index="0"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="332" height="32" viewBox="0 0 332 32">
+									<line stroke="rgba(0,0,0,0)" stroke-width="15" x1="328.0207583635336" y1="0.9317341336353153" x2="4.9188090893644265" y2="32.07409069018174"></line>
+									<line class="line-element" stroke="#000000" stroke-width="3" x1="328.0207583635336" y1="0.9317341336353153" x2="4.9188090893644265" y2="32.07409069018174"></line>
+									<polygon fill="#000000" transform="translate(327.5207583635336,0.4317341336353154) rotate(264.495)" points="0,4.5 4.5,-4.5 -4.5,-4.5"></polygon>
+									<ellipse rx="4.5" ry="4.5" cx="4.4188090893644265" cy="31.57409069018174" fill="#000000"></ellipse>
+							</svg></div>
+			</div>
+			<div class="sl-block" data-block-type="line" style="width: auto; height: auto; min-width: 1px; min-height: 1px; left: 269px; top: 154px;" data-block-id="a4a00cb353dc8347e5dba839df362d4a" data-name="line-8a8568">
+					<div class="sl-block-content fragment" data-line-x1="322" data-line-y1="0" data-line-x2="0" data-line-y2="249" data-line-color="#000000" data-line-start-type="arrow" data-line-end-type="circle" style="z-index: 17;" data-line-width="3px" data-fragment-index="0"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="322" height="249" viewBox="0 0 322 249">
+									<line stroke="rgba(0,0,0,0)" stroke-width="15" x1="318.9401902401745" y1="3.2527721434675594" x2="4.020454960054869" y2="246.77766060542342"></line>
+									<line class="line-element" stroke="#000000" stroke-width="3" x1="318.9401902401745" y1="3.2527721434675594" x2="4.020454960054869" y2="246.77766060542342"></line>
+									<polygon fill="#000000" transform="translate(318.4401902401745,2.7527721434675594) rotate(232.286)" points="0,4.5 4.5,-4.5 -4.5,-4.5"></polygon>
+									<ellipse rx="4.5" ry="4.5" cx="3.5204549600548694" cy="246.27766060542342" fill="#000000"></ellipse>
+							</svg></div>
+			</div>
+			<div class="sl-block" data-block-type="line" style="width: auto; height: auto; min-width: 1px; min-height: 1px; left: 269px; top: 334px;" data-block-id="608c83aaa5be6708b0390cdc8a8c5784" data-name="line-043e78">
+					<div class="sl-block-content fragment" data-line-x1="322" data-line-y1="0" data-line-x2="0" data-line-y2="114" data-line-color="#000000" data-line-start-type="arrow" data-line-end-type="circle" style="z-index: 18;" data-line-width="3px" data-fragment-index="0"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="322" height="114" viewBox="0 0 322 114">
+									<line stroke="rgba(0,0,0,0)" stroke-width="15" x1="318.25800477569453" y1="2.001824396182686" x2="4.6861116110041445" y2="113.01796048554512"></line>
+									<line class="line-element" stroke="#000000" stroke-width="3" x1="318.25800477569453" y1="2.001824396182686" x2="4.6861116110041445" y2="113.01796048554512"></line>
+									<polygon fill="#000000" transform="translate(317.75800477569453,1.5018243961826858) rotate(250.504)" points="0,4.5 4.5,-4.5 -4.5,-4.5"></polygon>
+									<ellipse rx="4.5" ry="4.5" cx="4.1861116110041445" cy="112.51796048554512" fill="#000000"></ellipse>
+							</svg></div>
+			</div>
+			<div class="sl-block" data-block-type="line" style="width: auto; height: auto; min-width: 1px; min-height: 1px; left: 533px; top: 168px;" data-block-id="03ed6fa26f105f083ac1e64c69f8b6f7" data-name="line-57a212">
+					<div class="sl-block-content fragment" data-line-x1="58" data-line-y1="0" data-line-x2="0" data-line-y2="140" data-line-color="#000000" data-line-start-type="arrow" data-line-end-type="circle" style="z-index: 19;" data-line-width="3px" data-fragment-index="0"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="58" height="140" viewBox="0 0 58 140">
+									<line stroke="rgba(0,0,0,0)" stroke-width="15" x1="56.77766852499101" y1="4.657351836228604" x2="2.1711862041502576" y2="136.4661022658442"></line>
+									<line class="line-element" stroke="#000000" stroke-width="3" x1="56.77766852499101" y1="4.657351836228604" x2="2.1711862041502576" y2="136.4661022658442"></line>
+									<polygon fill="#000000" transform="translate(56.27766852499101,4.157351836228604) rotate(202.504)" points="0,4.5 4.5,-4.5 -4.5,-4.5"></polygon>
+									<ellipse rx="4.5" ry="4.5" cx="1.6711862041502576" cy="135.9661022658442" fill="#000000"></ellipse>
+							</svg></div>
+			</div>
+			<div class="sl-block" data-block-type="line" style="width: auto; height: auto; min-width: 1px; min-height: 1px; left: 539px; top: 350px;" data-block-id="12f2728072066f2f132cb518676cd0e4" data-name="line-c70149">
+					<div class="sl-block-content fragment" data-line-x1="52" data-line-y1="0" data-line-x2="0" data-line-y2="8" data-line-color="#000000" data-line-start-type="arrow" data-line-end-type="circle" style="z-index: 20;" data-line-width="3px" data-fragment-index="0"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="52" height="8" viewBox="0 0 52 8">
+									<line stroke="rgba(0,0,0,0)" stroke-width="15" x1="48.05232736057222" y1="1.184257329142735" x2="4.567253564283268" y2="7.874268682417958"></line>
+									<line class="line-element" stroke="#000000" stroke-width="3" x1="48.05232736057222" y1="1.184257329142735" x2="4.567253564283268" y2="7.874268682417958"></line>
+									<polygon fill="#000000" transform="translate(47.55232736057222,0.684257329142735) rotate(261.254)" points="0,4.5 4.5,-4.5 -4.5,-4.5"></polygon>
+									<ellipse rx="4.5" ry="4.5" cx="4.067253564283268" cy="7.374268682417958" fill="#000000"></ellipse>
+							</svg></div>
+			</div>
+			<div class="sl-block" data-block-type="line" style="width: auto; height: auto; min-width: 1px; min-height: 1px; left: 533px; top: 358px;" data-block-id="874d93ab84b3a37df9fced9e6b01decd" data-name="line-99756a">
+					<div class="sl-block-content fragment" data-line-x1="58" data-line-y1="0" data-line-x2="0" data-line-y2="41" data-line-color="#000000" data-line-start-type="arrow" data-line-end-type="circle" style="z-index: 21;" data-line-width="3px" data-fragment-index="0"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="58" height="41" viewBox="0 0 58 41">
+									<line stroke="rgba(0,0,0,0)" stroke-width="15" x1="54.82540125772225" y1="3.097561179885999" x2="3.941793985092423" y2="39.06700770019329"></line>
+									<line class="line-element" stroke="#000000" stroke-width="3" x1="54.82540125772225" y1="3.097561179885999" x2="3.941793985092423" y2="39.06700770019329"></line>
+									<polygon fill="#000000" transform="translate(54.32540125772225,2.597561179885999) rotate(234.744)" points="0,4.5 4.5,-4.5 -4.5,-4.5"></polygon>
+									<ellipse rx="4.5" ry="4.5" cx="3.441793985092423" cy="38.56700770019329" fill="#000000"></ellipse>
+							</svg></div>
+			</div>
+			<div class="sl-block" data-block-type="line" style="width: auto; height: auto; min-width: 1px; min-height: 1px; left: 533px; top: 257px;" data-block-id="431552a3c8b2ebba35806ed1e2cd5f9a" data-name="line-51ed7c">
+					<div class="sl-block-content fragment" data-line-x1="58" data-line-y1="0" data-line-x2="0" data-line-y2="134" data-line-color="#000000" data-line-start-type="arrow" data-line-end-type="circle" style="z-index: 22;" data-line-width="3px" data-fragment-index="0"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="58" height="134" viewBox="0 0 58 134">
+									<line stroke="rgba(0,0,0,0)" stroke-width="15" x1="56.71249647397978" y1="4.629749525632915" x2="2.2324144078213433" y2="130.49752533365415"></line>
+									<line class="line-element" stroke="#000000" stroke-width="3" x1="56.71249647397978" y1="4.629749525632915" x2="2.2324144078213433" y2="130.49752533365415"></line>
+									<polygon fill="#000000" transform="translate(56.21249647397978,4.129749525632915) rotate(203.405)" points="0,4.5 4.5,-4.5 -4.5,-4.5"></polygon>
+									<ellipse rx="4.5" ry="4.5" cx="1.732414407821343" cy="129.99752533365415" fill="#000000"></ellipse>
+							</svg></div>
+			</div>
+			<div class="sl-block" data-block-type="line" style="width: auto; height: auto; min-width: 1px; min-height: 1px; left: 533px; top: 238px;" data-block-id="d00597f96d46a964eb3ef899055c9e3c" data-name="line-4289cd">
+					<div class="sl-block-content fragment" data-line-x1="58" data-line-y1="0" data-line-x2="0" data-line-y2="70" data-line-color="#000000" data-line-start-type="arrow" data-line-end-type="circle" style="z-index: 24;" data-line-width="3px" data-fragment-index="0"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="58" height="70" viewBox="0 0 58 70">
+									<line stroke="rgba(0,0,0,0)" stroke-width="15" x1="55.62891960862355" y1="3.96509702407503" x2="3.228957932518757" y2="67.20643008144287"></line>
+									<line class="line-element" stroke="#000000" stroke-width="3" x1="55.62891960862355" y1="3.96509702407503" x2="3.228957932518757" y2="67.20643008144287"></line>
+									<polygon fill="#000000" transform="translate(55.12891960862355,3.46509702407503) rotate(219.644)" points="0,4.5 4.5,-4.5 -4.5,-4.5"></polygon>
+									<ellipse rx="4.5" ry="4.5" cx="2.728957932518757" cy="66.70643008144287" fill="#000000"></ellipse>
+							</svg></div>
+			</div>
+			<div class="sl-block" data-block-type="line" style="width: auto; height: auto; min-width: 1px; min-height: 1px; left: 533px; top: 238px;" data-block-id="e5ae7c35d3e8003213e2cda84b19f168" data-name="line-7c64bb">
+					<div class="sl-block-content fragment" data-line-x1="58" data-line-y1="0" data-line-x2="0" data-line-y2="70" data-line-color="#000000" data-line-start-type="arrow" data-line-end-type="circle" style="z-index: 25;" data-line-width="3px" data-fragment-index="0"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="58" height="70" viewBox="0 0 58 70">
+									<line stroke="rgba(0,0,0,0)" stroke-width="15" x1="55.62891960862355" y1="3.96509702407503" x2="3.228957932518757" y2="67.20643008144287"></line>
+									<line class="line-element" stroke="#000000" stroke-width="3" x1="55.62891960862355" y1="3.96509702407503" x2="3.228957932518757" y2="67.20643008144287"></line>
+									<polygon fill="#000000" transform="translate(55.12891960862355,3.46509702407503) rotate(219.644)" points="0,4.5 4.5,-4.5 -4.5,-4.5"></polygon>
+									<ellipse rx="4.5" ry="4.5" cx="2.728957932518757" cy="66.70643008144287" fill="#000000"></ellipse>
+							</svg></div>
+			</div>
+			<div class="sl-block" data-block-type="line" style="width: auto; height: auto; min-width: 1px; min-height: 1px; left: 550px; top: 371px;" data-block-id="9e69312ab554b14d53317ea9dc53454b" data-name="line-422ec3">
+					<div class="sl-block-content fragment" data-line-x1="41" data-line-y1="0" data-line-x2="0" data-line-y2="69" data-line-color="#000000" data-line-start-type="arrow" data-line-end-type="circle" style="z-index: 26;" data-line-width="3px" data-fragment-index="0"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="41" height="69" viewBox="0 0 41 69">
+									<line stroke="rgba(0,0,0,0)" stroke-width="15" x1="39.201280339624965" y1="4.368576989411647" x2="2.6698388780093114" y2="65.84831993700872"></line>
+									<line class="line-element" stroke="#000000" stroke-width="3" x1="39.201280339624965" y1="4.368576989411647" x2="2.6698388780093114" y2="65.84831993700872"></line>
+									<polygon fill="#000000" transform="translate(38.701280339624965,3.8685769894116464) rotate(210.719)" points="0,4.5 4.5,-4.5 -4.5,-4.5"></polygon>
+									<ellipse rx="4.5" ry="4.5" cx="2.1698388780093114" cy="65.34831993700872" fill="#000000"></ellipse>
+							</svg></div>
+			</div>
+			<div class="sl-block" data-block-type="line" style="width: auto; height: auto; min-width: 1px; min-height: 1px; left: 533px; top: 358px;" data-block-id="79217175ae329c9378cc4d1776b042a6" data-name="line-9c9cbf">
+					<div class="sl-block-content fragment" data-line-x1="58" data-line-y1="0" data-line-x2="0" data-line-y2="41" data-line-color="#000000" data-line-start-type="arrow" data-line-end-type="circle" style="z-index: 27;" data-line-width="3px" data-fragment-index="0"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="58" height="41" viewBox="0 0 58 41">
+									<line stroke="rgba(0,0,0,0)" stroke-width="15" x1="54.82540125772225" y1="3.097561179885999" x2="3.941793985092423" y2="39.06700770019329"></line>
+									<line class="line-element" stroke="#000000" stroke-width="3" x1="54.82540125772225" y1="3.097561179885999" x2="3.941793985092423" y2="39.06700770019329"></line>
+									<polygon fill="#000000" transform="translate(54.32540125772225,2.597561179885999) rotate(234.744)" points="0,4.5 4.5,-4.5 -4.5,-4.5"></polygon>
+									<ellipse rx="4.5" ry="4.5" cx="3.441793985092423" cy="38.56700770019329" fill="#000000"></ellipse>
+							</svg></div>
+			</div>
+
+
+
+			<div style="margin-left: 11cm; margin-top:-5mm; width: 25cm;">
+				<table style="font-size:0.7em">
+					<thead><tr><th style="padding-top:0px;">name</th><th style="padding-top:0px;">profile</th></tr></thead>
+					<tbody>
+						<tr><td style="padding-bottom: 6mm;">Jane</td><td>{ "born" : 1999,<br>"city": "Berlin" }</td></tr>
+						<tr><td style="padding-top: 6mm; padding-bottom: 7mm;">Peter</td><td>{ "born" : 1990,<br>"city": "Berlin", "hair_color": "black" }</td></tr>
+						<tr><td style="padding-top: 7mm">Susan</td><td>{ "born" : 1995, <br>"city": "Albuquerque",<br>"country": "USA",<br>"hair_color": "black",<br>"job": "programmer" }</td></tr>
+					</tbody></table>
+			</div>
+
+
+			</section>
+
+			<section>
+				<h3>Expression Indexes</h3>
+
+				<p class="small">B+Tree Index (no GIN) on the result of an expression:</p>
+				<pre style="width: 100%;"><code class="sql">CREATE INDEX people_profile_city_idx ON people ((profile->>'city'));</code></pre>
+
+				<pre class="fragment" style="width: 100%;"><code class="sql">SELECT * FROM people WHERE profile->>'city' = 'Berlin';  -- &check;</code></pre>
+
+				<div class="fragment">
+				<hr>
+
+				<p class="small">GIN:</p>
+				<pre style="width: 100%;"><code class="sql">CREATE INDEX people_profile_hobby_idx ON people
+USING GIN ((profile->'hobbies'));</code></pre>
+
+				<pre class="fragment" style="width: 100%;"><code class="sql">SELECT * FROM people WHERE profile->'hobbies' ? 'yoga';  -- &check;</code></pre>
+				</div>
+								</section>	
+			</section>
+
+
+			<section>
+				<h3>Indexes on JSON in other RDBMSs</h3>
+				<p class="small">Oracle, MariaDB, and others do not have a native <code>JSON</code> type (uses <code>VARCHAR</code>)<br>and no native JSON index support.</p>
+				
+				<p class="small"><b>Oracle</b>: expression indexes</p>
+				<pre class="fragment" style="width: 100%;"><code class="sql">CREATE INDEX people_profile_city_idx ON people 
+(json_value(profile, '$.city'));</code></pre>
+
+<p class="small">Try out at <a href="https://dbfiddle.uk/?rdbms=oracle_18&fiddle=7edea3c16f3cfcdb6ed6a8eab4207154" target="_blank">https://dbfiddle.uk/?rdbms=oracle_18&fiddle=7edea3c16f3cfcdb6ed6a8eab4207154</a></p>												 
+
+				<p class="small"><b>MariaDB</b>: virtual columns</p>
+
+				
+			</section>
+
 
 			<section>
 							<h2>Summary</h2>
-							<ul>
-								<li>Structured Data, semi-structured data, unstructured data</li>
-								<li>CSV</li>
-								<li>XML: DTD, XSD, XPath, XQuery</li>
-								<li>JSON: JSONiq, JSONPath, BSON</li>
-								<li>YAML</li>
+							<ul class="small">
+								<li>User-Defined Data Types and Composite Types in SQL</li>
+								<li>SQL/XML: <code>XML</code> data type, <code>xpath</code>, <code>xpath_exists</code>, ...</li>
+								<li>SQL/JSON: <code>JSON</code> data type vs. string storage</li>
+								<li>JSON in PostgreSQL: <code>JSONB</code>, <code>jsonb_build_object</code>, <code>jsonb_agg</code>,<br><code>-></code>, <code>->></code>, <code>?</code>, <code>@></code>, path expressions, ...</li>
+								<li>Indexes on JSON data: GIN</li>
 							</ul>
 			</section>
 

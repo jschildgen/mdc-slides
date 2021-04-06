@@ -44,7 +44,7 @@
 								<div style="position: absolute; top: 120px; right:50px; font-size:230px"><!--<i class="fas fa-university green">--><i class="fab fa-youtube green"></i></div>
                 <h4>Lecture (starting 2021-03-16)</h4>
                 <ul>
-                    <li>Thu, 13:45 Uhr (on YouTube Live)</li>
+                    <li>Tue, 13:45 Uhr (on YouTube Live)</li>
                 </ul>
 								
 								<h3>&nbsp;</h3>
@@ -73,18 +73,16 @@
 										<h4>Big Data</h4>
 										<ul>
 											<li>Big-Data Platforms</li>
+											<li>Data Formats<br>(CSV, XML, JSON)</li>
 											<li>MapReduce</li>
 											<li>NoSQL Databases</li>
-											<li>Data Formats<br>(CSV, XML, JSON)</li>
 											<li>RDF, Graphs</li>
 									</ul>
 									</div>
 									<div>
 										<h4>Advanced SQL</h4>
 										<ul>
-											<li>User-defined Types</li>
-											<li>Composite Types</li>
-											<li>SQL/XML, SQL/JSON</li>
+											<li>SQL/JSON</li>
 											<li>Recursive SQL</li>
 											<li>Spatial Data</li>
 											<li>Temporal Data</li>
@@ -159,7 +157,7 @@
 														<li>&gt; 1 EB</li>
 														<li data-poll="correct">I don't know</li>
 												</ul>
-										<h2>https://frage.space</h2>
+										<h2>https://fraage.de</h2>
 									</div>
 
 									<aside class="notes">Big Data is characterized by the 4 Vs (in other definitions 3, 5, ...). It is large (<b>Volume</b>), is created at a high <b>Velocity</b>, can have heterogeneous structures (<b>Variety</b>; structured, semi-structured, unstructured, multi-media data), and its information is often uncertain and not trustworthy (<b>Veracity</b>).</aside>
@@ -209,6 +207,7 @@
 									<p class="small fragment" >(-) expensive, limited</p>
 
 									<h1 class="fragment grow"><i class="fas fa-server blue"></i></h1>
+									<aside class="notes">Scaling up means adding more resources (CPU, memory, storage, ...) or improving the resources (faster network, ...) of one machine. This approach is very limited. Special hardware is required which is often very expensive. It's cheaper to buy commodity hardware and scale out instead (see next slide).</aside>
 								</section>
 
 								<section>
@@ -234,8 +233,9 @@
 														<li>load balancing</li>
 														<li data-poll="correct">both</li>
 												</ul>
-										<h2>https://frage.space</h2>
+										<h2>https://fraage.de</h2>
 									</div>
+									<aside class="notes">Linear scalability means that a system becomes twice as fast when you double the number of machines in the cluster. Scaling out is cheaper than scaling up, but special algorithms, frameworks and programming patterns have to be used. The machines in the cluster have to communicate with each other to achieve a distributed storage of data and efficient distributed computations.</aside>
 								</section>
 
 								<section data-auto-animate>
@@ -244,7 +244,7 @@
 									<pre><code class="sql dontexecutesql">UPDATE products SET price = 4.50 WHERE product_id = 29;
 COMMIT;</code></pre>
 									<p class="small">Example: Replication factor = 3</p>
-									<div class="columns">
+									<div class="columns" style="margin-top:-7mm;">
 										<div><h1><i class="fas fa-server blue"></i></h1><p style="margin-top: -10mm;" class="fragment fade-out" data-fragment-index="1">price = 3.99</p><p style="margin-top: -10mm;" class="fragment" data-fragment-index="1">price = 4.50</p></div>
 										<div><h1><i class="fas fa-server blue"></i></h1><p style="margin-top: -10mm;" class="fragment fade-out" data-fragment-index="3">price = 3.99</p><p style="margin-top: -10mm;" class="fragment" data-fragment-index="3">price = 4.50</p></div>
 										<div><h1><i class="fas fa-server blue"></i></h1><p style="margin-top: -10mm;" class="fragment fade-out" data-fragment-index="2">price = 3.99</p><p style="margin-top: -10mm;" class="fragment" data-fragment-index="2">price = 4.50</p></div>
@@ -275,7 +275,7 @@ COMMIT;</code></pre>
 										<div><h1><i class="fas fa-server blue"></i></h1></div>
 										<div><h1><i class="fas fa-server blue"></i></h1></div>
 									</div>
-									<div class="fragment">
+									<div class="fragment" style="margin-top: -5mm;">
 										<h4>Synchronous Replication</h4>
 										<p class="small" style="margin-top: -5mm;">The client's <code>COMMIT</code> gets acknowledged when the replication is finished.</p>
 									</div>
@@ -292,7 +292,7 @@ COMMIT;</code></pre>
 														<li>The transaction will be aborted</li>
 														<li>The commit takes a very long time</li>
 												</ul>
-										<h2>https://frage.space</h2>
+										<h2>https://fraage.de</h2>
 									</div>
 
 									<aside class="notes">The drawback of Synchronous replication is that it decreases the performance of writing transactions. When one replica is unavailable, the whole system is unavailable. The drawback of asynchronous replication is that strong consistency is not guaranteed (see next slide).</aside>
@@ -334,10 +334,10 @@ GET preis;           -- 4.50
 										<div><h1><i class="fas fa-server green"></i></h1><p class="small" style="margin-top: -10mm;">&nbsp;[1000, 1999]</p></div>
 										<div><h1><i class="fas fa-server blue"></i></h1><p class="small" style="margin-top: -10mm;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[2000, &infin;]</p></div>
 									</div>
-									<p class="small">(+) supports = and range queries (&lt;, &ge;, ...) on the shard key</p>
+									<p class="small">(+) supports equality (=) and range queries (&lt;, &ge;, ...) on the shard key</p>
 									<p class="small">(-) hot spots can occur</p>
 									
-									<aside class="notes">A hot spot is a key or a range of keys which are much more often accessed than others. When data is partitioned by dates or timestamps, this is often the case because typically, most queries access the current data. Less often, historical data is accessed. </aside>
+									<aside class="notes">The difference between sharding and replication is that sharding does not duplicate the data. Here, data is divided and distributed across the cluster nodes. In this picture, each server stores a third of the data (assuming an equal distribution). A hot spot is a key or a range of keys which are much more often accessed than others. When data is partitioned by date or timestamp ranges, this is often the case because typically, most queries access the current data. Less often, historical data is accessed. </aside>
 								</section>
 
 								<section>
@@ -354,17 +354,17 @@ GET preis;           -- 4.50
 								<p class="small">Store a data item with key $k$ on the node whose hash is closest to $h(k)$</p>
 
 								<div class="poll fragment" style="bottom:-120px" data-fragment-index="4">
-									<h1>Let h(K) = 123^45 mod 2^32. On which node will product number 29 be stored?</h1>
+									<h1>Let h(K) = k*(123^45) mod 2^32. On which node will product number 29 be stored?</h1>
 											<ul>
 													<li>on the green one</li>
 													<li>on no node</li>
 													<li data-poll="correct">on the yellow one</li>
 													<li>on the red one</li>
 											</ul>
-									<h2>https://frage.space</h2>
+									<h2>https://fraage.de</h2>
 								</div>
 
-								<aside class="notes">A primitive hash-partitioning approach would be choosing $h(k) = k ~ mod ~ n as a hash function, with $n$ being the number of nodes in the cluster (in our example: 3). This would lead to an immense effort in repartitioning when a node is added because the hash function needs to be adjusted. Consistent hashing is an approach which uses the same hash function even when the cluster changes. With this hash function, the home node of each data item can be computed. Different from range partitioning, this approach does not support range queries on the partition key.</aside>
+								<aside class="notes">A primitive hash-partitioning approach would be choosing $h(k) = k ~ mod ~ n$ as a hash function, with $n$ being the number of nodes in the cluster (in our example: 3). This would lead to an immense effort in repartitioning when a node is added because the hash function needs to be adjusted. Consistent hashing is an approach which uses the same hash function even when the cluster changes. With this hash function, the home node of each data item can be computed. Different from range partitioning, this approach does not support range queries on the partition key.</aside>
 								</section>		
 
 			<section>
