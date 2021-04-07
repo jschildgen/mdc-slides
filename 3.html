@@ -311,6 +311,75 @@
 									Each dot in this chart is a revision of the SQL Standard. Up to SQL-92, each column value had an atomic type. Nonscalar types were firstly introduces in SQL:1999.</aside>
 								</section>
 
+								<section>
+									<h3>Normalization of Nonscalar Types</h3>
+									<div class="columns">
+									<div class="erd" style="margin-top:5mm; margin-left: -20mm; width: 550px;">
+										[[
+										 { _e: "Person", pos: [121, 102],
+											attributes: [
+											 { _a:"PersNo", options:["primary"], pos: [89, 13] },
+											 { _a:"Name", pos: [245, 13] },
+											 { _a:"Address", pos: [144, 188], attributes: [ 
+											 		{ _a:"Street", pos: [78, 261] },
+											 		{ _a:"City", pos: [204, 261] }
+									 ]  },
+											 { _a:"Hobbies", pos: [305, 122], options:["multi"] }
+											]
+										 }
+										],
+										[
+										 
+										]]
+						</div>
+						<div>
+							<h4 class="fragment" data-fragment-index="1">(NF)² - Non-first Normal Form</h4>
+							<table style="font-size:0.65em;" class="fragment" data-fragment-index="1">
+								<thead>
+										<tr><th><u>PersNo</u></th><th>Name</th><th colspan="2">Address</th><th>Hobbies</th></tr>
+										<tr><th></th><th></th><th>Street</th><th>City</th><th></th></tr>
+								</thead>
+								<tbody>
+										<tr><td>5</td><td>Peter</td><td style="width: 87mm;">Highway 5</td><td>Berlin</td><td>piano,<br>yoga</td></tr>
+								</tbody>
+						</table>
+
+						<div class="poll fragment fade-in-then-out" style="bottom:12px" data-fragment-index="2">
+							<h1>Bring the table in 1NF. How many tables are there now?</h1>
+									<ul>
+											<li>1</li>
+											<li data-poll="correct">2</li>
+											<li>3</li>
+											<li>4</li>
+									</ul>
+							<h2>https://fraage.de</h2>
+						</div>
+
+						<h4 class="fragment" data-fragment-index="3">1NF - First Normal Form</h4>
+							<table style="font-size:0.65em;" class="fragment" data-fragment-index="3">
+								<thead>
+										<tr><th><u>PersNo</u></th><th>Name</th><th>Address_Street</th><th>Address_City</th></tr>
+								</thead>
+								<tbody>
+										<tr><td>5</td><td>Peter</td><td style="width: 87mm;">Highway 5</td><td>Berlin</td></tr>
+								</tbody>
+						</table>
+						<table style="font-size:0.65em;" class="fragment" data-fragment-index="3">
+							<thead>
+									<tr><th><u>PersNo</u></th><th><u>Hobby</u></th></tr>
+							</thead>
+							<tbody>
+									<tr><td>5</td><td>piano</td></tr>
+									<tr><td>5</td><td>yoga</td></tr>
+								</tbody>
+					</table>
+						</div>
+					</div>
+
+					<aside class="notes">There are multiple normal forms in databases to avoid redundancies and anomalies, improve data integrity, and allows easily querying the data. In 1NF, each column consists of only one atomic value.</aside>
+
+								</section>
+
                 <section>
 									<h3>UDT - User-Defined Data Types</h3>
 									<p class="small">SQL:1999: <code>CREATE TYPE ...</code> (Structured Types, Subtyping, ...)</p>
@@ -555,9 +624,47 @@ SELECT p.name, h.hobby FROM people p, UNNEST(p.hobbies) AS h(hobby);</code></pre
 								</section>
 
 								<section>
+									<h3>SQL/XML and SQL/JSON</h3>
+										<div class="erd" style="margin-top:5mm; max-height: 7cm; margin-left: -2cm;">
+											[[
+											 { _e: "Person", pos: [448, 106],
+												attributes: [
+												 { _a:"PersNo", options:["primary"], pos: [320, 35] },
+												 { _a:"Name", pos: [440, 35] },
+												 { _a:"Address", pos: [626, 106], attributes: [ 
+														 { _a:"Street", pos: [559, 191]},
+														 { _a:"City", pos: [678, 191] }
+										 ]  },
+												 { _a:"Hobbies", pos: [600, 35], options:["multi"] },
+												 { _a:"Profile", pos: [370, 191]}
+												]
+											 }
+											],
+											[
+											 
+											]]
+							</div>
+								<table style="font-size:0.65em;" class="fragmentas">
+									<thead>
+											<tr><th><u>PersNo</u></th><th>Name</th><th>Address</th><th>Hobbies</th><th>Profile</th></tr>
+									</thead>
+									<tbody>
+											<tr>
+												<td>5</td>
+												<td>Peter</td>
+												<td style="width: 105mm;"><code class="xml" style="font-size: 14pt">&lt;address><br>&nbsp;&lt;street>Highway 5&lt;/street><br>&nbsp;&lt;city zip="10123">Berlin&lt;/city><br>&lt;/address></code></td>
+												<td><code class="javascript" style="font-size: 14pt">["piano", <br>"yoga"]</code></td>
+												<td><code class="javascript" style="font-size: 14pt">{ "job": <br>"programmer" }</code></td></tr>
+									</tbody>
+							</table>
+							<aside class="notes">The SQL datatypes <code>XML</code> and <code>JSON</code> can be used to model complex data structure. Furthermore, these types are often used for storing schemaless data. The attribute &quot;profile&quot; is used in this example to store arbitrary further information about a person in a flexible way.</aside>
+								</section>
+
+								<section>
 									<h2>SQL/XML</h2>
 									<p class="small">SQL:2003: <code>XML</code> data type, mappings, predicates, functions</p>
-									<pre style="width: 100%;"><code class="sql">CREATE TABLE people (name VARCHAR(200), address XML);</code></pre>
+									<pre style="width: 100%;"><code class="sql">-- try out at http://bit.ly/sqlxml
+CREATE TABLE people (name VARCHAR(200), address XML);</code></pre>
 
 										<pre style="width: 100%;" class="fragment"><code class="sql">INSERT INTO people VALUES ('Peter', '<address>
 <street>Highway 5</street><city zip="10123">Berlin</city></address>');</code></pre>
@@ -573,7 +680,6 @@ FROM people p, XMLTABLE('$addr/address'
 PASSING BY REF address AS "addr" COLUMNS zip CHAR(5) PATH 'city/@zip'
                                    city VARCHAR(100) PATH 'city') a;</code></pre>
 
-                <p class="small">Try out at <a href="https://dbfiddle.uk/?rdbms=db2_11.1&fiddle=c359607e840339a4b139e1e94c35b811" target="_blank">https://dbfiddle.uk/?rdbms=db2_11.1&fiddle=c359607e840339a4b139e1e94c35b811</a></p>												 
 								</section>
 
 								<section>
@@ -586,9 +692,9 @@ PASSING BY REF address AS "addr" COLUMNS zip CHAR(5) PATH 'city/@zip'
 								<table style="font-size:0.7em">
 									<thead><tr><th style="padding-top:0px;">name</th><th style="padding-top:0px;">address</th></tr></thead>
 									<tbody><tr><td>Peter</td><td>&lt;address>&lt;street>Highway 5&lt;/street><br>&lt;city zip=&quot;10123&quot;>Berlin&lt;/city>&lt;/address></td></tr></tbody></table>
-<pre style="width: 100%;" class="fragment"><code class="sql">SELECT xpath('//city/text()', address) FROM people;</code></pre>
+<pre style="width: 100%;" class="fragment"><code class="sql">SELECT xpath('//city/text()', address) AS c FROM people;</code></pre>
 <div class="poll fragment fade-in-then-out" style="bottom:-120px">
-	<h1>What's the data type of the column in the result of the SELECT xpath... query?</h1>
+	<h1>What's the data type of the column c in the result of the SELECT xpath... query?</h1>
 			<ul>
 					<li>XML</li>
 					<li data-poll="correct">XML ARRAY</li>
@@ -604,7 +710,8 @@ PASSING BY REF address AS "addr" COLUMNS zip CHAR(5) PATH 'city/@zip'
 									<section>
 										<h2>SQL/JSON</h2>
 									<p class="small">SQL:2016: <code>JSON</code> data type, mappings, predicates, functions</p>
-<pre style="width: 100%;"><code class="sql">CREATE TABLE people (name VARCHAR(200), hobbies JSON);
+<pre style="width: 100%;"><code class="sql">-- try out at http://bit.ly/sqljson
+CREATE TABLE people (name VARCHAR(200), hobbies JSON);
 INSERT INTO people VALUES ('Peter', '["piano","yoga"]');</code></pre>
 
 <table style="font-size:0.7em">
@@ -614,7 +721,6 @@ INSERT INTO people VALUES ('Peter', '["piano","yoga"]');</code></pre>
 <pre style="width: 100%;"><code class="sql">SELECT JSON_VALUE(hobbies, '$[1]') FROM people;</code></pre>
 <pre style="width: 100%;"><code class="sql">SELECT * FROM people WHERE JSON_EXISTS(hobbies, '$?(@=="yoga")');</code></pre>
 
-<p class="small">Try out at <a href="https://dbfiddle.uk/?rdbms=oracle_18&fiddle=910c9ed0330cd634b0a3042e5923c42b" target="_blank">https://dbfiddle.uk/?rdbms=oracle_18&fiddle=910c9ed0330cd634b0a3042e5923c42b</a></p>
 								<aside class="notes">Similar to SQL/XML, the SQL Standard introduced a native <code>JSON</code> data type for storing JSON data. Within the functions, e.g. <code>JSON_VALUE</code>, JSONPath expressions are used (see previous chapter). <code>JSON_VALUE</code> returns a scalar value (here: <code>VARCHAR</code>), another function <code>JSON_QUERY</code> returns a value of type <code>JSON</code>.</aside>							
 								</section>
 								
@@ -821,6 +927,8 @@ SELECT * FROM people WHERE profile @> '{"city" : "Berlin"}';  -- &check;
 
 -- for this query, the index cannot be used:
 SELECT * FROM people WHERE profile->>'city' = 'Berlin';       -- &cross;</code></pre>
+
+			<aside class="notes">After creating a GIN on a JSONB column, in PostgreSQL, each attribute-value pair of the top level of the stored JSON document in that column is inserted into the index. This way, the index can be used in SQL/JSON queries that filter on these top-level attributes.</aside>
 			</section>	
 			
 			<section>
@@ -975,6 +1083,7 @@ SELECT * FROM people WHERE profile->>'city' = 'Berlin';       -- &cross;</code><
 					</tbody></table>
 			</div>
 
+			<aside class="notes">This GIN is a tree structure that contains all attribute-value pairs of the JSON documents in the column &quot;profile&quot; together with a pointer to the corresponding row. We can use the index to find all people that live in the city Berlin. Mind that only the top-level attributes are in the index. If city would be an array or an object, the index cannot help searching within these sub-attributes.</aside>
 
 			</section>
 
@@ -995,23 +1104,29 @@ USING GIN ((profile->'hobbies'));</code></pre>
 
 				<pre class="fragment" style="width: 100%;"><code class="sql">SELECT * FROM people WHERE profile->'hobbies' ? 'yoga';  -- &check;</code></pre>
 				</div>
-								</section>	
+								<aside class="notes">The example at the bottom of this slide is the solution for the problem described on the slide before. As only top-level attributes are indexed, you need to create a separate GIN on the sub-object if you need index support there. The first example on this slide shows how expression indexes work in general. They do not directly index the values of a column but the result of an expression. Here, we simply create a normal B+tree index on all city values that appear in the JSON column.</aside>	
 			</section>
 
 
 			<section>
 				<h3>Indexes on JSON in other RDBMSs</h3>
-				<p class="small">Oracle, MariaDB, and others do not have a native <code>JSON</code> type (uses <code>VARCHAR</code>)<br>and no native JSON index support.</p>
-				
+
+				<div class="fragment">
 				<p class="small"><b>Oracle</b>: expression indexes</p>
-				<pre class="fragment" style="width: 100%;"><code class="sql">CREATE INDEX people_profile_city_idx ON people 
+				<pre style="width: 100%;"><code class="sql">-- try out at http://bit.ly/ojsonidx
+CREATE INDEX people_profile_city_idx ON people 
 (json_value(profile, '$.city'));</code></pre>
+				</div>
 
-<p class="small">Try out at <a href="https://dbfiddle.uk/?rdbms=oracle_18&fiddle=7edea3c16f3cfcdb6ed6a8eab4207154" target="_blank">https://dbfiddle.uk/?rdbms=oracle_18&fiddle=7edea3c16f3cfcdb6ed6a8eab4207154</a></p>												 
+				<div class="fragment">
+				<p class="small"><b>MariaDB</b>: index on virtual columns</p>
+				<pre style="width: 100%;"><code class="sql">-- try out at http://bit.ly/mjsonidx
+ALTER TABLE people
+ADD profile_city VARCHAR(80) AS (JSON_VALUE(profile, '$.city'));
+CREATE INDEX people_profile_city_idx ON people(profile_city);</code></pre>
+</div>
 
-				<p class="small"><b>MariaDB</b>: virtual columns</p>
-
-				
+			<aside class="notes">Oracle, MariaDB, and others do not have a native <code>JSON</code> type (they use <code>VARCHAR</code>) and no native JSON index support. But there are workarounds which allow efficient queries on JSON data. Expression indexes as shown on the previous slide can be used in Oracle as well. Here, an index of all city values is created. Oracle will automatically use the index on queries with the given expression in the WHERE clause. In MariaDB, indexes on JSON can be achieved by creating virtual columns. A virtual column is a generated column which is computed when it is queried. It is not persisted, but MySQL supports indexes on virtual columns. Mind that only queries on the virtual column (<code>WHERE profile_city = ...</code>) use the index, not on the expression behind that column (<code>WHERE JSON_VALUE(profile, '$.city') = ...</code>).</aside>
 			</section>
 
 
@@ -1022,7 +1137,7 @@ USING GIN ((profile->'hobbies'));</code></pre>
 								<li>SQL/XML: <code>XML</code> data type, <code>xpath</code>, <code>xpath_exists</code>, ...</li>
 								<li>SQL/JSON: <code>JSON</code> data type vs. string storage</li>
 								<li>JSON in PostgreSQL: <code>JSONB</code>, <code>jsonb_build_object</code>, <code>jsonb_agg</code>,<br><code>-></code>, <code>->></code>, <code>?</code>, <code>@></code>, path expressions, ...</li>
-								<li>Indexes on JSON data: GIN</li>
+								<li>Indexes on JSON data: GIN, Expression Indexes, Virtual Columns</li>
 							</ul>
 			</section>
 
