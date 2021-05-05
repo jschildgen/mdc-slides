@@ -1,0 +1,170 @@
+<!--    <p>The NoSQL key-value store Redis is extremely fast. This is because of two reasons: Firstly, Redis is a in-memory database, and secondly, Redis optimizes the storage of the values of Redis data types to allow efficient queries on it. When you take a look in the Redis documentation, you will see that many operations are executed in O(1). That's in constant time, independent of the database size!</p>
+-->
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>MDC - Chapter 5 - RDF and Graphs</title>
+
+		<link rel="stylesheet" href="reveal.js/dist/reset.css">
+		<link rel="stylesheet" href="reveal.js/dist/reveal.css">
+
+        <link rel="stylesheet" href="src/slides.css">
+        <link rel="stylesheet" href="src/sql.css">
+
+		<link rel="stylesheet" href="src/layout.css">
+        <link rel="stylesheet" href="lib/joint.min.css" />
+        <link rel="stylesheet" href="src/erd.css" />
+        <link rel="stylesheet" href="src/poll.css" />
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="src/rainbow.css">
+
+        <!--<script defer src="lib/fontawesome.all.min.js"/>-->
+        <link href="lib/fontawesome.all.min.css" rel="stylesheet">
+        <style> .reveal i.fa { font-family:FontAwesome; font-style: normal; } </style>
+	</head>
+	<body>
+		<div class="reveal">
+            <div id="header"></div>
+            <div id="footer"></div>
+			<div class="slides">
+                <section>
+                    <h4 style="text-align:center"><b>Prof. Dr.-Ing. Johannes Schildgen</b><br>
+                    <a href="mailto:johannes.schildgen@oth-regensburg.de">johannes.schildgen@oth-regensburg.de</a></h4>
+                    <h2>Modern Database Concepts</h2>
+                    <h4 style="text-align:center">&nbsp;</h4>
+                    <h3>Chapter 5: RDF and Graphs</h3>
+                    <h4 style="text-align:center">&nbsp;<br>&nbsp;</h4>
+                    <img src="img/ccby.png" height="60px" style="position: absolute; left:0px; border:0; bottom:-160px;">
+                    <img src="img/oth.png" height="60px" style="position: absolute; right:0px; border:0; bottom:-160px; box-shadow:none">
+                </section>
+
+			<section>
+				<h3>Semantic Web</h3>
+				<p class="small">Goal: Making the WWW data machine-readable.</p>
+				<h4>Ontologies</h4>
+				<p class="small">Metadata to describe concepts, relationships<br>and categories of things.</p>
+				<p class="small">Example: https://schema.org/Game</p>
+				<img style="position: relative; height: 12cm; margin-top: -5cm; margin-right: -14cm; z-index: -999" uml="class Thing {
+					name : Text
+					...
+				}
+
+				class CreativeWork {
+					publisher : Organization or Person
+					comment : Comment
+					...
+				}
+
+				class Game {
+					numberOfPlayers : QuantitativeValue
+					...
+				}
+
+				class Organization {
+					...
+				}
+
+				class Person {
+					children : Person
+					...
+				}
+
+				Thing <|-- CreativeWork
+				CreativeWork <|-- Game
+
+				CreativeWork ---r Organization : publisher
+				CreativeWork --- Person : publisher
+				Person --- Person : children
+
+				Thing <|-- Person
+				Thing <|-- Organization
+				"/>
+			</section>
+
+			<section>
+				<h3>Semantic Web</h3>
+				<p class="small">Classical web site:</p>
+				<pre><code class="html">&lt;html>&lt;body>&lt;div>
+ &lt;h1>Risk (game)&lt;/h1>
+ &lt;p>Risk is a board game by Hasbro. It was invented in 1957.&lt;/p>
+&lt;/div>&lt;/body>&lt;/html></code></pre>
+
+<p class="small fragment" data-fragment-id="1">Semantic web site:</p>
+				<pre class="fragment" data-fragment-id="1"><code class="html">&lt;html>&lt;body>&lt;div vocab="http://schema.org/" typeof="Person">
+ &lt;h1 property="name">Risk (game)&lt;/h1>
+ &lt;p>Risk is a board game by 
+  &lt;span property="publisher" typeof="Organization" 
+  href="http://yago-knowledge.org/resource/Hasbro">Hasbro&lt;/span>.
+  It was invented in &lt;span property="datePublished">1957&lt;/span>
+ .&lt;/p>
+&lt;/div>&lt;/body>&lt;/html></code></pre>
+			</section>
+								
+			<section>
+				<h3><b>R</b>esource <b>D</b>escription <b>F</b>ramework</h3>
+				<p class="small">W3C standard to describe metadata and major component of the Semantic Web</p>
+				<h4>Triplets</h4>
+				<ul class="small">
+					<li>subject: resource URI</li>
+					<li>predicate: URI</li>
+					<li>object: resource URI or literal value</li>
+				</ul>
+				<table style="margin-top: 3mm; font-size: 18pt;">
+					<tr><th>subject</th><th>predicate</th><th>object</th></tr>
+					<tr><td>http://yago-knowledge.org/<br>resource/Risk_(game)</td><td>https://www.w3.org/1999/02/<br>22-rdf-syntax-ns#type</td><td>https://schema.org/Game</td></tr>
+					<tr><td>http://yago-knowledge.org/<br>resource/Risk_(game)</td><td>https://schema.org/publisher</td><td>http://yago-knowledge.org/<br>resource/Hasbro</td></tr>
+					<tr><td>http://yago-knowledge.org/<br>resource/Risk_(game)</td><td>https://www.w3.org/2000/01/<br>rdf-schema#comment</td><td>"Board game"</td></tr>
+				</table>
+				<aside class="notes">RDF uses uniform resource identifiers (URI) to denote resources and predicates. A predicate describes aspects of a resource and the relationship between two resources. A collection of RDF statements represent a labeled, directed graph with resources as its nodes and predicates being the edges.</aside>
+			</section>
+
+			<section>
+				<h3>Prefix Declarations</h3>
+				<p class="small">Prefixes can be introduced to abbreviate URIs</p>
+				<pre><code class="sql">PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#>
+PREFIX schema: &lt;http://schema.org/></code></pre>
+<table style="margin-top: 3mm; font-size: 18pt;">
+	<tr><th>subject</th><th>predicate</th><th>object</th></tr>
+	<tr><td>http://yago-knowledge.org/<br>resource/Risk_(game)</td><td>rdf:type</td><td>https://schema.org/Game</td></tr>
+	<tr><td>http://yago-knowledge.org/<br>resource/Risk_(game)</td><td>schema:publisher</td><td>http://yago-knowledge.org/<br>resource/Hasbro</td></tr>
+	<tr><td>http://yago-knowledge.org/<br>resource/Risk_(game)</td><td>rdfs:comment</td><td>"Board game"</td></tr>
+</table>
+			</section>
+
+			<section>
+				<h3>Knowledge Bases</h3>
+			</section>
+
+			</div>
+		</div>
+
+		<script src="reveal.js/dist/reveal.js"></script>
+		<script src="reveal.js/plugin/markdown/markdown.js"></script>
+		<script src="reveal.js/plugin/highlight/highlight.js"></script>
+		<script src="reveal.js/plugin/zoom/zoom.js"></script>
+		<script src="reveal.js/plugin/math/math.js"></script>
+		<script src="reveal.js/plugin/notes/notes.js"></script>
+		<script src="reveal.js/plugin/search/search.js"></script>
+        <script src="lib/jquery.js"></script>
+        <script src="lib/lodash.js"></script>
+        <script src="lib/backbone.js"></script>
+        <script src="lib/joint.min.js"></script>
+				<script src="lib/deflate.js"></script>
+
+		<script src="src/init_reveal.js"></script>
+
+        <script>
+        if(window.location.search.match( /print-pdf/gi )) {
+                document.getElementById('header').style="display:none";
+                document.getElementById('footer').style="display:none";
+        }
+        </script>
+
+
+	</body>
+</html>

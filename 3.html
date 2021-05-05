@@ -705,7 +705,7 @@ PASSING BY REF address AS "addr" COLUMNS zip CHAR(5) PATH 'city/@zip'
 </div>
 	<pre style="width: 100%;" class="fragment"><code class="sql">SELECT * FROM people WHERE xpath_exists('//city[@zip=10123]', address);</code></pre>
 
-									<aside class="notes">The PostgreSQL syntax for working with XML data is quite similar to the SQL standard. PostgreSQL only supports XPath expressions, the SQL standard also allows XQuery FLWOR expressions. Mind that the return type of the <code>xpath</code> function in PostgreSQL is <code>XML ARRAY</code>. So, to get the city as a <code>VARCHAR</code>, the following expression would be needed: <code>CAST((xpath('//city/text()', address))[1] AS VARCHAR(100))</code></aside>
+									<aside class="notes">The PostgreSQL syntax for working with XML data is similar to the SQL standard. PostgreSQL only supports XPath, the SQL standard also allows XQuery FLWOR expressions. Mind that the return type of PostgreSQL's <code>xpath</code> function is <code>XML ARRAY</code>. So, to get the city as a <code>VARCHAR</code>, the following expression would be needed: <code>CAST((xpath('//city/text()', address))[1] AS VARCHAR(100))</code></aside>
 								</section>
 									<section>
 										<h2>SQL/JSON</h2>
@@ -902,12 +902,18 @@ SELECT * FROM people WHERE profile->'hobbies' ? 'yoga';</code></pre>
 							
 							<section>
 								<h3>Unnesting</h3>
-								<pre style="width: 100%;"><code class="sql">SELECT name, jsonb_path_query(profile, '$.hobbies[*]') AS hobby
-FROM people;</code></pre>
+
+								<pre style="width: 100%;"><code class="sql">SELECT name, hobby
+FROM people, 
+     jsonb_array_elements_text(profile->'hobbies') hobbies(hobby);</code></pre>
+
+								<pre style="width: 100%;"><code class="sql">SELECT name, hobby->>0
+FROM people, 
+     jsonb_path_query(profile, '$.hobbies[*]') hobbies(hobby);</code></pre>
 
 								<span data-sql-query="with t(name, hobby) as (values ('Peter','piano'), ('Peter','yoga')) select * from t"></span>
 
-								<aside class="notes"><code>jsonb_path_query</code> returns a set of <code>JSON</code> values. So, when the function finds multiple matching items, each of them is returned as a separate row in the query result.</aside>
+								<aside class="notes"><code>jsonb_array_elements</code> and <code>jsonb_path_query</code> return a set of <code>JSONB</code> values. When <code>jsonb_path_query</code> finds multiple matching items, each of them is returned as a separate row in the query result. In the first query on this slide, <code>jsonb_array_elements_text</code> is used, it directly returns a set of text. In the second query, a set of JSONB is returned so that we need to convert each value into text with <code>->>0</code>.</aside>
 							</section>
 
 							
@@ -1083,7 +1089,7 @@ SELECT * FROM people WHERE profile->>'city' = 'Berlin';       -- &cross;</code><
 					</tbody></table>
 			</div>
 
-			<aside class="notes">This GIN is a tree structure that contains all attribute-value pairs of the JSON documents in the column &quot;profile&quot; together with a pointer to the corresponding row. We can use the index to find all people that live in the city Berlin. Mind that only the top-level attributes are in the index. If city would be an array or an object, the index cannot help searching within these sub-attributes.</aside>
+			<aside class="notes">This GIN is a tree structure that contains all attribute-value pairs of the JSON documents in the column &quot;profile&quot; together with a pointer to the corresponding row. We can use the index to find all people that live in the city Berlin. Mind that only the top-level attributes are in the index.</aside>
 
 			</section>
 
@@ -1104,7 +1110,7 @@ USING GIN ((profile->'hobbies'));</code></pre>
 
 				<pre class="fragment" style="width: 100%;"><code class="sql">SELECT * FROM people WHERE profile->'hobbies' ? 'yoga';  -- &check;</code></pre>
 				</div>
-								<aside class="notes">The example at the bottom of this slide is the solution for the problem described on the slide before. As only top-level attributes are indexed, you need to create a separate GIN on the sub-object if you need index support there. The first example on this slide shows how expression indexes work in general. They do not directly index the values of a column but the result of an expression. Here, we simply create a normal B+tree index on all city values that appear in the JSON column.</aside>	
+								<aside class="notes">Expression indexes can be used to index only parts of the JSON data (e.g., only specific sub-fields). An expression index does not directly index the values of a column but the result of an expression. In the first query, we simply create a normal B+tree index on all city values that appear in the JSON column. In the second query, a GIN is built just on the JSON field &quot;hobbies&quot;.</aside>	
 			</section>
 
 

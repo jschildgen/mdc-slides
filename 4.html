@@ -1,0 +1,560 @@
+<!--    <p>The NoSQL key-value store Redis is extremely fast. This is because of two reasons: Firstly, Redis is a in-memory database, and secondly, Redis optimizes the storage of the values of Redis data types to allow efficient queries on it. When you take a look in the Redis documentation, you will see that many operations are executed in O(1). That's in constant time, independent of the database size!</p>
+-->
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>MDC - Chapter 4 - NoSQL Databases</title>
+
+		<link rel="stylesheet" href="reveal.js/dist/reset.css">
+		<link rel="stylesheet" href="reveal.js/dist/reveal.css">
+
+        <link rel="stylesheet" href="src/slides.css">
+        <link rel="stylesheet" href="src/sql.css">
+
+		<link rel="stylesheet" href="src/layout.css">
+        <link rel="stylesheet" href="lib/joint.min.css" />
+        <link rel="stylesheet" href="src/erd.css" />
+        <link rel="stylesheet" href="src/poll.css" />
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="src/rainbow.css">
+
+        <!--<script defer src="lib/fontawesome.all.min.js"/>-->
+        <link href="lib/fontawesome.all.min.css" rel="stylesheet">
+        <style> .reveal i.fa { font-family:FontAwesome; font-style: normal; } </style>
+	</head>
+	<body>
+		<div class="reveal">
+            <div id="header"></div>
+            <div id="footer"></div>
+			<div class="slides">
+                <section>
+                    <h4 style="text-align:center"><b>Prof. Dr.-Ing. Johannes Schildgen</b><br>
+                    <a href="mailto:johannes.schildgen@oth-regensburg.de">johannes.schildgen@oth-regensburg.de</a></h4>
+                    <h2>Modern Database Concepts</h2>
+                    <h4 style="text-align:center">&nbsp;</h4>
+                    <h3>Chapter 4: NoSQL Databases</h3>
+                    <h4 style="text-align:center">&nbsp;<br>&nbsp;</h4>
+                    <img src="img/ccby.png" height="60px" style="position: absolute; left:0px; border:0; bottom:-160px;">
+                    <img src="img/oth.png" height="60px" style="position: absolute; right:0px; border:0; bottom:-160px; box-shadow:none">
+
+										<div class="poll fragment" style="bottom:-180px">
+											<h1>Do you have any expertise in NoSQL?</h1>
+													<ul>
+															<li>Yes, from work</li>
+															<li>Yes, from private interest</li>
+															<li>Yes, from NoSQL lecture</li>
+															<li>NoExpertise</li>
+													</ul>
+											<h2>https://fraage.de</h2>
+										</div>
+                </section>
+
+								
+			<section>
+					<img src="img/4/nosql_cartoon1.png" alt="Geek and Poke" class="noborder stretch">
+						<p style="font-size: smaller; margin-top: -8mm;">Source: <a href="https://geek-and-poke.com/">https://geek-and-poke.com</a></p>
+			</section>
+
+			<section>
+				<h3>Database History (in No-Nation ;-)</h3>
+				<p class="fragment">1970: NoSQL - We have no SQL</p>
+				<p class="fragment">1980: NoSQL - Know SQL</p>
+				<p class="fragment">2000: NoSQL - No SQL!</p>
+				<p class="fragment">2005: <b>NoSQL - Not only SQL</b></p>
+				<p class="fragment">2013: No, SQL!</p>
+				<aside class="notes">NoSQL stands for &quot;Not only SQL&quot;.<br>Many benefits and features of NoSQL databases like schema flexibility and distribution is now also supported in modern relational database management systems, e.g. SQL/JSON.</aside>
+			</section>
+
+			<section>
+				<h3>NoSQL Databases</h3>
+				<div class="columns">
+					<div><p class="small">Typical properties:</p>
+					<ul class="small">
+						<li class="fragment">distributed storage</li>
+						<li class="fragment">distributed computing</li>
+						<li class="fragment">&Rightarrow; high (horizontal) scalability</li>
+						<li class="fragment">open-source / cost-effective</li>
+						<li class="fragment">schema-flexibility</li>
+						<li class="fragment">support for semi-structured and unstructured data</li>
+						<li class="fragment">non-relational data model</li>
+					</ul></div>
+				
+				<div><img src="img/4/mongodb.png" alt="MongoDB" class="noborder"><br>
+					<img src="img/4/redis.png" alt="Redis" class="noborder" style="margin-top:-5mm"><br>
+					<img src="img/4/cassandra.png" alt="Cassandra" class="noborder" style="margin-top:-5mm"><br>
+					<img src="img/4/DynamoDB.png" alt="DynamoDB" class="noborder" style="margin-top:-5mm; height: 2cm;"><br>
+					<img src="img/4/neo4j.png" alt="Neo4J" class="noborder" style="margin-top:-5mm"><br>
+					<img src="img/4/hbase.png" alt="HBase" class="noborder" style="margin-top:-9mm"></div>
+
+				</div>
+				<aside class="notes">The list on the right shows the most popular NoSQL DBMS: MongoDB, Redis, Cassandra, DynamoDB, Neo4J, HBase. See <a href="https://db-engines.com/en/ranking">https://db-engines.com/en/ranking</a>. </aside>
+			</section>
+
+			<section>
+				<h3>4 Categories of NoSQL Databases</h3>
+				<h4>Key-Value Stores</h4>
+				<p class="fragment" style="margin-top: -3mm;">$Key \rightarrow Value$</p>
+
+				<h4>Wide-Column Stores</h4>
+				<p class="fragment" style="margin-top: -3mm;">$Table \rightarrow (RowID \rightarrow (Column \rightarrow Value))$</p>
+
+				<h4>Document Databases</h4>
+				<p class="fragment" style="margin-top: -3mm;">$Database \rightarrow (Collection \rightarrow Document*)$</p>
+
+				<h4>Graph Databases</h4>
+				<p class="fragment" style="margin-top: -3mm;">$G = (V, E)$</p>
+
+				<aside class="notes">The data model of key-value stores is the simplest one. They store a set of key-value pairs and allow a key-wise access. In wide-column stores, each row of a table can have arbitrary columns. Document DBs store a collection of documents (e.g., JSON). Graph databases store data within vertices and edges.</aside>
+			</section>
+
+			<section>
+				<h3>Redis (Key-Value Store)</h3>
+				<img src="img/4/redis.png" alt="Redis" class="noborder" style="position: absolute; right: 1cm; top: 3cm;">
+				<p class="small">Data Model: Set of key-value pairs</p>
+				<p class="small">Value Data Types:<br>Strings, Lists, Sets, Hashes, Sorted Sets, ...</p>
+				
+				<div class="columns">
+					<div class="fragment" style="margin-left: -15mm;"><h4>Strings</h4>
+						<p class="small" style="margin-top: -5mm;">any kind of data</p>
+						<pre style="width: 10cm; margin-top: -5mm;"><code class="bash">> SET a 9
+OK
+> GET a
+9
+> INCR a
+10</code></pre>
+<p class="small">Try out at <a href="https://try.redis.io/">https://try.redis.io/</a></p>
+</div>
+					<div class="fragment"><h4>Lists</h4>
+						<p class="small" style="margin-top: -5mm;">Ordered lists of strings</p>
+						<pre style="width: 10cm; margin-top: -5mm;"><code class="bash">> RPUSH seasons "summer"
+1
+> LPUSH seasons "spring"
+2
+> LRANGE seasons 0 -1
+"spring"
+"summer"
+> RPOP seasons
+summer</code></pre>
+	</div>
+				</div>
+				
+				<div class="poll fragment" style="bottom:-100px">
+					<h1>What does the L in LPUSH and LPOP stand for?</h1>
+							<ul>
+									<li>Link</li>
+									<li>Loop</li>
+									<li>List</li>
+									<li data-poll="correct">Left</li>
+							</ul>
+					<h2>https://fraage.de</h2>
+				</div>
+
+
+<aside class="notes">Key-value stores store data as a set of key-value pairs (like a Map, associative array, or dictionary data structure). Redis distributes the key-value pairs across nodes in a cluster using hash partitioning. The example on the left shows <code>SET</code>, <code>GET</code>, and <code>INCR</code> commands. These can be used for Redis' String data type. Strings are arbitrary binary data like text, numbers, images, HTML pages, JSON documents, ...</aside>
+			</section>
+
+			<section>
+				<h3>Redis Data Types</h3>
+
+				<div class="columns">
+					<div>
+						<h4>Sets</h4>
+						<p class="small">Unordered collection of strings</p>
+				<pre style="width: 12cm;"><code class="bash">> SADD pers:5:hobbies "piano"
+1
+> SADD pers:5:hobbies "piano"
+0
+> SCARD pers:5:hobbies
+1
+> SISMEMBER pers:5:hobbies "yoga"
+0</code></pre>
+					</div>
+					<div>
+						<h4>Hashes</h4>
+						<p class="small">&wedgeq; Map&lt;String,String></p>
+				<pre style="width: 12cm;"><code class="bash">> HSET pers:1 "city" "London"
+1
+> HGET pers:1 "city"
+"London"
+> HGETALL pers:1
+"city"
+"London"</code></pre>
+					</div>
+				</div>
+
+
+				<div class="poll fragment" style="bottom:-240px">
+					<h1>Each product in a webshop can have arbitrary properties (weight, author, color, ...). Which Redis data type would you use to store these?</h1>
+							<ul>
+									<li>String</li>
+									<li>List</li>
+									<li>Set</li>
+									<li data-poll="correct">Hash</li>
+							</ul>
+					<h2>https://fraage.de</h2>
+				</div>
+
+				<aside class="notes">Values of key-value pairs stored in Redis can be of a complex type, e.g. lists, sets, or so-called hashes. The hash data type is again a set of key-value pairs. A full list of commands can be found at <a href="https://redis.io/commands">https://redis.io/commands</a>.</aside>
+			</section>
+
+			<section>
+				<h3>HBase (Wide-Column Store)</h3>
+				<img src="img/4/hbase.png" alt="HBase" class="noborder" style="position: absolute; right: 1cm; top: 3cm; height: 2cm;">
+				<p class="small">Data Model: Table with row-id plus column families that contain arbitrary columns.</p>
+				<p class="small">Value Data Type: byte[]</p>
+
+				<pre><code class="bash">> CREATE 'websites', 'info', 'links'
+> PUT 'websites', 'www.othr.de', 'info:title', 'OTH Regensburg'
+> PUT 'websites', 'www.othr.de', 'info:language', 'German'
+> PUT 'websites', 'www.othr.de', 'links:www.stwno.de', ''
+> GET 'websites', 'www.othr.de'
+</code></pre>
+				
+<table style="font-size:0.65em;">
+	<thead>
+			<tr><th><u>Row-ID</u></th><th>info</th><th>links</th></tr>
+	</thead>
+	<tbody>
+			<tr><td>www.othr.de</td><td>
+					<table>
+						<thead><tr><th>title</th><th>language</th></tr></thead>
+						<tbody><tr><td>OTH Regensburg</td><td>German</td></tr></tbody>
+					</table>
+			</td><td>
+				<table>
+					<thead><tr><th>www.stwno.de</th></tr></thead>
+					<tbody><tr><td></td></tr></tbody>
+				</table>
+			</td></tr>
+	</tbody>
+</table>
+
+<div class="poll fragment" style="bottom:-200px">
+	<h1>What do you think: How does HBase distribute its data across the nodes of a cluster?</h1>
+			<ul>
+					<li data-poll="correct">Range partitioning on the row-id</li>
+					<li>Hash partitioning on the row-id</li>
+					<li>Each column family on a separate node</li>
+					<li>All data on all nodes</li>
+			</ul>
+	<h2>https://fraage.de</h2>
+</div>
+
+<aside class="notes">Each row of a table in a wide-column store can contain arbitrary columns. To separate different concepts in the same table, column families are defined at table-creation time. Here, we separate the infos of a web site (other web sites can have similar or other columns) and a set of outgoing links. HBase only supports methods for accessing a row by its row-id or scanning over a set of rows by specifying a row-id range. Rows are distributed on cluster nodes using range partitioning on the row-ids. HBase stores its data in the Hadoop distributed file system. MapReduce is often used to execute complex computations on big data.</aside>
+			</section>
+
+			<section>
+				<h3>Versioning in HBase</h3>
+				<p class="small">HBase Data Model:<br>
+					$Table \rightarrow (RowID \rightarrow (ColFamily \rightarrow (Col \rightarrow (Timestamp \rightarrow Value))))$</p>
+				
+					<ul class="small">
+						<li>Each column can contain multiple version of its values (history)</li>
+						<li>Each value is annotated with the timestamp of its last write</li>
+						<li>Number of versions can be specified for each column family (default: 1)</li>
+					</ul>
+
+					<pre><code class="bash">> CREATE 'websites', {NAME=>'info', VERSIONS=>9}, 'links'</code></pre>
+
+					<pre class="fragment"><code class="java">Configuration config = HBaseConfiguration.create();
+HTable table = new HTable(config, "websites");
+Get g = new Get("www.othr.de");
+Result r = table.get(g);
+//  colFam     column     time value
+Map&lt;byte[],Map&lt;byte[],Map&lt;Long,byte[]>>> = r.getMap();</code></pre>
+
+<aside class="notes">The example shows Java code to access all columns in all column families of the row with row-id <code>"www.othr.de"</code>. For each column, we have a map of multiple (here: up to 9) versions. There are other methods to only access specific column families, only specific columns, only the current version, only the last n versions, etc.</aside>
+</section>
+
+			<section>
+				<h3>HBase - Example Application</h3>
+				<table style="font-size:0.65em;">
+					<thead>
+							<tr><th><u>Row-ID</u></th><th>Log</th></tr>
+					</thead>
+					<tbody>
+							<tr><td>user5/1619512603</td><td>
+									<table>
+										<thead><tr><th>action</th><th>type</th><th>query</th><th>size</th><th>ip</th></tr></thead>
+										<tbody><tr><td>search</td><td>image</td><td>cats</td><td>large</td><td>82.202.31.71</td></tr></tbody>
+									</table>
+							</td></tr>
+							<tr><td>user8/1619522109</td><td>
+								<table>
+									<thead><tr><th>action​</th><th>post-id</th><th>text</th><th>ip</th><th>mobile</th></tr></thead>
+									<tbody><tr><td>comment</td><td>923921</td><td>Okay</td><td>82.202.31.71</td><td>Android 11</td></tr></tbody>
+								</table>
+						</td></tr>
+					</tbody>
+				</table>
+				<div class="fragment" data-fragment-index="2">
+				<p class="small">This design of the row-id allows for queries like:</p>
+				<pre><code class="java">// the 10 most recent activies by user 5
+scan = Scan(Bytes.toBytes("user5/"), Bytes.toBytes("user6/"));
+scan.setReversed(true);
+scan.setMaxResultSize(10);</code></pre>
+				</div>
+
+				<div class="poll fragment fade-in-then-out" style="bottom:-160px" data-fragment-index="1">
+					<h1>Which of the following queries work well for this row-id design?</h1>
+							<ul>
+									<li>Who logged in at 27th April 2021?</li>
+									<li>Find all comments for post 923921</li>
+									<li data-poll="correct">The 10 most recent activies by user 5</li>
+									<li>For each IP, count the total number of activities</li>
+							</ul>
+					<h2>https://fraage.de</h2>
+				</div>
+
+				<aside class="notes">As HBase is optimized for GET and SCAN requests based on the row-id or ranges of row-ids, it is important to choose the row-id so that it fits to typical queries. In this example, we log each user's action on a web site in an HBase table. The row-id consists of a user id and a timestamp. We do a range search on the row-id to find every row with the row-id prefix <code>user5/</code>.</aside>
+			</section>
+
+			<section>
+				<h3>HBase - Example Application</h3>
+				<table style="font-size:0.65em;">
+					<thead>
+							<tr><th><u>Row-ID</u></th><th>Log</th></tr>
+					</thead>
+					<tbody>
+							<tr><td>search/1619512603/user5​​</td><td>
+									<table>
+										<thead><tr><th>type</th><th>query</th><th>size</th><th>ip</th></tr></thead>
+										<tbody><tr><td>image</td><td>cats</td><td>large</td><td>82.202.31.71</td></tr></tbody>
+									</table>
+							</td></tr>
+							<tr><td>comment/1619522109/user8​​</td><td>
+								<table>
+									<thead><tr><th>post-id</th><th>text</th><th>ip</th><th>mobile</th></tr></thead>
+									<tbody><tr><td>923921</td><td>Okay</td><td>82.202.31.71</td><td>Android 11</td></tr></tbody>
+								</table>
+						</td></tr>
+					</tbody>
+				</table>
+				<div class="fragment" data-fragment-index="2">
+				<p class="small">This design of the row-id allows for queries like:</p>
+				<pre><code class="java">// who logged in at 27th April 2021?
+scan = Scan(Bytes.toBytes("login/1619481600"), 
+            Bytes.toBytes("login/1619567999"));</code></pre>
+				</div>
+
+				<div class="poll fragment fade-in-then-out" style="bottom:-160px" data-fragment-index="1">
+					<h1>Which of the following queries work well for this row-id design?</h1>
+							<ul>
+									<li data-poll="correct">Who logged in at 27th April 2021?</li>
+									<li>Find all comments for post 923921</li>
+									<li>The 10 most recent activies by user 5</li>
+									<li>For each IP, count the total number of activities</li>
+							</ul>
+					<h2>https://fraage.de</h2>
+				</div>
+
+				<aside class="notes">Here, we store the very same data as on the slide before. But this time, the row-id consists of the name of an activity, a timestamp, and the user. We can now use a scan to find all activities of a specific type (e.g. login) within a given time range.</aside>
+			</section>
+
+			<section>
+				<h3>MongoDB (Document Database)</h3>
+				<img src="img/4/mongodb.png" alt="MongoDB" class="noborder" style="position: absolute; right: 1cm; top: 3cm; height: 2cm;">
+				<p class="small">Data Model: Collection of arbitrarily structured (JSON) documents.</p>
+				<p class="small">Value Data Type: the 6 JSON types + some more</p>
+
+				<pre style="width: 100%;"><code class="javascript">> db
+test
+
+> use socialnetwork
+switched to db socialnetwork
+
+> db.people.insert( { "name": "Peter", "hobbies": ["piano", "yoga"] } 
+WriteResult({ "nInserted" : 1 })
+
+> db.people.find()
+{ "_id" : ObjectId("60811e66216a217c24e2b7c5"), "name" : "Peter", 
+"hobbies" : [ "piano", "yoga" ] }
+</code></pre>
+<aside class="notes">When inserting a document in a non-existing collection or database, these database objects are automatically created. Each document in MongoDB has the field <code>_id</code>. If not manually set (to a number, string, ...), its value is an automatically generated ObjectId. Like the key in Redis, the row-id in HBase, the <code>_id</code> field in MongoDB must be unique and it allows a fast access. MongoDB also supports indexes over other fields, and range partitioning - they call it sharding - over the values of an arbitrary field.</aside>
+			</section>
+
+			<section>
+				<h3>Queries in MongoDB</h3>
+				<p class="small"><code>db.collectionname.find( selection, projection )<br>.sort(...).limit(...)</code></p>
+
+				<pre style="width: 100%;"><code class="javascript">> db.people.find( { "name": "Peter" }, {"_id":1} )
+{ "_id" : ObjectId("60811e66216a217c24e2b7c5") }
+
+> db.people.find( { "hobbies": "yoga" } ).sort({"name": 1}).limit(10)
+{ "_id" : ObjectId("60811e66216a217c24e2b7c5"), ... }</code></pre>
+
+				<aside class="notes">The selection in MongoDB uses a query-by-example approach. In the two queries shown here, we search for people with the name Peter, and people that have the hobby yoga. If a value within a document is an array, we check for containment. An optional projection can eliminate columns from the result. <code>{"_id":1}</code> will only retrieve the <code>_id</code> field. Sorting can be done ascending (<code>{"name":1}</code>) or descending (<code>{"name":-1}</code>).</aside>
+			</section>
+
+			<section>
+				<h3>Indexes in MongoDB</h3>
+				<pre style="width: 100%;"><code class="javascript">> db.people.createIndex( { "name": 1 })</code></pre>
+				<div class="fragment">
+				<h4>Multi-Key Indexes</h4>
+				<pre style="width: 100%;"><code class="javascript">> db.people.createIndex( { "hobbies": 1 })</code></pre>
+				</div>
+				<img src="img/4/multi-key-index.png" alt="Multi-Key Index" class="strech noborder fragment">
+
+				<aside class="notes">Like in SQL, indexes are automatically used when they can accelerate a query. E.g., the first index on this slide can be used for the query <code>db.people.find({"name":"Peter"})</code>, the second one for <code>db.people.find({"hobbies":"yoga"})</code>. As the field <code>"hobbies"</code> is an array, we call this index a multi-key index. Each document is referenced within the index multiple times - once for each of its array elements.</aside>
+			</section>
+
+			<section>
+				<h3>MongoDB Aggregation Pipeline</h3>
+				<pre style="width: 100%;"><code class="javascript">> db.people.aggregate([
+ { "$match": { "hobbies": "yoga" } },
+ { "$sort": { "name": 1 }},
+ { "$limit": 10 },
+ { "$project": { "_id": 1 }}
+])</code></pre>
+
+<pre class="fragment" style="width: 100%;"><code class="javascript">> db.people.aggregate([
+ { "$unwind": "$hobbies" },
+ { "$group": { "_id": "$hobbies", "names" : {"$push": "$name"} }}
+])</code></pre>
+<p class="fragment small"><code class="javascript">{ "_id": "yoga", "names": ["Peter", "Jane"] }<br>
+{ "_id": "piano", "names": ["Peter"] }</code></p>
+
+<div class="poll fragment" style="bottom:-180px">
+	<h1>What do you think: What would happen when you write <code>"hobbies"</code> instead of <code>"$hobbies"</code> within the <code>"$group"</code> step?</h1>
+			<ul>
+					<li>No difference</li>
+					<li data-poll="correct">One group with _id hobbies</li>
+					<li>One group for each person document</li>
+					<li>Error</li>
+			</ul>
+	<h2>https://fraage.de</h2>
+</div>
+
+<aside class="notes">The MongoDB aggregation pipeline allows for complex data-transformation queries. A pipeline is defined as a sequence of steps. The first query on this slide would also be possible with a <code>find</code> command. The second query shows further pipeline steps like <code>$unwind</code> for unwinding an array into its elements, and <code>$group</code> for grouping documents by a given field (here, grouping by hobby). <code>$push</code> is a so-called accumulator. It creates an array with all elements within a group. Other accumulators are <code>$sum</code>, <code>$avg</code>, <code>$max</code>, etc. A dollar symbol in a key (e.g. <code>$push</code>) is a reserved MongoDB command. A dollar in a value (e.g., <code>$name</code>) is an attribute dereference. In this case it references the value in the JSON field <code>"name"</code>.</aside>
+			</section>
+
+			<section>
+				<h3>Neo4J (Document Database)</h3>
+				<p class="small">Data Model: Property Graph $G = (V, E)$</p>
+				<ul class="small">
+					<li class="fragment"><em>Vertices</em>: have a label (node type) and a set of properties (key-value pairs)<br>
+					<code class="fragment">(:person { "name": "Peter", "city": "Berlin" })</code><br>&nbsp;</li>
+					<li class="fragment"><em>Edges</em>: directed connection between two nodes, have a label and properties<br>
+					<code class="fragment">() -[:friend {"since":"2021-05-04"}]-> ()</code><br>&nbsp;</li>
+				</ul>
+				<img class="fragment" style="width:50%;" uml='skinparam roundCorner 25
+
+object ":person" as peter {
+  name = Peter
+  city = Berlin
+}
+
+object ":person" as jane {
+  name = Jane
+  city = Berlin
+}
+
+peter -> jane : friend\nsince = 2021-05-04
+'>
+			<aside class="notes">Graphs consist of nodes edges. In typical graph databases, both nodes and edges can have a label, and a list of arbitrary properties. In Neo4J, there are only directed edges. So, when we want to model a friendship between two person nodes - friendship is a symmetric relationship -, we simply choose an arbitrary direction, either an outgoing or incoming edge. Later, when querying the data, we simply traverse edges in both directions to find a person's friends.</aside>
+			</section>
+
+			<section>
+				<h3>Neo4J - Cypher (Query Language)</h3>
+				<p class="small"><code>MATCH</code> clause: Pattern matching within the graph</p>
+				<p class="small"><code>(variable : node_label) -[variable : edge_label]-> ()</code></p>
+				<p class="small"><code>WHERE</code>, <code>ORDER BY</code>, <code>LIMIT</code>, <code>RETURN</code>, <code>UPDATE</code>, ... clauses: as in SQL or XQuery</p>
+				<pre><code class="plaintext">MATCH (p : person)-[:friend]-(x : person)
+WHERE p.name = 'Peter'
+ORDER BY x.name
+RETURN x.name, x.city</code></pre>
+
+<div class="poll fragment" style="bottom:-280px">
+	<h1>How are the values p and x stored in the database?</h1>
+			<ul>
+					<li>As internal node ids</li>
+					<li>As properties</li>
+					<li>As labels</li>
+					<li data-poll="correct">They are stored nowhere</li>
+			</ul>
+	<h2>https://fraage.de</h2>
+</div>
+
+			<aside class="notes">Within a MATCH clause <code>()</code> represent a node, and <code>--</code> / <code>-[]-</code> is an edge. Edges can have a direction <code>--></code> / <code>&lt;--</code>. If no direction is specified <code>--</code>, both incoming and outgoing edges are matched. It is possible to introduce variables (here: <code>p</code> and <code>x</code>) to refer to a node or edge, e.g. within a <code>WHERE</code> predicate or the <code>RETURN</code> clause. After a colon, the node or edge label can be specified, e.g. <code>:person</code>. The query on this slide finds the names and cities of Peter's friends. </aside>
+			</section>
+
+			<section>
+				<h3>Gremlin (Graph Query Language)</h3>
+				<pre style="width: 65%; left: -5cm;"><code class="groovy">gremlin> graph = TinkerFactory.createTheCrew()
+gremlin> g = traversal().withEmbedded(graph)
+
+// find Marko's person node
+gremlin> g.V().has('person', 'name', 'marko')
+==>v[1]
+
+// which software did Marko develop?
+gremlin> g.V().has('person', 'name', 'marko')
+         .out('develops').hasLabel('software')
+         .values('name')
+==>gremlin
+==>tinkergraph</code></pre>
+				<div style="position: absolute; top:2cm; right: 0mm;"><img style="width: 9cm;" class="" src="img/4/gremlingraph.png" alt="The Crew Graph">
+					<p class="small" style="margin-top: -5mm;"><a href="https://tinkerpop.apache.org/docs/3.4.10/images/the-crew-graph.png" target="_blank">Full graph at<br>https://bit.ly/thecrewgraph</a></p></div>
+
+<div class="poll fragment" style="bottom:-230px">
+	<h1>What does the step &quot;.out&quot; return?</h1>
+			<ul>
+					<li data-poll="correct">List of nodes</li>
+					<li>List of edges</li>
+					<li>List of strings</li>
+					<li>List of labels</li>
+			</ul>
+	<h2>https://fraage.de</h2>
+</div>					
+
+					<aside class="notes">Gremlin is a universal graph query language. Here, we use it to query an example graph within the embedded im-memory graph database Tinkergraph. The first two lines in the code creates a the example graph and initializes a traversable object <code>g</code>. With Gremlin, we traverse the graph by navigating over nodes and edges. In the longer example query on this slide, we first find all nodes <code>g.V()</code>, then we select only the person node with name Marko. After that we navigate to its neighbor nodes via outgoin <code>develops</code> edges, check wether their label is software, and finally return the value of the <code>name</code> property of that nodes. </aside>
+			</section>
+
+			<section>
+				<h2>Summary</h2>
+				<ul class="small">
+					<li>NoSQL = Not only SQL</li>
+					<li class="fragment">Key-Value Stores<br>e.g., Redis: supports simple and complex value types (lists, sets, hashes, ...))</li>
+					<li class="fragment">Wide-Column Stores<br>e.g., HBase: PUT/GET/SCAN API based on row-id (ranges); versioning</li>
+					<li class="fragment">Document Databases<br>e.g. MongoDB: collections of JSON documents; indexes, aggregation pipeline</li>
+					<li class="fragment">Graph Databases<br>e.g., Neo4J: property graphs, Cypher, Gremlin</li>
+				</ul>
+</section>
+
+			<section>
+				<img src="img/4/nosql_cartoon2.png" alt="Geek and Poke" class="noborder stretch">
+					<p style="font-size: smaller; margin-top: -8mm;">Source: <a href="https://geek-and-poke.com/">https://geek-and-poke.com</a></p>
+		</section>
+
+			</div>
+		</div>
+
+		<script src="reveal.js/dist/reveal.js"></script>
+		<script src="reveal.js/plugin/markdown/markdown.js"></script>
+		<script src="reveal.js/plugin/highlight/highlight.js"></script>
+		<script src="reveal.js/plugin/zoom/zoom.js"></script>
+		<script src="reveal.js/plugin/math/math.js"></script>
+		<script src="reveal.js/plugin/notes/notes.js"></script>
+		<script src="reveal.js/plugin/search/search.js"></script>
+        <script src="lib/jquery.js"></script>
+        <script src="lib/lodash.js"></script>
+        <script src="lib/backbone.js"></script>
+        <script src="lib/joint.min.js"></script>
+				<script src="lib/deflate.js"></script>
+
+		<script src="src/init_reveal.js"></script>
+
+        <script>
+        if(window.location.search.match( /print-pdf/gi )) {
+                document.getElementById('header').style="display:none";
+                document.getElementById('footer').style="display:none";
+        }
+        </script>
+
+
+	</body>
+</html>
