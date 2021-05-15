@@ -87,14 +87,18 @@
 
 			<section>
 				<h3>Semantic Web</h3>
-				<p class="small">Classical web site:</p>
-				<pre><code class="html">&lt;html>&lt;body>&lt;div>
- &lt;h1>Risk (game)&lt;/h1>
- &lt;p>Risk is a board game by Hasbro. It was invented in 1957.&lt;/p>
-&lt;/div>&lt;/body>&lt;/html></code></pre>
 
-<p class="small fragment" data-fragment-id="1">Semantic web site:</p>
-				<pre class="fragment" data-fragment-id="1"><code class="html">&lt;html>&lt;body>&lt;div vocab="http://schema.org/" typeof="Person">
+				<img src="img/5/risk.jpeg" alt="Risk" class="noborder" style="position: absolute; right: 5mm; width: 10cm;">
+
+				<p class="small">Classical web site:</p>
+
+				<pre style="width: 13cm; left: -4.9cm;"><code class="html">&lt;html>&lt;body>&lt;div>
+ &lt;h1>Risk (game)&lt;/h1>
+ &lt;p>Risk is a board game by Hasbro.
+ It was invented in 1957.&lt;/p>
+&lt;/div>&lt;/body>&lt;/html></code></pre>
+<p class="small fragment" data-fragment-index="1">Semantic web site:</p>
+				<pre class="fragment" data-fragment-index="1"><code class="html">&lt;html>&lt;body>&lt;div vocab="http://schema.org/" typeof="Person">
  &lt;h1 property="name">Risk (game)&lt;/h1>
  &lt;p>Risk is a board game by 
   &lt;span property="publisher" typeof="Organization" 
@@ -138,10 +142,595 @@ PREFIX schema: &lt;http://schema.org/></code></pre>
 
 			<section>
 				<h3>Knowledge Bases</h3>
+
+				<h4>Linked Open Data</h4>
+				<p class="small">Structured data that is freely available and interlinked with other data.</p>
+
+				<img src="img/5/yago.png" alt="Yago" style="position: absolute; right: 5mm; width: 5cm; top:40mm" class="noborder fragment" data-fragment-index="1">
+
+				<ul class="small">
+					<li class="fragment" data-fragment-index="1"><a href="https://yago-knowledge.org" target="_blank">Yago</a> (Yet Another Great Ontology)
+						<ul>
+							<li>data automatically extracted from Wikipedia and other sources</li>
+							<li>10 million entities + 120 million facts about them</li>
+							<li>accuracy: ~95%</li>
+						</ul>
+					</li>
+					<li class="fragment"><a href="https://www.dbpedia.org/" target="_blank">DBpeadia</a> <ul>
+						<li>also extracted from Wikipedia (infoboxes)</li>
+						<li>6 million entities: people, places, music albums, movies, games, ...</li>
+					</ul></li>
+				</ul>
+				<div class="fragment">
+				<p class="small">Datasets from Yago, DBpedia, and others are interlinked with each other:</p>
+				<table style="margin-top: 3mm; font-size: 18pt;">
+					<tr><th>subject</th><th>predicate</th><th>object</th></tr>
+					<tr><td>yago:Risk_(game)</td><td>owl:sameAs</td><td>dbpedia:Risk_(game)</td></tr>
+					</table></div>
 			</section>
 
+			<section>
+				<h3>Use Cases</h3>
+				<div class="columns">
+					<div><ul class="small">
+						<li>artificial-intelligence applications</li>
+						<li>IBM Watson<br>(natural-language question answering)</li>
+						<li>improving web search</li>
+						<li>clinical research</li>
+						<li>medicine applications</li>
+						<li>...</li>
+					</ul></div>
+					<div>
+				<img src="img/5/watson.jpg" alt="Watson wins Jeopardy" style="width: 10cm;" class="noborder"></div>
+				</div>
+
+				<cite>"Hey Siri, Alexa, Google, ..., how old is Paul McCartney?"</cite>
+
+				<img src="img/5/googlesearch.png" alt="Google search" class="noborder fragment">
+			</section>
+
+			<section>
+				<h2>SPARQL</h2>
+				<p><b>S</b>PARQL <b>P</b>rotocol <b>a</b>nd <b>R</b>DF <b>Q</b>uery <b>L</b>anguage</p>
+
+				<pre><code class="sparql">PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#>
+PREFIX schema: &lt;http://schema.org/>
+PREFIX yago: &lt;http://yago-knowledge.org/resource/>
+SELECT ?year WHERE {
+	yago:Risk_\(game\) schema:datePublished ?year
+} </code></pre>
+<p class="small">Try out at <a href="https://yago-knowledge.org/sparql" target="_blank">https://yago-knowledge.org/sparql</a></p>
+
+<span data-sql-query="select 1957 as year"></span>
+
+</section>
+
+<section>
+	<h3>Exploring Yago</h3>
+	<p class="small">Find everything</p>
+	<pre><code class="sparql">SELECT ?subject ?predicate ?object WHERE { 
+ ?subject ?predicate ?object 
+} 
+LIMIT 50</code></pre>
+
+<p class="small">Find cities</p>
+<pre class="fragment"><code class="sparql">SELECT ?subject ?predicate ?object WHERE { 
+ ?subject rdf:type schema:City.
+ ?subject ?predicate ?object 
+} 
+LIMIT 50</code></pre>
+ <pre class="fragment"><code class="sparql">SELECT * WHERE { 
+ ?subject a schema:City.
+ ?subject ?predicate ?object 
+} 
+LIMIT 50</code></pre>
+</section>
+
+<section>
+	<h3>SPARQL: SELECT, WHERE, ORDER BY</h3>
+	<p class="small"><code>.</code> separates two triplets<br>
+		<code>;</code> separates two triplets that share the same subject</p>
+	</ul>
+	<p class="small">All board games from Hasbro</p>
+	<pre><code class="sparql">SELECT ?game WHERE {
+ ?game rdf:type yago:Board_game.
+ ?game schema:publisher yago:Hasbro
+} </code></pre>
+
+<div class="fragment">
+<p class="small">Firstnames and lastnames of people born on the same day as Paul McCartney</p>
+<pre><code class="sparql">SELECT ?firstname ?lastname WHERE {
+ yago:Paul_McCartney schema:birthDate ?birthday.
+ ?p rdf:type schema:Person;
+    schema:birthDate ?birthday;
+    schema:givenName ?firstname;
+    schema:familyName ?lastname.
+}
+ORDER BY ?lastname</code></pre></div>
+</section>
+
+<section>
+	<h3>SPARQL: FILTER</h3>
+	<p class="small">All people born in the 1960s:</p>
+<pre><code class="sparql">SELECT ?p ?birthday WHERE {
+ ?p rdf:type schema:Person.
+ ?p schema:birthDate ?birthday
+ FILTER (?birthday >= "1960-01-01"^^xsd:date 
+      && ?birthday <= "1960-12-31"^^xsd:date) .
+}</code></pre>
+</section>
+
+<section>
+	<h3>SPARQL: GROUP BY</h3>
+<pre><code class="sparql">SELECT ?birthplace (COUNT(*) AS ?num_people) WHERE {
+ ?p a schema:Person.
+ ?p schema:birthPlace ?birthplace
+}
+GROUP BY ?birthplace
+ORDER BY DESC(?num_people)
+LIMIT 100</code></pre>
+
+<table style="font-size:0.7em">
+	<tr><th style="padding-top:0px;">birthplace</th><th style="padding-top:0px;">num_people</th></tr>
+		<tr><td>yago:Tokyo</td><td>21261</td></tr>
+		<tr><td>yago:Paris</td><td>20167</td></tr>
+		<tr><td>...</td><td>...</td></tr>
+	</table>
+</section> 
+
+	<section>
+		<h3>Graph Traversal</h3>
+		<p class="small">In which cities were people born that acted in the same movie as Michael J. Fox?</p>
+		<pre><code class="sparql">SELECT DISTINCT ?birthplace WHERE {
+ ?movie schema:actor yago:Michael_J._Fox.
+ ?movie schema:actor ?actor.
+ ?actor schema:birthPlace ?birthplace
+}</code></pre>
+
+<img style="width:40%;" uml='skinparam roundCorner 25
+
+object "?movie" as movie {
+}
+
+object "yago:Michael_J._Fox" as fox {
+}
+
+object "?actor" as actor {
+}
+
+object "?birthplace" as birthplace {
+}
+
+movie --> fox : schema:actor
+movie --> actor : schema:actor
+actor --> birthplace : schema:birthPlace
+'>
+	</section>
+	
+	<section>
+		<h3>Graphs</h3>
+		<p class="small">A graph consists of vertices $V$ and edges $E$.</p>
+		<p>$G = (V, E)$</p>
+
+		<p class="small">Example:<br>
+			$V = \{v_1, v_2, v_3, v_4\}$<br>
+			$E = \{(v_1, v_3), (v_2, v_3), (v_2, v_4)\}$</p>
+
+			<img style="width:4cm; position: absolute; right: 1cm; top: 4cm" uml='skinparam roundCorner 25
+
+			object "v1" as v1 {
+			}
+			
+			object "v2" as v2 {
+			}
+			
+			object "v3" as v3 {
+			}
+			
+			object "v4" as v4 {
+			}
+			
+			v1 --> v3 
+			v2 --> v3
+			v2 --> v4
+			'>
+
+			<div class="columns">
+				<div style="width: 12cm;">
+					<h4>Adjacency List</h4>
+					<pre><code>v1,v3
+v2,v3,v4</code></pre>
+		</div>	
+		<div style="width: 12cm;">
+			<h4>Adjacency Matrix</h4>
+			<pre><code>0,0,1,0
+0,0,1,1
+0,0,0,0
+0,0,0,0</code></pre>
+</div>
+</div>
+	</section>
+
+	<section>
+		<h3>Graphs in relational databases</h3>
+		<img style="width:4cm; position: absolute; right: 1cm; top: 4cm" uml='skinparam roundCorner 25
+
+			object "v1" as v1 {
+			}
+			
+			object "v2" as v2 {
+			}
+			
+			object "v3" as v3 {
+			}
+			
+			object "v4" as v4 {
+			}
+			
+			v1 --> v3 
+			v2 --> v3
+			v2 --> v4
+			'>
+
+		<div class="columns">
+			<div style="margin-left: -6cm;">
+				<h4>Vertex Table</h4>
+				<table style="font-size:0.7em">
+					<tr><th style="padding-top:0px;"><u>vid</u></th></tr>
+						<tr><td>v1</td></tr>
+						<tr><td>v2</td></tr>
+						<tr><td>v3</td></tr>
+						<tr><td>v4</td></tr>
+					</table>
+			</div>
+			<div style="width: 6cm; margin-left: -12cm;">
+				<h4>Edge Table</h4>
+				<table style="font-size:0.7em">
+					<tr><th style="padding-top:0px;"><u>eid</u></th><th style="padding-top:0px;">source</th><th style="padding-top:0px;">target</th></tr>
+						<tr><td>e1</td><td>v1</td><td>v3</td></tr>
+						<tr><td>e2</td><td>v2</td><td>v3</td></tr>
+						<tr><td>e3</td><td>v2</td><td>v4</td></tr>
+					</table>
 			</div>
 		</div>
+	</section>
+
+	<section>
+		<h3>Property graphs in rel. databases</h3>
+
+
+		<img style="width:50%;" uml='skinparam roundCorner 25
+
+object ":person" as peter {
+  name = Peter
+  city = Berlin
+}
+
+object ":person" as jane {
+  name = Jane
+  city = Berlin
+}
+
+peter -> jane : friend\nsince = 2021-05-04
+'>
+
+<div class="columns">
+	<div style="margin-left: -0cm;">
+		<p class="small"><b>People</b></p>
+		<table style="font-size:0.7em">
+							<tr><th style="padding-top:0px;"><u>pid</u></th><th>name</th><th>city</th></tr>
+								<tr><td>1</td><td>Peter</td><td>Berlin</td></tr>
+								<tr><td>2</td><td>Jane</td><td>Berlin</td></tr>
+							</table>
+	</div>
+	<div style="width: 13cm; margin-left: -2cm;">
+		<p class="small"><b>Friends</b></p>
+<table style="font-size:0.7em">
+					<tr><th style="padding-top:0px;"><u>pid1</u></th><th><u>pid2</u></th><th>properties</th></tr>
+						<tr><td>1</td><td>2</td><td>{ "since": "2021-05-04" }</td></tr>
+					</table>
+</div>
+</div>
+	</section>
+
+	<section>
+		<h3>Labels</h3>
+
+
+		<img style="width: 6cm; right:1cm; position: absolute;" uml='skinparam roundCorner 25
+
+object ":person" as p1 {
+ pid = 1
+ name = Peter
+ city = Berlin
+}
+
+object ":message" as m1 {
+	mid = 101
+	txt = Hi
+	timestamp = 1619867471
+}
+
+p1 -[hidden]-> m1
+
+'>
+
+		<p class="small">Modelling alternatives for vertex / edge labels:</p>
+		<ul>
+			<li class="fragment">One table for each label
+				<p class="small">People (<u>pid</u>, name, city)<br>
+				Messages (<u>mid</u>, txt, timestamp)</p>
+			</li>
+			<li class="fragment">
+				Label column
+				<p class="small">Vertices (<u>vid</u>, label, name, city, txt, timestamp)
+			</li>
+			<li class="fragment">Labels table
+			<p class="small">Vertices (<u>vid</u>, name, city, txt, timestamp)<br>
+				Labels(<u>vid, label</u>)</li>
+		</ul>
+	</section>
+
+	<section>
+		<h3>Properties</h3>
+
+		<img style="width: 6cm; right:1cm; position: absolute;" uml='skinparam roundCorner 25
+
+object ":person" as p1 {
+ pid = 1
+ name = Peter
+ city = Berlin
+}
+
+object ":message" as m1 {
+	mid = 101
+	txt = Hi
+	timestamp = 1619867471
+}
+
+p1 -[hidden]-> m1
+
+'>
+
+		<p class="small">Modelling alternatives for vertex / edge properties:</p>
+		<ul>
+			<li class="fragment">One column for each property
+				<p class="small">Vertices (<u>vid</u>, label, name, city, txt, timestamp)<br>
+			</li>
+			<li class="fragment">
+				Properties column (JSON / XML / ...) 
+				<p class="small">Vertices (<u>vid</u>, properties)
+			</li>
+			<li class="fragment">Properties table
+			<p class="small">Vertices (<u>vid</u>)<br>
+				Properties(<u>vid, property</u>, value)</li>
+		</ul>
+		<p class="small fragment">Combinations are possible.</p>
+	</section>
+
+	<section>
+		<h3>Tree structures in rel. databases</h3>
+		<p class="small"><b>Tree</b>: two vertices are connected by exactly one path.</p>
+		<p class="small"><b>Forest</b>: two vertices are connected by at most one path.</p>
+
+		<div class="columns">
+			<div><span data-sql-query="SELECT * FROM phd" data-sql-pk="pid" style="font-size: 90%;"></span></div>
+			<div><img style="height: 9cm;" uml='skinparam roundCorner 25
+
+				object ":person" as p1 {
+					pid = 1
+					name = Leonhard Euler
+				}
+				
+				object ":person" as p11 {
+					pid = 2
+					name = Joseph Louis Lagrange
+				}
+				
+				object ":person" as p12 {
+					pid = 3
+					name = Johann Hennert
+				}
+				
+				object ":person" as p111 {
+					pid = 4
+					name = Jean-Baptiste Joseph Fourier
+				}
+				
+				object ":person" as p112 {
+					pid = 5
+					name = Siméon Poisson
+				}
+				
+				p1 <-- p11 : advisor
+				p1 <-- p12 : advisor \n year = 1766
+				p11 <-- p111 : advisor
+				p11 <-- p112 : advisor \n year = 1800
+				'></div>
+		</div>
+		<p style="margin-top:-5mm" class="small">Sources: <a href="https://genealogy.math.ndsu.nodak.edu/">https://genealogy.math.ndsu.nodak.edu/</a> and <a href="https://academictree.org/">https://academictree.org/</a></p>
+
+	</section>
+
+	<section>
+		<h3>Graph queries in SQL</h3>
+		<span data-sql-query="SELECT * FROM phd WHERE pid" data-sql-pk="pid"></span>
+
+<p class="small">What's the name of Siméon Poisson's doctor mother / doctor father?</p>
+			<pre><code class="sql">SELECT p2.name FROM phd p1 JOIN phd p2 ON p1.advisor = p2.pid
+AND p1.name = 'Siméon Poisson';</code></pre>
+			<span class="sqlresult"></span>
+		
+	</section>
+
+	<section>
+		<h3>Graph queries in SQL</h3>
+
+<p class="small">How many students does every advisor have?</p>
+			<pre><code class="sql">SELECT advisor.name, COUNT(student.pid) AS num_students
+FROM phd advisor LEFT JOIN phd student 
+  ON advisor.pid = student.advisor
+GROUP BY advisor.name;</code></pre>
+
+			<span class="sqlresult"></span>
+
+			<p class="small">But these are only their direct students.</p>
+		
+	</section>
+
+	<section>
+		<h3>CTE - Common Table Expressions</h3>
+<h4>WITH ... AS (SELECT ...) SELECT ...</h4>
+<pre><code class="sql">WITH advisors AS 
+(SELECT pid, advisor FROM phd WHERE advisor IS NOT NULL)
+SELECT * FROM advisors;
+</code></pre>	
+<span class="sqlresult"></span>
+	</section>
+
+	<section>
+		<h3>CTE - Common Table Expressions</h3>
+<h4>WITH ... AS (SELECT ...) SELECT ...</h4>
+<pre><code class="sql">WITH advisors AS (SELECT pid, advisor FROM phd 
+                              WHERE advisor IS NOT NULL), 
+advisors2 AS (SELECT c.pid, a.advisor FROM phd c JOIN phd a 
+              ON c.advisor = a.pid WHERE a.advisor IS NOT NULL)
+SELECT * FROM advisors UNION ALL SELECT * FROM advisors2;
+</code></pre>	
+<span class="sqlresult"></span>
+	</section>
+
+	<section>
+		<h3>Recursive Queries</h3>
+		<pre><code class="sql">WITH RECURSIVE phd_closure AS (
+ SELECT pid, advisor FROM phd WHERE advisor IS NOT NULL
+ UNION ALL
+ SELECT c.pid, a.advisor FROM phd_closure c 
+ JOIN phd a ON c.advisor = a.pid WHERE a.advisor IS NOT NULL
+)
+SELECT * FROM phd_closure;</code></pre>	
+			<span data-sql-query="WITH phd_closure AS (
+SELECT pid, advisor FROM phd WHERE advisor IS NOT NULL
+UNION ALL
+SELECT c.pid, a.advisor FROM phd c JOIN phd a ON c.advisor = a.pid WHERE a.advisor IS NOT NULL
+)
+SELECT * FROM phd_closure;"></span>
+
+	</section>
+
+	<section>
+		<h3>Recursive Queries</h3>
+		<pre><code class="sql">WITH RECURSIVE phd_closure AS (
+ SELECT pid, advisor, ''||advisor as advisors FROM phd WHERE advisor IS NOT NULL
+ UNION ALL
+ SELECT c.pid, a.advisor, c.advisors||'->'||a.advisor FROM phd_closure c 
+ JOIN phd a ON c.advisor = a.pid WHERE a.advisor IS NOT NULL
+)
+SELECT * FROM phd_closure;</code></pre>	
+			<span data-sql-query="WITH phd_closure AS (
+SELECT pid, advisor, ''|advisor as advisors FROM phd WHERE advisor IS NOT NULL
+UNION ALL
+SELECT c.pid, a.advisor, c.advisor||'->'||a.advisor FROM phd c JOIN phd a ON c.advisor = a.pid WHERE a.advisor IS NOT NULL
+)
+SELECT * FROM phd_closure;"></span>
+
+	</section>
+
+	<section>
+		<h3>Recursive Queries</h3>
+		<pre><code class="sql">WITH RECURSIVE phd_closure AS (
+ SELECT pid, advisor FROM phd WHERE advisor IS NOT NULL
+ UNION ALL
+ SELECT c.pid, a.advisor FROM phd_closure c 
+ JOIN phd a ON c.advisor = a.pid WHERE a.advisor IS NOT NULL
+)
+SELECT advisor, count(*) FROM phd_closure GROUP BY advisor;</code></pre>	
+
+<p class="small">How many descendants (doctor children, grandchildren, grandgrandchildren, ...) does every advisor have?</p>
+			<span data-sql-query="WITH phd_closure AS (
+SELECT pid, advisor FROM phd WHERE advisor IS NOT NULL
+UNION ALL
+SELECT c.pid, a.advisor FROM phd c JOIN phd a ON c.advisor = a.pid WHERE a.advisor IS NOT NULL
+)
+SELECT advisor, count(*) FROM phd_closure GROUP BY advisor;"></span>
+
+	</section>
+
+	<section>
+		<h3>CONNECT BY</h3>
+		<p class="small">Recursive queries in Oracle</p>
+		<pre><code class="sql">SELECT pid, CONNECT_BY_ROOT advisor as advisor
+FROM phd CONNECT BY PRIOR pid = advisor;</code></pre>
+
+<table class="small">
+	<tr><td style="width:9cm"><code>CONNECT BY cond</code></td><td>hierarchical connection between parent and child rows (evaluated before <code>WHERE</code>)</td></tr>
+	<tr><td style="width:9cm"><code>PRIOR col</code></td><td>column of the parent row</td></tr>
+	<tr><td style="width:9cm"><code>CONNECT_BY_ROOT col</code></td><td>column of the highest parent row</td></tr>
+	<tr><td style="width:9cm"><code>LEVEL</code></td><td>1 for the root, 2 for the root's children, ...</td></tr>
+	<tr><td style="width:9cm"><code>CONNECT_BY_ISLEAF</code></td><td>1 if the row has no children, 0 otherwise</td></tr>
+	<tr><td style="width:9cm"><code>SYS_CONNECT_BY_PATH(expr, sep)</code></td><td>a string containing the full path from the root to the current node, containing the values for <code>expr</code>, separated by <code>sep</code>.</td></tr>
+</table>
+
+	</section>
+
+	<section>
+		<h3>CONNECT BY</h3>
+		<table class="small">
+			<tr><td style="width:9cm"><code>START WITH cond</code></td><td>specifies the set of root nodes</td></tr>
+			<tr></tr>
+			</table>
+		
+		<pre><code class="sql">SELECT pid, CONNECT_BY_ROOT advisor as advisor, 
+LEVEL, CONNECT_BY_ISLEAF, SYS_CONNECT_BY_PATH(pid, ' -> ')
+FROM phd CONNECT BY PRIOR pid = advisor 
+START WITH pid = 1;</code></pre>
+
+<table style="font-size:0.7em">
+	<tr><th style="padding-top:0px;">pid</th><th>advisor</th><th>LEVEL</th><th>CONNECT_BY_ISLEAF</th><th>SYS_CONNECT_BY_PATH</th></tr>
+	<tr><td>1</td><td>1</td><td>1</td><td>0</td><td>-> 1</td></tr>
+	<tr><td>2</td><td>1</td><td>2</td><td>0</td><td>-> 1 -> 2</td></tr>
+	<tr><td>4</td><td>1</td><td>3</td><td>1</td><td>-> 1 -> 2 -> 4</td></tr>
+	<tr><td>5</td><td>1</td><td>3</td><td>1</td><td>-> 1 -> 2 -> 5</td></tr>
+	<tr><td>3</td><td>1</td><td>2</td><td>1</td><td>-> 1 -> 3</td></tr>
+</table>
+
+	</section>
+
+	<section>
+		<h3>CONNECT BY</h3>
+
+		<p class="small">How many descendants (doctor children, grandchildren, grandgrandchildren, ...) does every advisor have?</p>
+
+<pre><code class="sql">WITH phd_closure AS (
+ SELECT pid, CONNECT_BY_ROOT advisor as advisor
+ FROM phd CONNECT BY PRIOR pid = advisor)
+SELECT advisor, count(*) FROM phd_closure 
+WHERE advisor IS NOT NULL GROUP BY advisor;</code></pre>
+
+<span data-sql-query="WITH phd_closure AS (
+SELECT pid, advisor FROM phd WHERE advisor IS NOT NULL
+UNION ALL
+SELECT c.pid, a.advisor FROM phd c JOIN phd a ON c.advisor = a.pid WHERE a.advisor IS NOT NULL
+)
+SELECT advisor, count(*) FROM phd_closure GROUP BY advisor;"></span>
+
+<p class="small">Try out at <a href="https://dbfiddle.uk/?rdbms=oracle_18&fiddle=d73a042538be90f2858e2d7aec7a8f38" target="_blank">http://bit.ly/oconnectby</a></p>
+	</section>
+
+	<section>
+		<h2>Summary</h2>
+				<ul class="small">
+					<li>The Semantic Web, Ontologies</li>
+					<li>RDF</li>
+					<li>SPARQL</li>
+					<li>Graphs: adjacency lists, adjacency matrices</li>
+					<li>Graphs in RDBMS: Vertex table, edge table, labels, properties</li>
+					<li>Recursive SQL queries</li>
+					<li>CONNECT BY</li>
+				</ul>
+	</section>
+
 
 		<script src="reveal.js/dist/reveal.js"></script>
 		<script src="reveal.js/plugin/markdown/markdown.js"></script>
@@ -164,6 +753,21 @@ PREFIX schema: &lt;http://schema.org/></code></pre>
                 document.getElementById('footer').style="display:none";
         }
         </script>
+
+				<script>
+db = openDatabase("SQL", "1", "SQL", 5*1024*1024);
+
+db.transaction(function(tx) {
+	tx.executeSql("DROP TABLE IF EXISTS phd;");
+	tx.executeSql("create table phd (pid int primary key, name varchar(200), advisor int references phd(pid), year int);");
+	tx.executeSql("insert into phd values (1, 'Leonard Euler', NULL, NULL);");
+	tx.executeSql("insert into phd values (2, 'Joseph Louis Lagrange', 1, NULL);");
+	tx.executeSql("insert into phd values (3, 'Johann Hennert', 1, 1766);");
+	tx.executeSql("insert into phd values (4, 'Jean-Baptiste Joseph Fourier', 2, NULL);");
+	tx.executeSql("insert into phd values (5, 'Siméon Poisson', 2, 1800);");
+	
+});
+</script>
 
 
 	</body>

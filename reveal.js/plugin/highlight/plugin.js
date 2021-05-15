@@ -63,6 +63,8 @@ const Plugin = {
 				Plugin.highlightBlock( block );
 			}
 
+			hljs.registerLanguage("sparql",function(e){var t=e.getLanguage("ttl").exports,r={keyword:"base|10 prefix|10 @base|10 @prefix|10 add all as|0 ask bind by|0 clear construct|10 copymove create data default define delete describe distinct drop exists filter from|0 graph|10 group having in|0 insert limit load minus named|10 not offset optional order reduced select|0 service silent to union using values where with|0","function":"abs asc avg bound ceil coalesce concat containsstrbefore count dayhours desc encode_for_uri floor group_concat if|0 iri isblank isiri isliteral isnumeric isuri langdatatype langmatches lcase max md5 min|0 minutes month now rand regex replace round sameterm sample seconds separator sha1 sha256 sha384 sha512 str strafter strdt strends strlang strlen strstarts struuid substr sum then timezone tz ucase uribnode uuid year",literal:"true|0 false|0",built_in:"a|0"},a={cN:"variable",b:"[?$]"+e.IR,r:0},n={b:/"""\s*\{/,e:/"""/,sL:"json",eB:!0,eE:!0,r:0},i={b:/'''\s*\{/,e:/'''/,sL:"json",eB:!0,eE:!0,r:0};return{cI:!0,k:r,aliases:["rql","rq","ru"],c:[t.LANGTAG,t.DATATYPE,t.IRI_LITERAL,t.BLANK_NODE,t.PNAME,a,n,i,t.TRIPLE_QUOTE_STRING,t.TRIPLE_APOS_STRING,t.QUOTE_STRING_LITERAL,t.APOS_STRING_LITERAL,t.NUMBER,e.HCM]}})
+
 		} );
 
 		// If we're printing to PDF, scroll the code highlights of
