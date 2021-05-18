@@ -48,7 +48,7 @@
 				<h4>Ontologies</h4>
 				<p class="small">Metadata to describe concepts, relationships<br>and categories of things.</p>
 				<p class="small">Example: https://schema.org/Game</p>
-				<img style="position: relative; height: 12cm; margin-top: -5cm; margin-right: -14cm; z-index: -999" uml="class Thing {
+				<img style="position: relative; height: 12cm; margin-top: -6cm; margin-right: -14cm; z-index: -999" uml="class Thing {
 					name : Text
 					...
 				}
@@ -83,6 +83,9 @@
 				Thing <|-- Person
 				Thing <|-- Organization
 				"/>
+
+				<aside class="notes">While classical web site are made for humans, the idea behind the semantic web is to make information on web documents available for machines as a Giant Global Graph. Standardized data models (RDF) and standardized ontology languages help integrating and understanding data. Ontologies describe a network of how things relate to each other.</aside>
+			
 			</section>
 
 			<section>
@@ -98,7 +101,7 @@
  It was invented in 1957.&lt;/p>
 &lt;/div>&lt;/body>&lt;/html></code></pre>
 <p class="small fragment" data-fragment-index="1">Semantic web site:</p>
-				<pre class="fragment" data-fragment-index="1"><code class="html">&lt;html>&lt;body>&lt;div vocab="http://schema.org/" typeof="Person">
+				<pre class="fragment" data-fragment-index="1"><code class="html">&lt;html>&lt;body>&lt;div vocab="http://schema.org/" typeof="Game">
  &lt;h1 property="name">Risk (game)&lt;/h1>
  &lt;p>Risk is a board game by 
   &lt;span property="publisher" typeof="Organization" 
@@ -106,6 +109,51 @@
   It was invented in &lt;span property="datePublished">1957&lt;/span>
  .&lt;/p>
 &lt;/div>&lt;/body>&lt;/html></code></pre>
+
+			<aside class="notes">Humans know the context when reading a text. Annotating web sites helps machines to understand the content. Here, we describe a little graph using RDFa syntax and a schema.org vocabulary.</aside>
+			</section>
+
+			<section>
+				<h3>Graph</h3>
+				<img style="width:80%;" uml='skinparam roundCorner 25
+
+object "http://example.com/Risk_(game)" as risk {
+}
+
+object "Risk (Game)" as risk_name {
+}
+
+object "yago:Hasbro" as hasbro {
+}
+
+object "1957" as y57 {
+}
+
+risk --> risk_name : schema:name
+risk --> hasbro : schema:publisher
+risk --> y57 : schema:datePublished
+'>
+
+<h4>Resources</h4>
+<p class="small">A resource is a thing or predicate with a unique resource identifier (URI).</p>
+
+<div class="poll fragment" style="bottom:-170px">
+	<h1>How many resources are in this graph?</h1>
+			<ul>
+					<li>1</li>
+					<li>2</li>
+					<li>3</li>
+					<li>4</li>
+					<li data-poll="correct">5</li>
+					<li>6</li>
+					<li>7</li>
+			</ul>
+	<h2>https://fraage.de</h2>
+</div>
+
+<aside class="notes">In this example graph, there are the five resources <code>http://example.com/Risk_(game)</code>, <code>yago:Hasbro</code>, <code>schema:name</code>, <code>schema:publisher</code>, and <code>schema:datePublished</code>. The prefix <code>yago:</code> is resolved to <code>http://yago-knowledge.org/resource/</code> and <code>schema:</code> is resolved to <code>http://schema.org/</code>.<br>
+<code>Risk(game)</code> and <code>1957</code> are no resources but literals.</aside>
+	</section>
 			</section>
 								
 			<section>
@@ -114,14 +162,14 @@
 				<h4>Triplets</h4>
 				<ul class="small">
 					<li>subject: resource URI</li>
-					<li>predicate: URI</li>
+					<li>predicate: resource URI</li>
 					<li>object: resource URI or literal value</li>
 				</ul>
 				<table style="margin-top: 3mm; font-size: 18pt;">
 					<tr><th>subject</th><th>predicate</th><th>object</th></tr>
 					<tr><td>http://yago-knowledge.org/<br>resource/Risk_(game)</td><td>https://www.w3.org/1999/02/<br>22-rdf-syntax-ns#type</td><td>https://schema.org/Game</td></tr>
 					<tr><td>http://yago-knowledge.org/<br>resource/Risk_(game)</td><td>https://schema.org/publisher</td><td>http://yago-knowledge.org/<br>resource/Hasbro</td></tr>
-					<tr><td>http://yago-knowledge.org/<br>resource/Risk_(game)</td><td>https://www.w3.org/2000/01/<br>rdf-schema#comment</td><td>"Board game"</td></tr>
+					<tr><td>http://yago-knowledge.org/<br>resource/Risk_(game)</td><td>https://schema.org/<br>datePublished</td><td>"1957"^^&lt;https://www.w3<br>.org/2001/XMLSchema#:gYear></td></tr>
 				</table>
 				<aside class="notes">RDF uses uniform resource identifiers (URI) to denote resources and predicates. A predicate describes aspects of a resource and the relationship between two resources. A collection of RDF statements represent a labeled, directed graph with resources as its nodes and predicates being the edges.</aside>
 			</section>
@@ -129,14 +177,17 @@
 			<section>
 				<h3>Prefix Declarations</h3>
 				<p class="small">Prefixes can be introduced to abbreviate URIs</p>
-				<pre><code class="sql">PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+				<pre><code class="sparql" contenteditable>PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#>
-PREFIX schema: &lt;http://schema.org/></code></pre>
+PREFIX schema: &lt;http://schema.org/>
+PREFIX xsd: &lt;https://www.w3.org/2001/XMLSchema#>
+PREFIX yago: &lt;http://yago-knowledge.org/resource/></code></pre>
 <table style="margin-top: 3mm; font-size: 18pt;">
 	<tr><th>subject</th><th>predicate</th><th>object</th></tr>
-	<tr><td>http://yago-knowledge.org/<br>resource/Risk_(game)</td><td>rdf:type</td><td>https://schema.org/Game</td></tr>
-	<tr><td>http://yago-knowledge.org/<br>resource/Risk_(game)</td><td>schema:publisher</td><td>http://yago-knowledge.org/<br>resource/Hasbro</td></tr>
-	<tr><td>http://yago-knowledge.org/<br>resource/Risk_(game)</td><td>rdfs:comment</td><td>"Board game"</td></tr>
+	<tr><td>yago:Risk_(game)</td><td>rdf:type</td><td>schema:Game</td></tr>
+	<tr><td>yago:Risk_(game)</td><td>schema:publisher</td><td>yago:Hasbro</td></tr>
+	<tr><td>yago:Risk_(game)</td><td>schema:datePublished</td><td>"1957"^^xsd:gYear</td></tr>
+	<tr><td>yago:Risk_(game)</td><td>rdfs:comment</td><td>"Board game"</td></tr>
 </table>
 			</section>
 
@@ -152,13 +203,12 @@ PREFIX schema: &lt;http://schema.org/></code></pre>
 					<li class="fragment" data-fragment-index="1"><a href="https://yago-knowledge.org" target="_blank">Yago</a> (Yet Another Great Ontology)
 						<ul>
 							<li>data automatically extracted from Wikipedia and other sources</li>
-							<li>10 million entities + 120 million facts about them</li>
+							<li>2 billion RDF triplets, 64 million entities (as of 2020)</li>
 							<li>accuracy: ~95%</li>
 						</ul>
 					</li>
-					<li class="fragment"><a href="https://www.dbpedia.org/" target="_blank">DBpeadia</a> <ul>
-						<li>also extracted from Wikipedia (infoboxes)</li>
-						<li>6 million entities: people, places, music albums, movies, games, ...</li>
+					<li class="fragment"><a href="https://www.dbpedia.org/" target="_blank">DBpeadia</a>, <a href="https://www.wikidata.org/" target="_blank">Wikidata</a>, <a href="https://babelnet.org/" target="_blank">BabelNet</a>, ... <ul>
+						<li>millions of entities: people, places, music albums, movies, games, ...</li>
 					</ul></li>
 				</ul>
 				<div class="fragment">
@@ -167,6 +217,8 @@ PREFIX schema: &lt;http://schema.org/></code></pre>
 					<tr><th>subject</th><th>predicate</th><th>object</th></tr>
 					<tr><td>yago:Risk_(game)</td><td>owl:sameAs</td><td>dbpedia:Risk_(game)</td></tr>
 					</table></div>
+
+					<aside class="notes">As lots of information in the web is present just in form of unstructured data (e.g. Wikipedia articles), projects like Yago or DBpedia extract this information (e.g., from Wikipedia infoboxes) and generate a large machine-readable data graph.</aside>
 			</section>
 
 			<section>
@@ -193,7 +245,7 @@ PREFIX schema: &lt;http://schema.org/></code></pre>
 				<h2>SPARQL</h2>
 				<p><b>S</b>PARQL <b>P</b>rotocol <b>a</b>nd <b>R</b>DF <b>Q</b>uery <b>L</b>anguage</p>
 
-				<pre><code class="sparql">PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+				<pre><code class="sparql" contenteditable>PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#>
 PREFIX schema: &lt;http://schema.org/>
 PREFIX yago: &lt;http://yago-knowledge.org/resource/>
@@ -204,27 +256,44 @@ SELECT ?year WHERE {
 
 <span data-sql-query="select 1957 as year"></span>
 
+<aside class="notes">SPARQL is a graph-based query language for querying RDF data. Its syntax is inspired by SQL (SELECT, WHERE, ORDER BY, GROUP BY, ...). The WHERE clause consists of subject-predicate-object triplets. In all three parts, variables can be used. Variables in SPARQL start with a <code>?</code></aside>
+
 </section>
 
 <section>
 	<h3>Exploring Yago</h3>
-	<p class="small">Find everything</p>
-	<pre><code class="sparql">SELECT ?subject ?predicate ?object WHERE { 
+	<p class="small" style="margin-bottom: -3mm;">Find everything</p>
+	<pre><code class="sparql" contenteditable>SELECT ?subject ?predicate ?object WHERE { 
  ?subject ?predicate ?object 
 } 
 LIMIT 50</code></pre>
 
-<p class="small">Find cities</p>
-<pre class="fragment"><code class="sparql">SELECT ?subject ?predicate ?object WHERE { 
+<div class="fragment">
+<p class="small" style="margin-bottom: -3mm;">Find cities</p>
+<pre><code class="sparql" contenteditable>SELECT ?subject ?predicate ?object WHERE { 
  ?subject rdf:type schema:City.
  ?subject ?predicate ?object 
 } 
 LIMIT 50</code></pre>
- <pre class="fragment"><code class="sparql">SELECT * WHERE { 
+</div>
+ <pre class="fragment"><code class="sparql" contenteditable>SELECT * WHERE { 
  ?subject a schema:City.
  ?subject ?predicate ?object 
 } 
 LIMIT 50</code></pre>
+
+<div class="poll fragment" style="bottom:-50px">
+	<h1>SELECT * WHERE { ?p a schema:Person. ?c a schema:City } is ...?</h1>
+			<ul>
+					<li>an erroneous query</li>
+					<li>a join</li>
+					<li>a union</li>
+					<li data-poll="correct">a cross product</li>
+			</ul>
+	<h2>https://fraage.de</h2>
+</div>
+
+<aside class="notes">The first query on this slide finds 50 RDF triplets. <code>SELECT *</code> is an abbreviation for all variables that were introduced. The keyword <code>a</code> is an abbreviation for <code>rdf:type</code>. Mutlple triplets are separated by a dot<code>.</code></aside>
 </section>
 
 <section>
@@ -233,14 +302,14 @@ LIMIT 50</code></pre>
 		<code>;</code> separates two triplets that share the same subject</p>
 	</ul>
 	<p class="small">All board games from Hasbro</p>
-	<pre><code class="sparql">SELECT ?game WHERE {
+	<pre><code class="sparql" contenteditable>SELECT ?game WHERE {
  ?game rdf:type yago:Board_game.
  ?game schema:publisher yago:Hasbro
 } </code></pre>
 
 <div class="fragment">
 <p class="small">Firstnames and lastnames of people born on the same day as Paul McCartney</p>
-<pre><code class="sparql">SELECT ?firstname ?lastname WHERE {
+<pre><code class="sparql" contenteditable>SELECT ?firstname ?lastname WHERE {
  yago:Paul_McCartney schema:birthDate ?birthday.
  ?p rdf:type schema:Person;
     schema:birthDate ?birthday;
@@ -248,22 +317,34 @@ LIMIT 50</code></pre>
     schema:familyName ?lastname.
 }
 ORDER BY ?lastname</code></pre></div>
+
+<div class="poll fragment" style="bottom:-20px">
+	<h1>Use the ; notation for the first query</h1>
+			<ul>
+					<li data-poll="correct">?game a yago:Board_game; schema:publisher yago:Hasbro</li>
+					<li>?game a yago:Board_game. schema:publisher yago:Hasbro</li>
+					<li>?game a yago:Board_game; ?game schema:publisher yago:Hasbro</li>
+					<li>?game a yago:Board_game. ?game schema:publisher yago:Hasbro</li>
+			</ul>
+	<h2>https://fraage.de</h2>
+</div>
 </section>
 
 <section>
 	<h3>SPARQL: FILTER</h3>
 	<p class="small">All people born in the 1960s:</p>
-<pre><code class="sparql">SELECT ?p ?birthday WHERE {
+<pre><code class="sparql" contenteditable>SELECT ?p ?birthday WHERE {
  ?p rdf:type schema:Person.
  ?p schema:birthDate ?birthday
  FILTER (?birthday >= "1960-01-01"^^xsd:date 
       && ?birthday <= "1960-12-31"^^xsd:date) .
 }</code></pre>
+<aside class="notes">The FILTER predicate is used for predicates on variables that are no subject-predicate-object triplets. Here, binary operators and comparison operators can be used.</aside>
 </section>
 
 <section>
 	<h3>SPARQL: GROUP BY</h3>
-<pre><code class="sparql">SELECT ?birthplace (COUNT(*) AS ?num_people) WHERE {
+<pre><code class="sparql" contenteditable>SELECT ?birthplace (COUNT(*) AS ?num_people) WHERE {
  ?p a schema:Person.
  ?p schema:birthPlace ?birthplace
 }
@@ -277,18 +358,19 @@ LIMIT 100</code></pre>
 		<tr><td>yago:Paris</td><td>20167</td></tr>
 		<tr><td>...</td><td>...</td></tr>
 	</table>
+	<aside class="notes">The usage of GROUP BY is similar to SQL. In the GROUP BY clause, one or more variables define the grouping criterion. These variables can be used in the SELECT clause, all others must only appear in aggregation functions like SUM, MIN, MAX, AVG, COUNT, ...</aside>
 </section> 
 
 	<section>
 		<h3>Graph Traversal</h3>
 		<p class="small">In which cities were people born that acted in the same movie as Michael J. Fox?</p>
-		<pre><code class="sparql">SELECT DISTINCT ?birthplace WHERE {
+		<pre><code class="sparql" contenteditable>SELECT DISTINCT ?birthplace WHERE {
  ?movie schema:actor yago:Michael_J._Fox.
  ?movie schema:actor ?actor.
  ?actor schema:birthPlace ?birthplace
 }</code></pre>
 
-<img style="width:40%;" uml='skinparam roundCorner 25
+<img style="width:40%; margin-top: -5mm;" uml='skinparam roundCorner 25
 
 object "?movie" as movie {
 }
@@ -306,6 +388,8 @@ movie --> fox : schema:actor
 movie --> actor : schema:actor
 actor --> birthplace : schema:birthPlace
 '>
+
+<aside class="notes">Within the WHERE clause, the same variables are used in multiple triplets. This allows to traverse the graph node by node over the edges. In this example, we start at the node about Michael J. Fox, find all movies in which he acted, then find all other actors of those movies and finally, their birth places.</aside>
 	</section>
 	
 	<section>
@@ -350,6 +434,7 @@ v2,v3,v4</code></pre>
 0,0,0,0</code></pre>
 </div>
 </div>
+<aside class="notes">Graphs in general are a set of vertices plus a set of edges that connect two vertices with each other. Two typical representations of graphs - also often used to store a graph within CSV files - are adjacency lists and adjacency matrices. Adjacency list store for each vertex its neighbors via outgoing edges. This is very compact if there are only a few edges. In this case, the adjacency matrix would be very sparse (i.e., many zeros). A 1 in row i and column j in the adjacency matrix means that there is an edge from node $v_i$ to $v_j$.</aside>
 	</section>
 
 	<section>
@@ -394,6 +479,31 @@ v2,v3,v4</code></pre>
 					</table>
 			</div>
 		</div>
+
+		<div class="fragment">
+			<p class="small">Which nodes have an outgoing edge to one of those nodes where v2 has an outgoing edge to?</p>
+			<pre><code class="sql" contenteditable>SELECT DISTINCT vx.source FROM edges v2, vx 
+WHERE vx.target = v2.target AND v2.source = 'v2'</code></pre>
+		</div>
+
+		<div class="poll fragment" style="bottom:-110px">
+			<h1>What's the result of this query?</h1>
+					<ul>
+							<li>empty result</li>
+							<li>v1</li>
+							<li>v2</li>
+							<li>v3</li>
+							<li>v4</li>
+							<li data-poll="correct">v1, v2</li>
+							<li>v1, v3</li>
+							<li>v1, v4</li>
+							<li>v1, v2, v3</li>
+							<li>v1, v2, v4</li>
+					</ul>
+			<h2>https://fraage.de</h2>
+		</div>
+
+		<aside class="notes">In a relational database, we can store vertices and edges in two separate tables. Instead of a unique edge id (here: eid), it is also possible to omit this column and use (soruce, target) as the primary key. Graph queries in SQL typically need a lot of joins between the vertex and edge tables.</aside>
 	</section>
 
 	<section>
@@ -432,6 +542,8 @@ peter -> jane : friend\nsince = 2021-05-04
 					</table>
 </div>
 </div>
+
+<aside class="notes">In a property graph, vertices and edges have a label and a set of properties. In this example, we create a table for each vertex label (people table), and a table for each edge label (friends). Other modelling alternatives can be found on the next slide. The people table is the vertex table plus two columns for two properties. friends is the edge table with a column of type JSON to store arbitrary edge properties.</aside>
 	</section>
 
 	<section>
@@ -459,17 +571,30 @@ p1 -[hidden]-> m1
 		<p class="small">Modelling alternatives for vertex / edge labels:</p>
 		<ul>
 			<li class="fragment">One table for each label
-				<p class="small">People (<u>pid</u>, name, city)<br>
+				<p class="small" style="margin-top: 0mm;">People (<u>pid</u>, name, city)<br>
 				Messages (<u>mid</u>, txt, timestamp)</p>
 			</li>
 			<li class="fragment">
 				Label column
-				<p class="small">Vertices (<u>vid</u>, label, name, city, txt, timestamp)
+				<p class="small" style="margin-top: 0mm;">Vertices (<u>vid</u>, label, name, city, txt, timestamp)
 			</li>
 			<li class="fragment">Labels table
-			<p class="small">Vertices (<u>vid</u>, name, city, txt, timestamp)<br>
+			<p class="small" style="margin-top: 0mm;">Vertices (<u>vid</u>, name, city, txt, timestamp)<br>
 				Labels(<u>vid, label</u>)</li>
 		</ul>
+
+		<div class="poll fragment" style="bottom:-150px">
+			<h1>What's possible in the labels-table approach and not in the label-column approach?</h1>
+					<ul>
+							<li>vertices without labels</li>
+							<li data-poll="correct">vertices with multiple labels</li>
+							<li>multiple vertices with the same label</li>
+							<li>it's the same</li>
+					</ul>
+			<h2>https://fraage.de</h2>
+		</div>
+
+		<aside class="notes">The second and third approach is more flexible. New vertices with new labels can simply be inserted without creating a new table. But as these approaches lead to more complex and worse-understandable queries, the one-table-for-each-label approach is mostly used. The third approach allows vertices having multiple labels (e.g. person and student). The same three approaches can be used for edge labels, too.</aside>
 	</section>
 
 	<section>
@@ -496,17 +621,20 @@ p1 -[hidden]-> m1
 		<p class="small">Modelling alternatives for vertex / edge properties:</p>
 		<ul>
 			<li class="fragment">One column for each property
-				<p class="small">Vertices (<u>vid</u>, label, name, city, txt, timestamp)<br>
+				<p class="small" style="margin-top: 0mm;">Vertices (<u>vid</u>, label, name, city, txt, timestamp)<br>
 			</li>
 			<li class="fragment">
 				Properties column (JSON / XML / ...) 
-				<p class="small">Vertices (<u>vid</u>, properties)
+				<p class="small" style="margin-top: 0mm;">Vertices (<u>vid</u>, properties)
 			</li>
 			<li class="fragment">Properties table
-			<p class="small">Vertices (<u>vid</u>)<br>
+			<p class="small" style="margin-top: 0mm;">Vertices (<u>vid</u>)<br>
 				Properties(<u>vid, property</u>, value)</li>
 		</ul>
-		<p class="small fragment">Combinations are possible.</p>
+		<p class="small fragment" style="margin-top: -3mm;">Combinations are possible.</p>
+
+		<aside class="notes">Alternative two and three is very flexible and allows using arbitrary properties. A problem of approach three is the data type of the value column. As different properties use different data types, a common type must be found, e.g. storing everything as a VARCHAR(2000000).<br>
+			Another approach is combining two modelling alternatives, e.g. one and two: Important properties like name and timestamp become individual columns, all other properties are stored in a JSON column.</aside>
 	</section>
 
 	<section>
@@ -516,7 +644,7 @@ p1 -[hidden]-> m1
 
 		<div class="columns">
 			<div><span data-sql-query="SELECT * FROM phd" data-sql-pk="pid" style="font-size: 90%;"></span></div>
-			<div><img style="height: 9cm;" uml='skinparam roundCorner 25
+			<div><img style="height: 9cm; margin-top: -8mm; z-index: -999; position: relative;" uml='skinparam roundCorner 25
 
 				object ":person" as p1 {
 					pid = 1
@@ -551,6 +679,18 @@ p1 -[hidden]-> m1
 		</div>
 		<p style="margin-top:-5mm" class="small">Sources: <a href="https://genealogy.math.ndsu.nodak.edu/">https://genealogy.math.ndsu.nodak.edu/</a> and <a href="https://academictree.org/">https://academictree.org/</a></p>
 
+		<div class="poll fragment" style="bottom:-120px">
+			<h1>What's the name of Siméon Poisson's doctor mother / doctor father?</h1>
+					<ul>
+							<li>SELECT p1.name FROM phd p1 JOIN phd p2 ON p1.advisor = p2.pid AND p1.name = 'Siméon Poisson';</li>
+							<li>SELECT p1.name FROM phd p1 JOIN phd p2 ON p1.pid = p2.advisor AND p1.name = 'Siméon Poisson';</li>
+							<li data-poll="correct">SELECT p2.name FROM phd p1 JOIN phd p2 ON p1.advisor = p2.pid AND p1.name = 'Siméon Poisson';</li>
+							<li>SELECT p2.name FROM phd p1 JOIN phd p2 ON p1.pid = p2.advisor AND p1.name = 'Siméon Poisson';</li>
+					</ul>
+			<h2>https://fraage.de</h2>
+		</div>
+
+		<aside class="notes">When a graph forms a tree, there is often no need for an edge table. In this example, every person has at most one doctor mother or doctor father. So we can directly store the pid of a person's advisor in the advisor column. The edge property &quot;year&quot; becomes another column.</aside>
 	</section>
 
 	<section>
@@ -558,17 +698,20 @@ p1 -[hidden]-> m1
 		<span data-sql-query="SELECT * FROM phd WHERE pid" data-sql-pk="pid"></span>
 
 <p class="small">What's the name of Siméon Poisson's doctor mother / doctor father?</p>
-			<pre><code class="sql">SELECT p2.name FROM phd p1 JOIN phd p2 ON p1.advisor = p2.pid
+
+<pre><code class="sql" contenteditable>SELECT p2.name FROM phd p1 JOIN phd p2 ON p1.advisor = p2.pid
 AND p1.name = 'Siméon Poisson';</code></pre>
 			<span class="sqlresult"></span>
 		
+		
+			<aside class="notes">Typical for graph queries in SQL is that the same table is used in the FROM clause multiple times. Each join between two times the vetex table (here: phd) is one hop to a neighbor node.</aside>
 	</section>
 
 	<section>
 		<h3>Graph queries in SQL</h3>
 
 <p class="small">How many students does every advisor have?</p>
-			<pre><code class="sql">SELECT advisor.name, COUNT(student.pid) AS num_students
+			<pre><code class="sql" contenteditable>SELECT advisor.name, COUNT(student.pid) AS num_students
 FROM phd advisor LEFT JOIN phd student 
   ON advisor.pid = student.advisor
 GROUP BY advisor.name;</code></pre>
@@ -577,33 +720,37 @@ GROUP BY advisor.name;</code></pre>
 
 			<p class="small">But these are only their direct students.</p>
 		
+			<aside class="notes">Again, we use the phd table twice in the FROM clause to find all advisors of all students. Afterwards, we group by the advisor to count the number of their students.</aside>
 	</section>
 
 	<section>
 		<h3>CTE - Common Table Expressions</h3>
 <h4>WITH ... AS (SELECT ...) SELECT ...</h4>
-<pre><code class="sql">WITH advisors AS 
+<pre><code class="sql" contenteditable>WITH advisors AS 
 (SELECT pid, advisor FROM phd WHERE advisor IS NOT NULL)
 SELECT * FROM advisors;
 </code></pre>	
 <span class="sqlresult"></span>
+
+<aside class="notes">With classical SQL, we need to manually join each hop individually up to a desired depth. Without recursive SQL, it is not possible to compute the transitive closure (the advisor of the advisor of the advisor ...). Recursive queries is an extension of the CTE feature in SQL. The CTE on this slide simply find all pids and the pids of their advisor of those students who have a doctor mother or doctor father.</aside>
 	</section>
 
 	<section>
 		<h3>CTE - Common Table Expressions</h3>
-<h4>WITH ... AS (SELECT ...) SELECT ...</h4>
-<pre><code class="sql">WITH advisors AS (SELECT pid, advisor FROM phd 
+<pre><code class="sql" contenteditable>WITH advisors AS (SELECT pid, advisor FROM phd 
                               WHERE advisor IS NOT NULL), 
 advisors2 AS (SELECT c.pid, a.advisor FROM phd c JOIN phd a 
               ON c.advisor = a.pid WHERE a.advisor IS NOT NULL)
 SELECT * FROM advisors UNION ALL SELECT * FROM advisors2;
 </code></pre>	
 <span class="sqlresult"></span>
+
+<aside class="notes">As a next step, we introduce one additional hop. The first CTE finds all people and their direct advisor (see previous slide), and the second CTE <code>advisors2</code> finds a pid and the advisor of their advisor. In the result, we find two new rows: (4,1) and (5,1) indicating that person 1 has people 4 and 5 as an indirect student.</aside>
 	</section>
 
 	<section>
 		<h3>Recursive Queries</h3>
-		<pre><code class="sql">WITH RECURSIVE phd_closure AS (
+		<pre><code class="sql" contenteditable>WITH RECURSIVE phd_closure AS (
  SELECT pid, advisor FROM phd WHERE advisor IS NOT NULL
  UNION ALL
  SELECT c.pid, a.advisor FROM phd_closure c 
@@ -617,29 +764,44 @@ SELECT c.pid, a.advisor FROM phd c JOIN phd a ON c.advisor = a.pid WHERE a.advis
 )
 SELECT * FROM phd_closure;"></span>
 
+<div class="poll fragment" style="bottom:-70px">
+	<h1>In line 5, what if we would not write WHERE a.advisor IS NOT NULL?</h1>
+			<ul>
+					<li>The recursion would never end</li>
+					<li data-poll="correct">There would be some additional rows with the advisor NULL</li>
+					<li>The result would be empty</li>
+					<li>It would not change anything</li>
+			</ul>
+	<h2>https://fraage.de</h2>
+</div>
+
+<aside class="notes">This query finds the transitive closure: all descendants of every advisor. For this example graph, the result is the same as on the previous slide because the hight of our tree is just 2. But in general, this query finds all direct and indirect advisors up to the roots of the forest.<br>
+<code>WITH RECURSIVE</code> indicates that we have a recursive SQL query. Within the CTE's FROM clause, we use the CTE itself. The CTE consists of two parts combined by <code>UNION ALL</code>. The part before the union, we compute the starting set. Here, we find all people who have an advisor. Let's call this set &quot;phd_closure&quot;. After the union, we join phd_closure and the original phd table to find all advisors of those people in the set &quot;phd_closure&quot;. As a result, they are added to the set and in the next iteration their advisors are found.<br>
+It is important that a recursive query must terminate. For our query, this is the case, because there are no cycles, and we stop for those people who's advisor is NULL. But even without this IS NOT NULL predicate, the recursion would stop, because these rows would not find a join partner in the next iteration.</aside>
 	</section>
 
 	<section>
 		<h3>Recursive Queries</h3>
-		<pre><code class="sql">WITH RECURSIVE phd_closure AS (
- SELECT pid, advisor, ''||advisor as advisors FROM phd WHERE advisor IS NOT NULL
+		<pre><code class="sql" contenteditable>WITH RECURSIVE phd_closure AS (
+ SELECT pid, advisor, 1 AS level, ''||advisor as advisors 
+ FROM phd WHERE advisor IS NOT NULL
  UNION ALL
- SELECT c.pid, a.advisor, c.advisors||'->'||a.advisor FROM phd_closure c 
+ SELECT c.pid, a.advisor, c.level+1, c.advisors||'->'||a.advisor 
+ FROM phd_closure c 
  JOIN phd a ON c.advisor = a.pid WHERE a.advisor IS NOT NULL
 )
 SELECT * FROM phd_closure;</code></pre>	
 			<span data-sql-query="WITH phd_closure AS (
-SELECT pid, advisor, ''|advisor as advisors FROM phd WHERE advisor IS NOT NULL
+SELECT pid, advisor, 1 as level, ''|advisor as advisors FROM phd WHERE advisor IS NOT NULL
 UNION ALL
-SELECT c.pid, a.advisor, c.advisor||'->'||a.advisor FROM phd c JOIN phd a ON c.advisor = a.pid WHERE a.advisor IS NOT NULL
+SELECT c.pid, a.advisor, 2, c.advisor||'->'||a.advisor FROM phd c JOIN phd a ON c.advisor = a.pid WHERE a.advisor IS NOT NULL
 )
 SELECT * FROM phd_closure;"></span>
-
 	</section>
 
 	<section>
 		<h3>Recursive Queries</h3>
-		<pre><code class="sql">WITH RECURSIVE phd_closure AS (
+		<pre><code class="sql" contenteditable>WITH RECURSIVE phd_closure AS (
  SELECT pid, advisor FROM phd WHERE advisor IS NOT NULL
  UNION ALL
  SELECT c.pid, a.advisor FROM phd_closure c 
@@ -655,12 +817,13 @@ SELECT c.pid, a.advisor FROM phd c JOIN phd a ON c.advisor = a.pid WHERE a.advis
 )
 SELECT advisor, count(*) FROM phd_closure GROUP BY advisor;"></span>
 
+<aside class="notes">On the previous slides, we simply wrote <code>SELECT * FRO phd_closure</code> to output the full closure. Now we continue by using the closure as the input for a GROUP BY query. We compute the total number of direct and indirect students for each person.</aside>
 	</section>
 
 	<section>
 		<h3>CONNECT BY</h3>
 		<p class="small">Recursive queries in Oracle</p>
-		<pre><code class="sql">SELECT pid, CONNECT_BY_ROOT advisor as advisor
+		<pre><code class="sql" contenteditable>SELECT pid, CONNECT_BY_ROOT advisor as advisor
 FROM phd CONNECT BY PRIOR pid = advisor;</code></pre>
 
 <table class="small">
@@ -676,17 +839,15 @@ FROM phd CONNECT BY PRIOR pid = advisor;</code></pre>
 
 	<section>
 		<h3>CONNECT BY</h3>
-		<table class="small">
-			<tr><td style="width:9cm"><code>START WITH cond</code></td><td>specifies the set of root nodes</td></tr>
-			<tr></tr>
-			</table>
+
+			<p class="small"><code>START WITH cond</code>: specifies the set of root nodes</p>
 		
-		<pre><code class="sql">SELECT pid, CONNECT_BY_ROOT advisor as advisor, 
+		<pre><code class="sql" contenteditable>SELECT pid, CONNECT_BY_ROOT advisor as advisor, 
 LEVEL, CONNECT_BY_ISLEAF, SYS_CONNECT_BY_PATH(pid, ' -> ')
 FROM phd CONNECT BY PRIOR pid = advisor 
 START WITH pid = 1;</code></pre>
 
-<table style="font-size:0.7em">
+<table style="font-size:0.7em;">
 	<tr><th style="padding-top:0px;">pid</th><th>advisor</th><th>LEVEL</th><th>CONNECT_BY_ISLEAF</th><th>SYS_CONNECT_BY_PATH</th></tr>
 	<tr><td>1</td><td>1</td><td>1</td><td>0</td><td>-> 1</td></tr>
 	<tr><td>2</td><td>1</td><td>2</td><td>0</td><td>-> 1 -> 2</td></tr>
@@ -695,6 +856,9 @@ START WITH pid = 1;</code></pre>
 	<tr><td>3</td><td>1</td><td>2</td><td>1</td><td>-> 1 -> 3</td></tr>
 </table>
 
+<aside class="notes">Oracle does not support <code>WITH RECURIVE</code>. They introduced their own operator <code>CONNECT BY</code> which works similar to <code>JOIN ON</code>, but it recursively joins again and again. We use the phd table only once, but we refer to the parent node via the keyword <code>PRIOR</code>. Mind that we traverse the trees from the root to the leaves. In the <code>WITH RECURSIVE</code> examples, we did it the other way around.</aside>
+
+
 	</section>
 
 	<section>
@@ -702,7 +866,7 @@ START WITH pid = 1;</code></pre>
 
 		<p class="small">How many descendants (doctor children, grandchildren, grandgrandchildren, ...) does every advisor have?</p>
 
-<pre><code class="sql">WITH phd_closure AS (
+<pre><code class="sql" contenteditable>WITH phd_closure AS (
  SELECT pid, CONNECT_BY_ROOT advisor as advisor
  FROM phd CONNECT BY PRIOR pid = advisor)
 SELECT advisor, count(*) FROM phd_closure 
@@ -714,6 +878,8 @@ UNION ALL
 SELECT c.pid, a.advisor FROM phd c JOIN phd a ON c.advisor = a.pid WHERE a.advisor IS NOT NULL
 )
 SELECT advisor, count(*) FROM phd_closure GROUP BY advisor;"></span>
+
+<aside class="notes">After we computed the transitive closure, we can again use a CTE or subquery to compute the number of direct an indirect students for every advisor.</aside>
 
 <p class="small">Try out at <a href="https://dbfiddle.uk/?rdbms=oracle_18&fiddle=d73a042538be90f2858e2d7aec7a8f38" target="_blank">http://bit.ly/oconnectby</a></p>
 	</section>

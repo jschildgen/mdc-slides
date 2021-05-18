@@ -124,7 +124,7 @@ function execute_query(query, res_element, pk=[], tablename = null) {
     db.transaction(function(tx) {
         tx.executeSql(query, [], function(tx, results) {
             if(results.rows.length == 0) { // empty result set
-                res_element.innerHTML = '- leere Ergebnismenge -';
+                res_element.innerHTML = '- empty result set -';
                 return;
             }
 
