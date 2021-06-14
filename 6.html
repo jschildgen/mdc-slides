@@ -1,0 +1,282 @@
+<!--    <p>The NoSQL key-value store Redis is extremely fast. This is because of two reasons: Firstly, Redis is a in-memory database, and secondly, Redis optimizes the storage of the values of Redis data types to allow efficient queries on it. When you take a look in the Redis documentation, you will see that many operations are executed in O(1). That's in constant time, independent of the database size!</p>
+-->
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>MDC - Chapter 6 - Spatial Data</title>
+
+		<link rel="stylesheet" href="reveal.js/dist/reset.css">
+		<link rel="stylesheet" href="reveal.js/dist/reveal.css">
+
+        <link rel="stylesheet" href="src/slides.css">
+        <link rel="stylesheet" href="src/sql.css">
+
+		<link rel="stylesheet" href="src/layout.css">
+        <link rel="stylesheet" href="lib/joint.min.css" />
+        <link rel="stylesheet" href="src/erd.css" />
+        <link rel="stylesheet" href="src/poll.css" />
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="src/rainbow.css">
+
+        <!--<script defer src="lib/fontawesome.all.min.js"/>-->
+        <link href="lib/fontawesome.all.min.css" rel="stylesheet">
+        <style> .reveal i.fa { font-family:FontAwesome; font-style: normal; } </style>
+	</head>
+	<body>
+		<div class="reveal">
+            <div id="header"></div>
+            <div id="footer"></div>
+			<div class="slides">
+                <section>
+                    <h4 style="text-align:center"><b>Prof. Dr.-Ing. Johannes Schildgen</b><br>
+                    <a href="mailto:johannes.schildgen@oth-regensburg.de">johannes.schildgen@oth-regensburg.de</a></h4>
+                    <h2>Modern Database Concepts</h2>
+                    <h4 style="text-align:center">&nbsp;</h4>
+                    <h3>Chapter 6: Spatial Data</h3>
+                    <h4 style="text-align:center">&nbsp;<br>&nbsp;</h4>
+                    <img src="img/ccby.png" height="60px" style="position: absolute; left:0px; border:0; bottom:-160px;">
+                    <img src="img/oth.png" height="60px" style="position: absolute; right:0px; border:0; bottom:-160px; box-shadow:none">
+                </section>
+
+			
+	<section>
+		<h2>Spatial Data</h2>
+		<div class="columns">
+			<div>
+				<h4>Representation of real-world objects</h4>
+				<i class="fas fa-globe-europe green" style="font-size: 4cm"></i>
+				<span class="red" style="position: absolute; left:6cm; top: 6.7cm">.</span>
+			</div>
+			<div class="fragment">
+				<h4>Geometric objects in Euclidean space</h4>
+				<i class="fas fa-vector-square green" style="font-size: 4cm"></i>
+			</div>
+		</div>
+
+		<div class="fragment" style="margin-top: 9mm;">
+			<h4>Geographic Information System (GIS)</h4>
+			<p class="small">A system for collecting, storing, analyzing and disseminating information about areas of the earth.</p>
+		</div>
+		<aside class="notes">Many applications store spatial data: maps, locations of customers / stores / app users / ..., integrated-circuit design, ... 
+		In general, this data is based on geometries: points, linestrings, polygons, etc. in an 2D or 3D Euclidean space. 
+	Traditional GIS are cartography, government, climatology applications. Business GIS consist of enterprise data with geospatial references (locations).</aside>
+	</section>
+
+	<section>
+		<h3>Coordinate Systems</h3>
+		<img src="img/6/latlon.png" alt="Latitude and Longitude" class="noborder" style="width: 6cm; position: absolute; right: 1cm;">
+
+		
+		<h4>Geographic</h4>
+		<p class="small">On surface of the earth: Latitude &Phi; and Longitude &lambda;<br>
+			Unit: degrees °</p>
+
+	<div class="fragment">
+		<h4>Projected</h4>
+		<p class="small">Projected to 2D space; many different projection algorithms</p>
+	</div>
+
+	<div class="fragment">
+		<h4>Abstract coordinate systems</h4>
+		<p class="small">Not related to Earth's surface (e.g., location on an image); 2D $(x,y)$ or 3D $(x,y,z)$</p>
+	</div>
+
+	<aside class="notes">Projection of spheroid coordinates onto another shape (e.g. cylinder) is required to construct 2D maps and simplifies computations. But projection also causes inaccuracies and other problems (e.g. scale distortion at the poles). This is why multiple coordinate reference systems exist. </aside>
+	</section>
+
+	<section>
+		<h3>Spatial Reference Systems</h3>
+		<p class="small">Local, regional or global system to locate geographical entities.</p>
+
+		<table class="small" style="width: 26cm;">
+			<tr><th>SRID</th><th>Spatial Reference System</th><th>Description</th></tr>
+			<tr><td>4326</td><td>WGS-84</td><td>World-wide; used by GPS, OpenStreetMap</td></tr>
+			<tr><td>31466</td><td>DHDN / Gauß-Krüger Zone 2</td><td>Germany (west of 7.5° E)</td></tr>
+			<tr><td>31467</td><td>DHDN / Gauß-Krüger Zone 3</td><td>Germany (between 7.5° E and 10.5° E)</td></tr>
+			<tr><td>31468</td><td>DHDN / Gauß-Krüger Zone 4</td><td>Germany (between 10.5° E and 13.5° E)</td></tr>
+			<tr><td>31469</td><td>DHDN / Gauß-Krüger Zone 5</td><td>Germany (between 13.5° E and 16.5° E)</td></tr>
+			<tr><td>3857</td><td>WGS 84 / Pseudo-Mercator</td><td>Used by Google Maps, OpenStreetMap, ...</td></tr>
+		</table>
+		<aside class="notes">There are a lot of different spatial reference systems. There are identified by an SRID (Spatial Reference Identifier). Often, coordinates have to be translated from one reference system into another.</aside>
+	</section>
+
+	<section>
+		<h3>SQL/MM Spatial</h3>
+		
+		<div class="columns">
+			<div>
+				<h4><code>GEOMETRY data type</code></h4>
+				<img style="max-width: 13.5cm; margin-left: 0cm;" uml="
+											hide empty members
+											set namespaceSeparator none
+		
+											abstract class ST_Geometry
+											abstract class ST_Surface
+											abstract class ST_Curve
+											class ST_Point
+											class ST_GeomCollection
+											
+											ST_Geometry <|-- ST_Surface
+											ST_Geometry <|-- ST_Curve
+											ST_Geometry <|-- ST_Point
+											ST_Geometry <|-- ST_GeomCollection
+		
+											class ST_CurvePolygon
+											class ST_Polygon
+				 
+											ST_Surface <|-- ST_CurvePolygon
+											ST_CurvePolygon <|-- ST_Polygon
+		
+											class &quot;...&quot; as dots1
+		
+											ST_Curve <|-- ST_ST_LineString
+											ST_Curve <|-- dots1
+		
+											class &quot;...&quot; as dots2
+		
+											ST_GeomCollection <|-- dots2
+		"/>
+			</div>
+			<div class="fragment" style="margin-left: 1cm;">
+				<h4>Routines</h4>
+				<p class="small">Creation, manipulation, search, comparison, conversion</p>
+				<ul class="small" style="margin-left: 5mm;">
+					<li><code>ST_EQUALS(g1, g2)</code></li>
+					<li><code>ST_INTERSECTS(g1, g2)</code></li>
+					<li><code>ST_INTERSECTION(g1, g2)</code></li>
+					<li><code>ST_BUFFER(g, dist)</code></li>
+					<li><code>ST_AREA(surface)</code></li>
+					<li><code>ST_X(point)</code></li>
+					<li><code>ST_DISTANCE(g1, g2)</code></li>
+					<li>...</li>
+				</ul>
+			</div>
+		</div>
+		
+		<aside class="notes">The SQL/MM Spatial 2003 standard defines data types and routines for working with spatial data. The non-italic data types in the type hierarchy are instantiable.</aside>
+	</section>
+
+	<section>
+		<h3>0-dimensional geometries</h3>
+
+		<h4><code>ST_Point</code></h4>
+		<pre style="width: 14cm; left: -5cm;"><code class="c">POINT(5 5)</code></pre>
+
+		<span style="font-size: 2cm; position: absolute; top: 3cm; right: 4cm;" class="red">.</span>
+		
+		<h4><code>ST_MultiPoint</code></h4>
+		<pre style="width: 14cm; left: -65cm;"><code class="c">MULTIPOINT(1 1, 1 3, 3 3)</code></pre>
+		<span style="font-size: 2cm; position: absolute; top: 6.5cm; right: 4cm;" class="red">.</span>
+		<span style="font-size: 2cm; position: absolute; top: 6cm; right: 4cm;" class="red">.</span>
+		<span style="font-size: 2cm; position: absolute; top: 6cm; right: 3.5cm;" class="red">.</span>
+
+		<p>Format used here: <b>WKT</b> (well-known text)</p>
+		<aside class="notes">The well-known text format is often used to describe a geometry object via a string. Other formats are WKB (well-known binary), GML (geographic markup language), or GeoJSON. In SQL/MM Spatial, there are constructors for each geometry data type that takes a WKT string.</aside>
+	</section>
+
+	<section>
+		<h3>1-dimensional geometries</h3>
+		<p class="small">Represented by a sequence of points (<em>closed</em> if start point = end point)</p>
+
+		<h4>ST_LineString</h4>
+		<pre style="width: 14cm; left: -5cm;"><code class="c">LINESTRING(1 1, 1 3, 3 3)</code></pre>
+		<pre style="width: 14cm; left: -5cm;"><code class="c">LINESTRING(1 1, 1 3, 3 3, 1 1)</code></pre>
+
+		<div class="sl-block" data-block-type="line" data-name="line-f7a33c" data-block-id="0358d6fa866ae4e4793c4b634184ef0c" style="width: auto; height: auto; min-width: 0px; min-height: 0px; left: 799px; top: 210px;">
+			<div class="sl-block-content" data-line-x1="0" data-line-y1="0" data-line-x2="80" data-line-y2="0" data-line-color="#000000" data-line-start-type="none" data-line-end-type="none" style="z-index: 10;" data-line-width="4px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="80" height="1" viewBox="0 0 80 1">
+							<line stroke="rgba(0,0,0,0)" stroke-width="15" x1="0" y1="0" x2="80" y2="0"></line>
+							<line class="line-element" stroke="#ff6363" stroke-width="4" x1="0" y1="0" x2="80" y2="0"></line>
+					</svg></div>
+	</div>
+	<div class="sl-block" data-block-type="line" style="width: auto; height: auto; min-width: 0px; min-height: 0px; left: 800px; top: 210px;" data-block-id="cb69b9127a25f3059c892f8db107bc40" data-name="line-40d799">
+			<div class="sl-block-content" data-line-x1="0" data-line-y1="70" data-line-x2="80" data-line-y2="0" data-line-color="#000000" data-line-start-type="none" data-line-end-type="none" style="z-index: 11;" data-line-width="4px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="80" height="70" viewBox="0 0 80 70">
+							<line stroke="rgba(0,0,0,0)" stroke-width="15" x1="0" y1="70" x2="80" y2="0"></line>
+							<line class="fragment line-element" stroke="#ff6363" stroke-width="4" x1="0" y1="70" x2="80" y2="0"></line>
+					</svg></div>
+	</div>
+	<div class="sl-block" data-block-type="line" style="width: auto; height: auto; min-width: 0px; min-height: 0px; left: 799px; top: 210px;" data-block-id="ce9846899e64939cbe9394efef95c4cd" data-name="line-5bcb67">
+			<div class="sl-block-content" data-line-x1="0" data-line-y1="70" data-line-x2="0" data-line-y2="0" data-line-color="#000000" data-line-start-type="none" data-line-end-type="none" style="z-index: 12;" data-line-width="4px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="1" height="70" viewBox="0 0 1 70">
+							<line stroke="rgba(0,0,0,0)" stroke-width="15" x1="0" y1="70" x2="0" y2="0"></line>
+							<line class="line-element" stroke="#ff6363" stroke-width="4" x1="0" y1="70" x2="0" y2="0"></line>
+					</svg></div>
+	</div>
+	</section>
+
+	<section>
+		<h3>2-dimensional geometries</h3>
+		<p class="small">Boundaries are one or more closed curves</p>
+		<h4>ST_Polygon</h4>
+		<pre style="width: 14cm; left: -5cm;"><code class="c">ST_POLYGON((0 0, 1 1, 2 0, 1 -1, 0 0))</code></pre>
+
+		<h4>ST_CurvePolygon</h4>
+		<p class="small">1 external closed curve + n holes</p>
+		<pre style="width: 14cm; left: -5cm;"><code class="c">ST_POLYGON((0 0, 1 1, 2 0, 1 -1, 0 0),
+(0.3 0, 1 0.3, 1.3 0, 1 -0.3, 0 0))</code></pre>
+
+		<div class="sl-block" data-block-type="shape" data-name="shape-10bafd" data-block-id="93531f61e7410a9f5650a6138d0a7bbb" style="width: 160px; height: 140px; left: 720px; top: 140px;">
+			<div class="sl-block-content" data-shape-type="diamond" data-shape-fill-color="#ff6363" data-shape-stretch="true" style="z-index: 10;"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" preserveAspectRatio="none" viewBox="0 0 160 140">
+							<polygon points="160,70 80,140 0,70 80,0" class="shape-element" fill="#ff6363"></polygon>
+					</svg></div>
+	</div>
+	<div class="sl-block" data-block-type="shape" style="width: 160px; height: 140px; left: 720px; top: 350px;" data-block-id="99728e35be4423831e937b57bf960a43" data-name="shape-b6c2eb">
+			<div class="sl-block-content" data-shape-type="diamond" data-shape-fill-color="#ff6363" data-shape-stretch="true" style="z-index: 11;"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" preserveAspectRatio="none" viewBox="0 0 160 140">
+							<polygon points="160,70 80,140 0,70 80,0" class="shape-element" fill="#ff6363"></polygon>
+					</svg></div>
+	</div>
+	<div class="sl-block" data-block-type="shape" style="width: 80px; height: 70px; left: 760px; top: 385px;" data-block-id="05724fca16501524984d3c58be5da806" data-name="shape-4dd207">
+			<div class="sl-block-content" data-shape-type="diamond" data-shape-fill-color="rgb(255, 255, 255)" data-shape-stretch="true" style="z-index: 12;"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" preserveAspectRatio="none" viewBox="0 0 80 70">
+							<polygon points="80,35 40,70 0,35 40,0" class="shape-element" fill="rgb(255, 255, 255)"></polygon>
+					</svg></div>
+	</div>
+	</section>
+
+	<section>
+		<h2>Summary</h2>
+				
+	</section>
+
+
+		<script src="reveal.js/dist/reveal.js"></script>
+		<script src="reveal.js/plugin/markdown/markdown.js"></script>
+		<script src="reveal.js/plugin/highlight/highlight.js"></script>
+		<script src="reveal.js/plugin/zoom/zoom.js"></script>
+		<script src="reveal.js/plugin/math/math.js"></script>
+		<script src="reveal.js/plugin/notes/notes.js"></script>
+		<script src="reveal.js/plugin/search/search.js"></script>
+        <script src="lib/jquery.js"></script>
+        <script src="lib/lodash.js"></script>
+        <script src="lib/backbone.js"></script>
+        <script src="lib/joint.min.js"></script>
+				<script src="lib/deflate.js"></script>
+
+		<script src="src/init_reveal.js"></script>
+
+        <script>
+        if(window.location.search.match( /print-pdf/gi )) {
+                document.getElementById('header').style="display:none";
+                document.getElementById('footer').style="display:none";
+        }
+        </script>
+
+				<script>
+db = openDatabase("SQL", "1", "SQL", 5*1024*1024);
+
+db.transaction(function(tx) {
+	tx.executeSql("DROP TABLE IF EXISTS phd;");
+	tx.executeSql("create table phd (pid int primary key, name varchar(200), advisor int references phd(pid), year int);");
+	tx.executeSql("insert into phd values (1, 'Leonard Euler', NULL, NULL);");
+	tx.executeSql("insert into phd values (2, 'Joseph Louis Lagrange', 1, NULL);");
+	tx.executeSql("insert into phd values (3, 'Johann Hennert', 1, 1766);");
+	tx.executeSql("insert into phd values (4, 'Jean-Baptiste Joseph Fourier', 2, NULL);");
+	tx.executeSql("insert into phd values (5, 'Siméon Poisson', 2, 1800);");
+	
+});
+</script>
+
+
+	</body>
+</html>
