@@ -94,14 +94,32 @@
 
 		<table class="small" style="width: 26cm;">
 			<tr><th>SRID</th><th>Spatial Reference System</th><th>Description</th></tr>
-			<tr><td>4326</td><td>WGS-84</td><td>World-wide; used by GPS, OpenStreetMap</td></tr>
+			<tr><td>4326</td><td>WGS-84</td><td>World-wide; used by GPS, ... (unit: degrees)</td></tr>
 			<tr><td>31466</td><td>DHDN / Gauß-Krüger Zone 2</td><td>Germany (west of 7.5° E)</td></tr>
 			<tr><td>31467</td><td>DHDN / Gauß-Krüger Zone 3</td><td>Germany (between 7.5° E and 10.5° E)</td></tr>
 			<tr><td>31468</td><td>DHDN / Gauß-Krüger Zone 4</td><td>Germany (between 10.5° E and 13.5° E)</td></tr>
 			<tr><td>31469</td><td>DHDN / Gauß-Krüger Zone 5</td><td>Germany (between 13.5° E and 16.5° E)</td></tr>
-			<tr><td>3857</td><td>WGS 84 / Pseudo-Mercator</td><td>Used by Google Maps, OpenStreetMap, ...</td></tr>
+			<tr><td>3857</td><td>WGS 84 / Pseudo-Mercator</td><td>Used by Google Maps, OpenStreetMap, ...<br>(unit: metre)</td></tr>
 		</table>
-		<aside class="notes">There are a lot of different spatial reference systems. There are identified by an SRID (Spatial Reference Identifier). Often, coordinates have to be translated from one reference system into another.</aside>
+
+		<!--SELECT ST_DISTANCE(
+ ST_GEOMFROMTEXT('POINT(0 51.5)', 4326),
+ ST_GEOMFROMTEXT('POINT(139.8 35.6)', 4326)
+);-->
+
+<div class="poll fragment" style="bottom:-150px">
+	<h1>When using SRID 4326, what's the distance between London and Tokyo?</h1>
+			<ul>
+				<li>15</li>
+				<li data-poll="correct">140</li>
+				<li>5938</li>
+				<li>9559</li>
+			</ul>
+	<h2>https://fraage.de</h2>
+</div>
+
+		
+		<aside class="notes">There are a lot of different spatial reference systems. There are identified by an SRID (Spatial Reference Identifier). Often, coordinates have to be translated from one reference system into another. WGS-84 uses degrees as units. Often latitude and longitude values are provided in degrees. But, distances and radiuses are often in kilometers. So, coordinates have to be converted into a reference system that uses meters, e.g. SRID 3857.</aside>
 	</section>
 
 	<section>
@@ -143,7 +161,7 @@
 			</div>
 			<div class="fragment" style="margin-left: 1cm;">
 				<h4>Routines</h4>
-				<p class="small">Creation, manipulation, search, comparison, conversion</p>
+				<p class="small">Creation, manipulation, retrieval, comparison, conversion</p>
 				<ul class="small" style="margin-left: 5mm;">
 					<li><code>ST_EQUALS(g1, g2)</code></li>
 					<li><code>ST_INTERSECTS(g1, g2)</code></li>
@@ -157,7 +175,7 @@
 			</div>
 		</div>
 		
-		<aside class="notes">The SQL/MM Spatial 2003 standard defines data types and routines for working with spatial data. The non-italic data types in the type hierarchy are instantiable.</aside>
+		<aside class="notes">The SQL/MM Spatial 2003 standard defines data types and routines for working with spatial data. The non-italic data types in the type hierarchy are instantiable. Subtypes of ST_GeomCollection are for example ST_MultiPoint, ST_MultiLineString or ST_MultiPolygon. They are a multiset of the underlying data type.</aside>
 	</section>
 
 	<section>
@@ -175,7 +193,12 @@
 		<span style="font-size: 2cm; position: absolute; top: 6cm; right: 3.5cm;" class="red">.</span>
 
 		<p>Format used here: <b>WKT</b> (well-known text)</p>
-		<aside class="notes">The well-known text format is often used to describe a geometry object via a string. Other formats are WKB (well-known binary), GML (geographic markup language), or GeoJSON. In SQL/MM Spatial, there are constructors for each geometry data type that takes a WKT string.</aside>
+		<aside class="notes">A point represents a single location and has an x and y coordinate.<br>The well-known text format is often used to describe a geometry object via a string. Other formats are WKB (well-known binary), GML (geographic markup language), or GeoJSON. In SQL/MM Spatial, there are constructors for WKT, WKB, and GML for each geometry data type.</aside>
+	
+		<h4>Routines for points:</h4>
+			<ul class="small">
+				<li><code>ST_X(p)</code>, <code>ST_Y(p)</code> for coordinate access</li>
+			</ul>
 	</section>
 
 	<section>
@@ -204,39 +227,180 @@
 							<line class="line-element" stroke="#ff6363" stroke-width="4" x1="0" y1="70" x2="0" y2="0"></line>
 					</svg></div>
 	</div>
+
+	<h4>Routines for curves:</h4>
+			<ul class="small">
+				<li><code>ST_StartPoint(c)</code>, <code>ST_EndPoint(c)</code> &rightarrow; ST_Point</li>
+				<li><code>ST_NPoints(c)</code> &rightarrow; Integer (number of points)</li>
+				<li><code>ST_PointN(c, n)</code> &rightarrow; ST_Point (n-th point)</li>
+				<li><code>ST_Length(c)</code> &rightarrow; Float</li>
+				<li><code>ST_IsClosed(c)</code> &rightarrow; Boolean</li>
+			</ul>
+
+			<aside class="notes">Curves are defined by a sequence of points. For linestrings, linear interpolation between two consecutive points is used. ST_CircularString uses circular interpolation.</aside>
 	</section>
 
 	<section>
 		<h3>2-dimensional geometries</h3>
 		<p class="small">Boundaries are one or more closed curves</p>
 		<h4>ST_Polygon</h4>
-		<pre style="width: 14cm; left: -5cm;"><code class="c">ST_POLYGON((0 0, 1 1, 2 0, 1 -1, 0 0))</code></pre>
+		<p class="small">1 external closed LineString + n holes</p>
+		<pre style="width: 14cm; left: -5cm;"><code class="c">POLYGON((0 0, 1 1, 2 0, 1 -1, 0 0))</code></pre>
 
-		<h4>ST_CurvePolygon</h4>
-		<p class="small">1 external closed curve + n holes</p>
-		<pre style="width: 14cm; left: -5cm;"><code class="c">ST_POLYGON((0 0, 1 1, 2 0, 1 -1, 0 0),
-(0.3 0, 1 0.3, 1.3 0, 1 -0.3, 0 0))</code></pre>
+		<pre style="width: 14cm; left: -5cm;"><code class="c">POLYGON((0 0, 1 1, 2 0, 1 -1, 0 0),
+(0.7 0, 1 0.3, 1.3 0, 1 -0.3, 0.7 0))</code></pre>
 
-		<div class="sl-block" data-block-type="shape" data-name="shape-10bafd" data-block-id="93531f61e7410a9f5650a6138d0a7bbb" style="width: 160px; height: 140px; left: 720px; top: 140px;">
+		<div class="sl-block" data-block-type="shape" data-name="shape-10bafd" data-block-id="93531f61e7410a9f5650a6138d0a7bbb" style="width: 160px; height: 140px; left: 600px; top: 190px;">
 			<div class="sl-block-content" data-shape-type="diamond" data-shape-fill-color="#ff6363" data-shape-stretch="true" style="z-index: 10;"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" preserveAspectRatio="none" viewBox="0 0 160 140">
 							<polygon points="160,70 80,140 0,70 80,0" class="shape-element" fill="#ff6363"></polygon>
 					</svg></div>
 	</div>
-	<div class="sl-block" data-block-type="shape" style="width: 160px; height: 140px; left: 720px; top: 350px;" data-block-id="99728e35be4423831e937b57bf960a43" data-name="shape-b6c2eb">
+	<div class="sl-block" data-block-type="shape" style="width: 160px; height: 140px; left: 600px; top: 370px;" data-block-id="99728e35be4423831e937b57bf960a43" data-name="shape-b6c2eb">
 			<div class="sl-block-content" data-shape-type="diamond" data-shape-fill-color="#ff6363" data-shape-stretch="true" style="z-index: 11;"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" preserveAspectRatio="none" viewBox="0 0 160 140">
 							<polygon points="160,70 80,140 0,70 80,0" class="shape-element" fill="#ff6363"></polygon>
 					</svg></div>
 	</div>
-	<div class="sl-block" data-block-type="shape" style="width: 80px; height: 70px; left: 760px; top: 385px;" data-block-id="05724fca16501524984d3c58be5da806" data-name="shape-4dd207">
+	<div class="sl-block" data-block-type="shape" style="width: 80px; height: 70px; left: 640px; top: 405px;" data-block-id="05724fca16501524984d3c58be5da806" data-name="shape-4dd207">
 			<div class="sl-block-content" data-shape-type="diamond" data-shape-fill-color="rgb(255, 255, 255)" data-shape-stretch="true" style="z-index: 12;"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" preserveAspectRatio="none" viewBox="0 0 80 70">
 							<polygon points="80,35 40,70 0,35 40,0" class="shape-element" fill="rgb(255, 255, 255)"></polygon>
 					</svg></div>
 	</div>
+
+	<h4>Routines for surfaces:</h4>
+			<ul class="small">
+				<li><code>ST_Area(s)</code>, <code>ST_Perimeter(s)</code> &rightarrow; Float</li>
+				<li><code> ST_Centroid(s)</code> &rightarrow; ST_Point</li>
+			</ul>
+
+			<!--
+				select st_geomfromtext('POLYGON((0 0, 1 1, 2 0, 1 -1, 0 0)
+)'),ST_Centroid(
+ st_geomfromtext('POLYGON((0 0, 1 1, 2 0, 1 -1, 0 0))'))
+union all
+select st_geomfromtext('POLYGON((0 0, 1 1, 2 0, 1 -1, 0 0),
+(0.7 0, 1 0.3, 1.3 0, 1 -0.3, 0.7 0))'),ST_Centroid(
+ st_geomfromtext('POLYGON((0 0, 1 1, 2 0, 1 -1, 0 0),
+(0.7 0, 1 0.3, 1.3 0, 1 -0.3, 0.7 0))'));
+			-->
+			<div class="poll fragment" style="bottom:-140px">
+				<h1>What's true for the two polygons on this slide?</h1>
+						<ul>
+							<li>Same area, same centroid</li>
+							<li>Same area, different centroid</li>
+							<li data-poll="correct">Different area, same centroid</li>
+							<li>Different area, different centroid</li>
+						</ul>
+				<h2>https://fraage.de</h2>
+			</div>
+
+			<aside class="notes">Surfaces are also defined by a sequence of points. If the surface has holes in it, it is a sequence of multiple curves. ST_CurvePolygon is a generalized surface, for an ST_Polygon, the boundaries are linestrings. </aside>
 	</section>
+
+	<section>
+		<h3>Other Routines</h3>
+		<h4>Routines for all geometries:</h4>
+			<ul class="small" style="margin-top: -5mm;">
+				<li><code>ST_Envelope(g)</code> &rightarrow; ST_Polygon (bounding rectangle)</li>
+				<li><code>ST_Buffer(g, dist)</code> &rightarrow; ST_Geometry<br>(encircles geometric at a specific distance)</li>
+				<li><code>ST_Difference(g1, g2)</code>,<br><code>ST_Intersection(g1, g2)</code>,<br><code>ST_Union(g1, g2)</code> &rightarrow; ST_Geometry</li>
+				<li><code>ST_Intersects(g1, g2)</code>,<br><code>ST_Crosses(g1, g2)</code>,<br><code>ST_Overlaps(g1, g2)</code>,<br><code>ST_Touches(g1, g2)</code>,<br><code>ST_Contains(g1, g2)</code>,<br><code>ST_Within(g1, g2)</code> &rightarrow; Boolean</li>
+				<li><code>ST_IsSimple(g)</code> &rightarrow; Boolean (no self-intersection)</li>
+			</ul>
+			<img src="img/6/st_buffer.png" alt="ST_BUFFER" class="noborder" style="position: absolute; right: 5mm; top: 5cm">
+			<aside class="notes">The image on the right shows a 20km buffer around a line string.</aside>
+	</section>
+
+	<section>
+		<h3>PostGIS</h3>
+		<p class="small">Spatial and Geographic Objects for PostgreSQL.</p>
+
+		<pre><code class="sql">CREATE TABLE buildings (
+customer_name VARCHAR(50) PRIMARY KEY,
+geo GEOMETRY(POINT, 4326));</code></pre>
+
+<pre class="fragment"><code class="sql">INSERT INTO buildings VALUES ('Rita', 
+ST_GEOMFROMTEXT('POINT(12.096944 49.017222)', 4326));
+INSERT INTO buildings VALUES ('Mary',
+ST_GEOMFROMTEXT('POINT(7.221258 50.329615)', 4326));</code></pre>
+
+<pre class="fragment"><code class="sql">SELECT ST_Distance(ST_Transform(r.geo, 3857), 
+                   ST_Transform(w.geo, 3857))/1000     -- in km
+FROM buildings r, buildings w
+WHERE r.customer_name = 'Rita'
+AND w.customer_name = 'Mary';</code></pre>
+
+<aside class="notes">PostGIS is an extension for PostgreSQL that offers a <code>GEOMETRY</code> data type and the <code>ST_%</code> functions. In this example, we use the spatial reference system with SRID 4326. It uses the unit degrees for longitude and latitude values. To retrieve a distance in meters (or kilometers), we need to transform the coordinates into SRID 3857. The query returns a distance of 587 km between Rita's and Mary's cities Regensburg and Mayen. Without the transformation, the query would return a distance of 5.05 (degrees).</aside>
+</section>
+
+<section>
+	<h3>Insurance Example</h3>
+
+		<pre><code class="sql">CREATE TABLE rivers (
+ name VARCHAR(30) PRIMARY KEY,
+ river_line GEOMETRY(LineString, 4326),
+ flood_zones GEOMETRY(Polygon, 4326));</code></pre>
+
+ <pre><code class="sql">INSERT INTO rivers (name, river_line) VALUES ('Rhine',
+ ST_GEOMFROMTEXT('LINESTRING(8.561667 46.559167, 
+                             7.895 49.966944, 
+                             4.179428 51.861992)', 4326));</code></pre>
+
+<p class="small">Extend the flood zones for the rivers by 3 kilometers:</p>
+<pre style="margin-top: -2mm;"><code class="sql">UPDATE rivers SET flood_zones = ST_Transform(
+ST_BUFFER(ST_Transform(river_line, 3857), 3000), 4326);</code></pre>
+
+<p class="small">Find all customers that have a building in the flood zones:</p>
+<pre style="margin-top: -2mm;"><code class="sql">SELECT customer_name FROM buildings b, rivers r
+WHERE ST_Within(b.geo, r.flood_zones)</code></pre>
+
+<p style="font-size: medium;">Source: STOLZE, Knut. SQL/MM spatial: The standard to manage spatial data in a relational database system. In: BTW 2003</p>
+<aside class="notes">In reality, the river Rhine has a more complex shape and is not close to the town Mayen ;-)</aside>
+</section>
+
+<section>
+	<h3>Geo-Indexes</h3>
+	<div class="columns">
+		<div style="width: 12cm;">
+			<h4>R-Tree</h4>
+			<p class="small">Leaves: minimum bounding rectangles of the geo-objects</p>
+			<p class="small">Inner nodes: minimum bounding rectangles of the child nodes</p>
+			<p class="fragment small">Example:<br>
+R1 = (10,100), (100,5))<br>
+R2 = (0,50), (170,0))<br>
+Find objects in ((120, 100), (150, 0)):
+&Rightarrow; continue search only in R2
+		</div>
+		<div>
+			<img src="img/6/rtree.png" alt="R-Tree" class="noborder" style="width: 15cm;">
+		</div>
+	</div>
+	<aside class="notes">R-Tree stands for Rectangle tree and is a multi-dimensional index structure, not only for geo data. For indexing geo data, we compute minimum bounding rectangles ((x1, y1), (x2, y2)) -- the coordinates of its top left and bottom right corner. After that, be build a tree that hierarchically organizes nearby rectangles within a larger rectangle. A search query starts at the root and inspects all children with overlapping areas.</aside>
+</section>
+
+<section>
+	<h3>Geo-Indexes in PostgreSQL</h3>
+	<pre><code class="sql">CREATE INDEX buildings_geo_idx ON buildings USING GIST (geo);</code></pre>
+
+	<p class="fragment small">Find all buildings within a 10 km radius from Regensburg</p>
+	<pre class="fragment"><code class="sql">SELECT * FROM buildings WHERE ST_WITHIN(geo, 
+ST_Transform(ST_BUFFER(ST_Transform(
+ST_GEOMFROMTEXT('POINT(7.22 50.32)', 4326), 3857), 10000), 4326));</code></pre>
+
+	<aside class="notes">Geo-index can be used for filters or geo-joins using binary predicates like ST_Within, ST_Overlaps, ST_Intersects, ... The index would not be used for a query that uses <code>WHERE ST_DISTANCE(...) &lt;= 10000</code>. The index on this slide can also be used for the query that finds buildings in the flood zones of our rivers.</aside>
+</section>
 
 	<section>
 		<h2>Summary</h2>
 				
+		<ul>
+			<li>GIS</li>
+			<li>Coordinate Systems, SRID</li>
+			<li>SQL/MM Spatial: Data Types and Routines</li>
+			<li><code>ST_Point</code>, <code>ST_LineString</code>, <code>ST_Polygon</code>, ...</li>
+			<li>WKT</li>
+			<li>PostGIS</li>
+			<li>Geo-Indexes: R-Trees</li>
+		</ul>
 	</section>
 
 
