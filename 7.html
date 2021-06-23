@@ -133,9 +133,21 @@ UNIQUE(pnr, date_period WITHOUT OVERLAPS));</code></pre>
 		<pre><code class="sql">SELECT price FROM products WHERE pnr = 17 AND
 date_period CONTAINS '2021-06-29';</code></pre>
 
-<pre><code class="sql">SELECT price FROM products WHERE pnr = 17 AND
+<div class="poll fragment fade-in-then-out" style="bottom:-50px">
+	<h1>Rewrite the query without using the CONTAINS operator!</h1>
+			<ul>
+				<li>... '2021-06-29' BETWEEN valid_from AND valid_until </li>
+				<li>.. valid_from >= '2021-06-29' AND valid_until &lt; '2021-06-29'</li>
+				<li data-poll="correct">... '2021-06-29' >= valid_from AND '2021-06-29' &lt; valid_until</li>
+				<li>... '2021-05-01' >= valid_from AND '2021-05-15' &lt; valid_until</li>
+			</ul>
+	<h2>https://fraage.de</h2>
+</div>
+
+<pre class="fragment"><code class="sql">SELECT price FROM products WHERE pnr = 17 AND
 date_period CONTAINS PERIOD ('2021-05-01', '2021-05-15');</code></pre>
 
+<div class="fragment">
 	<h4>Other operators (based on Allen's Operators)</h4>
 	<ul class="small">
 		<li><span class="red">p1</span> OVERLAPS <span class="blue">p2</span></li>
@@ -215,6 +227,7 @@ date_period CONTAINS PERIOD ('2021-05-01', '2021-05-15');</code></pre>
             <line class="line-element" stroke="#5473B9" stroke-width="2" x1="0" y1="0" x2="98" y2="0"></line>
         </svg></div>
 </div>
+</div>
 	</section>
 
 	<section>
@@ -228,6 +241,17 @@ VALUES (17, 'chocolate bar', 0.89, '2021-01-01', '2021-07-01');</code></pre>
 		</div>
 
 		<div class="fragment">
+
+			<div class="poll fragment fade-in-then-out" style="bottom:50px">
+				<h1>Before the UPDATE, there are two rows about product 17, how many rows do we have after the UPDATE?</h1>
+						<ul>
+							<li>1</li>
+							<li>2</li>
+							<li>3</li>
+							<li data-poll="correct">4</li>
+						</ul>
+				<h2>https://fraage.de</h2>
+			</div>
 			<h4><code>UPDATE</code></h4>		
 			<div class="columns" style="margin-top: -7mm;">
 				<div style="width: 14cm;"><pre><code class="sql">UPDATE products 
@@ -246,7 +270,18 @@ SET price = 0.50 WHERE pnr = 17;</code></pre></div>
 FOR PORTION OF date_period FROM '2021-04-15' TO '2021-04-20';</code></pre>
 		</div>
 
-		<p class="small">Try out at <a href="https://dbfiddle.uk/?rdbms=mariadb_10.5&fiddle=31c32b3705a3da482ca5329b813c4c98">https://bit.ly/mapptime</a></p>		
+		<div class="poll fragment fade-in-then-out" style="bottom:235px; left:0">
+			<h1>And how many rows do we have now after this DELETE?</h1>
+					<ul>
+						<li>2</li>
+						<li>3</li>
+						<li>4</li>
+						<li data-poll="correct">5</li>
+					</ul>
+			<h2>https://fraage.de</h2>
+		</div>
+
+		<p class="fragment small">Try out at <a href="https://dbfiddle.uk/?rdbms=mariadb_10.5&fiddle=31c32b3705a3da482ca5329b813c4c98" target="_blank">https://bit.ly/mapptime</a></p>		
 	</section>
 
 	<section>
@@ -289,6 +324,8 @@ WHERE S.pnr = P.pnr AND S.S.term OVERLAPS P.date_period;</code></pre>
 WHERE S.pnr = P.pnr
 AND S.valid_from <= P.valid_until
 AND S.valid_until > P.valid_from"></span>
+
+<aside class="notes">Without the OVERLAPS operator, we can do the temporal join with <code>S.valid_from <= P.valid_until AND S.valid_until > P.valid_from</code></aside>
 	</section>
 
 	<section>
@@ -325,6 +362,18 @@ WITH SYSTEM VERSIONING;</code></pre>
 		<p class="small" style="margin-top: -5mm;">Operate on current row and insert historical system row.</p>
 		<pre style="width: 100%;"><code class="sql">UPDATE customers SET email = 'peter@example.com' WHERE custno = 5;</code></pre>
 		<pre style="width: 100%;"><code class="sql">DELETE FROM customers WHERE custno = 5;</code></pre>
+
+		<div class="poll fragment fade-in-then-out" style="bottom:120px;">
+			<h1>After executing the three queries on this slide, how many rows will SELECT * FROM customers WHERE custno = 5; return?</h1>
+					<ul>
+						<li data-poll="correct">0</li>
+						<li>1</li>
+						<li>2</li>
+						<li>3</li>
+					</ul>
+			<h2>https://fraage.de</h2>
+		</div>
+
 		<aside class="notes">INSERT, UPDATE, DELETE work in the same way as for normal tables. The historical states are automatically saved in the background.</aside>
 	</section>
 
