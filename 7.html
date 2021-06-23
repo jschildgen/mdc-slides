@@ -322,10 +322,10 @@ WHERE S.pnr = P.pnr AND S.S.term OVERLAPS P.date_period;</code></pre>
 
 <span data-sql-query="SELECT S.custno, P.* FROM subscriptions S, products P
 WHERE S.pnr = P.pnr
-AND S.valid_from <= P.valid_until
+AND S.valid_from < P.valid_until
 AND S.valid_until > P.valid_from"></span>
 
-<aside class="notes">Without the OVERLAPS operator, we can do the temporal join with <code>S.valid_from <= P.valid_until AND S.valid_until > P.valid_from</code></aside>
+<aside class="notes">Without the OVERLAPS operator, we can do the temporal join with <code>S.valid_from &lt; P.valid_until AND S.valid_until > P.valid_from</code></aside>
 	</section>
 
 	<section>
