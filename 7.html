@@ -1,0 +1,454 @@
+<!--    <p>The NoSQL key-value store Redis is extremely fast. This is because of two reasons: Firstly, Redis is a in-memory database, and secondly, Redis optimizes the storage of the values of Redis data types to allow efficient queries on it. When you take a look in the Redis documentation, you will see that many operations are executed in O(1). That's in constant time, independent of the database size!</p>
+-->
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>MDC - Chapter 7 - Temporal Data Management</title>
+
+		<link rel="stylesheet" href="reveal.js/dist/reset.css">
+		<link rel="stylesheet" href="reveal.js/dist/reveal.css">
+
+        <link rel="stylesheet" href="src/slides.css">
+        <link rel="stylesheet" href="src/sql.css">
+
+		<link rel="stylesheet" href="src/layout.css">
+        <link rel="stylesheet" href="lib/joint.min.css" />
+        <link rel="stylesheet" href="src/erd.css" />
+        <link rel="stylesheet" href="src/poll.css" />
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="src/rainbow.css">
+
+        <!--<script defer src="lib/fontawesome.all.min.js"/>-->
+        <link href="lib/fontawesome.all.min.css" rel="stylesheet">
+        <style> .reveal i.fa { font-family:FontAwesome; font-style: normal; } </style>
+	</head>
+	<body>
+		<div class="reveal">
+            <div id="header"></div>
+            <div id="footer"></div>
+			<div class="slides">
+                <section>
+                    <h4 style="text-align:center"><b>Prof. Dr.-Ing. Johannes Schildgen</b><br>
+                    <a href="mailto:johannes.schildgen@oth-regensburg.de">johannes.schildgen@oth-regensburg.de</a></h4>
+                    <h2>Modern Database Concepts</h2>
+                    <h4 style="text-align:center">&nbsp;</h4>
+                    <h3>Chapter 7: Temporal Data Management</h3>
+                    <h4 style="text-align:center">&nbsp;<br>&nbsp;</h4>
+                    <img src="img/ccby.png" height="60px" style="position: absolute; left:0px; border:0; bottom:-100px;">
+                    <img src="img/oth.png" height="60px" style="position: absolute; right:0px; border:0; bottom:-100px; box-shadow:none">
+                </section>
+
+
+			<section>
+				<h3>Motivation</h3>
+				<p class="small">Databases usually focus on the current state of the real world.</p>
+				<pre><code class="sql">SELECT price FROM products WHERE productno = 29;
+UPDATE price FROM products SET price = 4.99 WHERE productno = 29;</code></pre>
+				<p class="small">Information about previous states are no longer available.</p>
+
+				<div class="fragment">
+				<p class="small">Other application scenarios:</p>
+				<ul class="small">
+					<li>For auditing purposes, a bank needs access to all changes in customer data.</li>
+					<li>An insurance company needs to store the fee for specific time periods.</li>
+					<li>Predictive-analytics algorithms analyze the past to predict the future.</li>
+					<li>A travel agency wants to detect inconsistencies, e.g. the time period of a car rental in Rome overlaps with a hotel reservation in New York.</li>
+				</ul>
+				</div>
+				<aside class="notes">In some of the scenarios shown here, we need access to the data from the past (historical product prices, customer data, ...) and some examples store also data about the future (insurance fee for next year, hotel reservations, ...).</aside>
+			</section>
+
+			<section>
+				<h3>Temporalization Approaches</h3>
+				<p class="small">Timestamp-based modelling approach:<br>add two additional columns representing the time period when a record was true</p>
+				<pre><code class="sql">CREATE TABLE products (pnr INT, description VARCHAR(100), 
+price DECIMAL(18,2), valid_from DATE DEFAULT CURRENT_TIME, 
+                     valid_until DATE DEFAULT '9999-12-31');</code></pre>
+
+				<pre><code class="sql">CREATE VIEW products_current AS SELECT * FROM products
+WHERE current_time >= valid_from AND current_time < valid_until;</code></pre>
+
+				<p class="small">Challenges:</p>
+				<ul class="small">
+					<li>How to interpret time intervals (open/closed)?</li>
+					<li>How to write temporal queries?</li>
+					<li>How to avoid overlapping time intervals?</li>
+					<li>How to add real temporal support on top of the DBMS?<br>&Rightarrow; Triggers, stored procedures, constraints.</li>
+				</ul>
+				<aside class="notes">In the table shown here, we do not have a primary key. (pnr, valid_from) would be okay as a primary key but it would be better if we could somehow avoid that the time periods overlap. </aside>
+			</section>
+			
+	<section>
+		<h3>SQL:2011 - Temporal Support</h3>
+		<h4>Time Periods</h4>
+		<p class="small" style="margin-top: -5mm;">defined by two DATE or TIMESTAMP columns: [start-col, end-col)</p>
+		<pre style="width: 98%;"><code class="sql">CREATE TABLE t (d1 DATE, d2 DATE, PERIOD FOR date_period(d1, d2));</code></pre>
+
+		<div class="fragment">
+			<h4>Application-time period tables</h4>
+			<p class="small" style="margin-top: -5mm;">allow temporal queries over periods</p>
+
+			<pre style="width: 98%;"><code class="sql">SELECT * FROM t WHERE date_period CONTAINS DATE '2021-06-01';</code></pre>
+		</div>
+
+		<div class="fragment">
+			<h4>System-versioned tables</h4>
+			<p class="small" style="margin-top: -5mm;">allow historical queries</p>
+			<pre style="width: 98%;"><code class="sql">SELECT * FROM t FOR SYSTEM TIME AS OF TIMESTAMP '2021-06-01 14:00';</code></pre>
+		</div>
+
+		<div class="fragment">
+			<h4>Bitemporal tables</h4>
+		</div>
+		<aside class="notes">Time periods are defined by a closed-open interval. The start time is included in the interval, the end-time is not. Bitemporal tables are both system-versioned and application-time period tables.</aside>
+	</section>
+
+	<section>
+		<h3>Time Periods</h3>
+		<p class="small"><code>PERIOD FOR period_name(start_col, end_col)</code></p>
+
+		<pre><code class="sql">CREATE TABLE products (pnr INT, description VARCHAR(100), 
+price DECIMAL(18,2), valid_from DATE, valid_until DATE,
+PERIOD FOR date_period(valid_from, valid_until),
+UNIQUE(pnr, date_period WITHOUT OVERLAPS));</code></pre>
+
+<span data-sql-query="SELECT * FROM products;"></span>
+<p></p>
+
+<h4>Time periods in MariaDB</h4>
+<p class="small" style="margin-top: -5mm;">MariaDB does not support primary keys on periods &Rightarrow; use <code>UNIQUE</code></p>
+
+
+		<aside class="notes">The SQL Standard did not introduce a new data type for time periods. Instead, periods are defined over two DATE or TIMESTAMP columns. The period starts at &gt;= start_col and ends at &lt; end_col. In the SQL Standard, periods can be part of the primary key. There, the <code>WITHOUT OVERLAPS</code> clause is introduced to guarantee that each point in time is never in more than one period. MariaDB does not support time periods within the primary key. Here, often an additional unique ID column is introduces as the primary key.</aside>
+	</section>
+
+	<section>
+		<h3>Operations on Time Periods</h3>
+		<p class="small">As specified in the SQL Standard (not supported by MariaDB).</p>
+		<h4><code>CONTAINS</code></h4>
+		<pre><code class="sql">SELECT price FROM products WHERE pnr = 17 AND
+date_period CONTAINS '2021-06-29';</code></pre>
+
+<pre><code class="sql">SELECT price FROM products WHERE pnr = 17 AND
+date_period CONTAINS PERIOD ('2021-05-01', '2021-05-15');</code></pre>
+
+	<h4>Other operators (based on Allen's Operators)</h4>
+	<ul class="small">
+		<li><span class="red">p1</span> OVERLAPS <span class="blue">p2</span></li>
+		<li><span class="red">p1</span> EQUALS <span class="blue">p2</span></li>
+		<li><span class="red">p1</span> [IMMEDIATELY] PRECEDES <span class="blue">p2</span></li>
+		<li><span class="red">p1</span> [IMMEDIATELY] SUCCEEDS <span class="blue">p2</span></li>
+	</ul>
+	<div class="sl-block" data-block-type="line" data-name="line-bcd7a0" data-block-id="b2a656bf3387e8ac7833cdd753579069" style="width: auto; height: auto; min-width: 0px; min-height: 0px; left: 560px; top: 455px;">
+    <div class="sl-block-content" data-line-x1="0" data-line-y1="0" data-line-x2="240" data-line-y2="0" data-line-start-type="none" data-line-end-type="none" style="z-index: 10;"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="240" height="1" viewBox="0 0 240 1">
+            <line stroke="rgba(0,0,0,0)" stroke-width="15" x1="0" y1="0" x2="240" y2="0"></line>
+            <line class="line-element" stroke="#ff6363" stroke-width="2" x1="0" y1="0" x2="240" y2="0"></line>
+        </svg></div>
+</div>
+<div class="sl-block" data-block-type="line" style="width: auto; height: auto; min-width: 0px; min-height: 0px; left: 621px; top: 462px;" data-block-id="27fdb72c85dd628c4a9a894dfb13afc9" data-name="line-b61772">
+    <div class="sl-block-content" data-line-x1="0" data-line-y1="0" data-line-x2="240" data-line-y2="0" data-line-color="#000000" data-line-start-type="none" data-line-end-type="none" style="z-index: 11;"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="240" height="1" viewBox="0 0 240 1">
+            <line stroke="rgba(0,0,0,0)" stroke-width="15" x1="0" y1="0" x2="240" y2="0"></line>
+            <line class="line-element" stroke="#5473B9" stroke-width="2" x1="0" y1="0" x2="240" y2="0"></line>
+        </svg></div>
+</div>
+<div class="sl-block" data-block-type="line" style="width: auto; height: auto; min-width: 0px; min-height: 0px; left: 560px; top: 494px;" data-block-id="d5fe109c9615d70c31d967265a6f5d8f" data-name="line-272dba">
+    <div class="sl-block-content" data-line-x1="0" data-line-y1="0" data-line-x2="301" data-line-y2="0" data-line-color="#000000" data-line-start-type="none" data-line-end-type="none" style="z-index: 12;"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="301" height="1" viewBox="0 0 301 1">
+            <line stroke="rgba(0,0,0,0)" stroke-width="15" x1="0" y1="0" x2="301" y2="0"></line>
+            <line class="line-element" stroke="#ff6363" stroke-width="2" x1="0" y1="0" x2="301" y2="0"></line>
+        </svg></div>
+</div>
+<div class="sl-block" data-block-type="line" style="width: auto; height: auto; min-width: 0px; min-height: 0px; left: 560px; top: 489px;" data-block-id="c2e3ef585f0c83a5cf0a6805e9de60b9" data-name="line-9eac27">
+    <div class="sl-block-content" data-line-x1="0" data-line-y1="0" data-line-x2="301" data-line-y2="0" data-line-color="#000000" data-line-start-type="none" data-line-end-type="none" style="z-index: 13;"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="301" height="1" viewBox="0 0 301 1">
+            <line stroke="rgba(0,0,0,0)" stroke-width="15" x1="0" y1="0" x2="301" y2="0"></line>
+            <line class="line-element" stroke="#5473B9" stroke-width="2" x1="0" y1="0" x2="301" y2="0"></line>
+        </svg></div>
+</div>
+<div class="sl-block" data-block-type="line" style="width: auto; height: auto; min-width: 0px; min-height: 0px; left: 560px; top: 528px;" data-block-id="b82d575f9765064ab70f293d90364e43" data-name="line-1c458d">
+    <div class="sl-block-content" data-line-x1="0" data-line-y1="0" data-line-x2="166" data-line-y2="0" data-line-color="#000000" data-line-start-type="none" data-line-end-type="none" style="z-index: 14;"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="166" height="1" viewBox="0 0 166 1">
+            <line stroke="rgba(0,0,0,0)" stroke-width="15" x1="0" y1="0" x2="166" y2="0"></line>
+            <line class="line-element" stroke="#ff6363" stroke-width="2" x1="0" y1="0" x2="166" y2="0"></line>
+        </svg></div>
+</div>
+<div class="sl-block" data-block-type="line" style="width: auto; height: auto; min-width: 0px; min-height: 0px; left: 726px; top: 528px;" data-block-id="2fe4ed08d4b700d6fcb50809250a95b3" data-name="line-5e4d5f">
+    <div class="sl-block-content" data-line-x1="0" data-line-y1="0" data-line-x2="135" data-line-y2="0" data-line-color="#000000" data-line-start-type="none" data-line-end-type="none" style="z-index: 15;"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="135" height="1" viewBox="0 0 135 1">
+            <line stroke="rgba(0,0,0,0)" stroke-width="15" x1="0" y1="0" x2="135" y2="0"></line>
+            <line class="line-element" stroke="#5473B9" stroke-width="2" x1="0" y1="0" x2="135" y2="0"></line>
+        </svg></div>
+</div>
+<div class="sl-block" data-block-type="line" style="width: auto; height: auto; min-width: 0px; min-height: 0px; left: 753px; top: 580px;" data-block-id="f46fb9289fa7616f904a9ce29530d431" data-name="line-af3546">
+    <div class="sl-block-content" data-line-x1="0" data-line-y1="0" data-line-x2="108" data-line-y2="0" data-line-color="#000000" data-line-start-type="none" data-line-end-type="none" style="z-index: 16;"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="108" height="1" viewBox="0 0 108 1">
+            <line stroke="rgba(0,0,0,0)" stroke-width="15" x1="0" y1="0" x2="108" y2="0"></line>
+            <line class="line-element" stroke="#ff6363" stroke-width="2" x1="0" y1="0" x2="108" y2="0"></line>
+        </svg></div>
+</div>
+<div class="sl-block" data-block-type="line" style="width: auto; height: auto; min-width: 0px; min-height: 0px; left: 560px; top: 580px;" data-block-id="93ad2fb38cd815c2ead6d694522bf501" data-name="line-4c34cc">
+    <div class="sl-block-content" data-line-x1="0" data-line-y1="0" data-line-x2="193" data-line-y2="0" data-line-color="#000000" data-line-start-type="none" data-line-end-type="none" style="z-index: 17;"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="193" height="1" viewBox="0 0 193 1">
+            <line stroke="rgba(0,0,0,0)" stroke-width="15" x1="0" y1="0" x2="193" y2="0"></line>
+            <line class="line-element" stroke="#5473B9" stroke-width="2" x1="0" y1="0" x2="193" y2="0"></line>
+        </svg></div>
+</div>
+<div class="sl-block" data-block-type="line" style="width: auto; height: auto; min-width: 0px; min-height: 0px; left: 807px; top: 600px;" data-block-id="6ef3906b9ff147d0fdef24d7955128bc" data-name="line-fea9ca">
+    <div class="sl-block-content" data-line-x1="0" data-line-y1="0" data-line-x2="54" data-line-y2="0" data-line-color="#000000" data-line-start-type="none" data-line-end-type="none" style="z-index: 18;"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="54" height="1" viewBox="0 0 54 1">
+            <line stroke="rgba(0,0,0,0)" stroke-width="15" x1="0" y1="0" x2="54" y2="0"></line>
+            <line class="line-element" stroke="#ff6363" stroke-width="2" x1="0" y1="0" x2="54" y2="0"></line>
+        </svg></div>
+</div>
+<div class="sl-block" data-block-type="line" style="width: auto; height: auto; min-width: 0px; min-height: 0px; left: 560px; top: 600px;" data-block-id="15d0621356638d63c5836b778fb4a9e6" data-name="line-af96af">
+    <div class="sl-block-content" data-line-x1="0" data-line-y1="0" data-line-x2="193" data-line-y2="0" data-line-color="#000000" data-line-start-type="none" data-line-end-type="none" style="z-index: 19;"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="193" height="1" viewBox="0 0 193 1">
+            <line stroke="rgba(0,0,0,0)" stroke-width="15" x1="0" y1="0" x2="193" y2="0"></line>
+            <line class="line-element" stroke="#5473B9" stroke-width="2" x1="0" y1="0" x2="193" y2="0"></line>
+        </svg></div>
+</div>
+<div class="sl-block" data-block-type="line" style="width: auto; height: auto; min-width: 0px; min-height: 0px; left: 560px; top: 550px;" data-block-id="dcce17e4d50d743a5cb7470b3e338fa2" data-name="line-7df6eb">
+    <div class="sl-block-content" data-line-x1="0" data-line-y1="0" data-line-x2="166" data-line-y2="0" data-line-color="#000000" data-line-start-type="none" data-line-end-type="none" style="z-index: 20;"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="166" height="1" viewBox="0 0 166 1">
+            <line stroke="rgba(0,0,0,0)" stroke-width="15" x1="0" y1="0" x2="166" y2="0"></line>
+            <line class="line-element" stroke="#ff6363" stroke-width="2" x1="0" y1="0" x2="166" y2="0"></line>
+        </svg></div>
+</div>
+<div class="sl-block" data-block-type="line" style="width: auto; height: auto; min-width: 0px; min-height: 0px; left: 763px; top: 550px;" data-block-id="3932ea21d295de1546bdb59abb01add2" data-name="line-9e5dba">
+    <div class="sl-block-content" data-line-x1="0" data-line-y1="0" data-line-x2="98" data-line-y2="0" data-line-color="#000000" data-line-start-type="none" data-line-end-type="none" style="z-index: 21;"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" width="98" height="1" viewBox="0 0 98 1">
+            <line stroke="rgba(0,0,0,0)" stroke-width="15" x1="0" y1="0" x2="98" y2="0"></line>
+            <line class="line-element" stroke="#5473B9" stroke-width="2" x1="0" y1="0" x2="98" y2="0"></line>
+        </svg></div>
+</div>
+	</section>
+
+	<section>
+		<h3>Application-Time Period Tables</h3>
+		<p class="small">Application (user) has to set/update valid time periods.</p>
+
+		<div class="fragment">
+			<h4><code>INSERT</code></h4>		
+			<pre style="margin-top: -3mm;"><code class="sql">INSERT INTO products (pnr, description, price, valid_from)
+VALUES (17, 'chocolate bar', 0.89, '2021-01-01', '2021-07-01');</code></pre>
+		</div>
+
+		<div class="fragment">
+			<h4><code>UPDATE</code></h4>		
+			<div class="columns" style="margin-top: -7mm;">
+				<div style="width: 14cm;"><pre><code class="sql">UPDATE products 
+FOR PORTION OF date_period 
+FROM '2021-02-01' TO '2021-03-01' 
+SET price = 0.50 WHERE pnr = 17;</code></pre></div>
+				<div class="fragment" style="margin-top: -7mm;">
+					<span data-sql-query="SELECT price, valid_from, valid_until FROM products2;"></span>
+				</div>
+			</div>
+		</div>
+
+		<div class="fragment" style="margin-top: -5mm;">
+			<h4><code>DELETE</code></h4>		
+			<pre style="margin-top: -3mm;"><code class="sql">DELETE FROM products
+FOR PORTION OF date_period FROM '2021-04-15' TO '2021-04-20';</code></pre>
+		</div>
+
+		<p class="small">Try out at <a href="https://dbfiddle.uk/?rdbms=mariadb_10.5&fiddle=31c32b3705a3da482ca5329b813c4c98">https://bit.ly/mapptime</a></p>		
+	</section>
+
+	<section>
+		<h3>Application Time: Foreign Keys</h3>
+		<p class="small">As specified by the SQL Standard (not supported by MariaDB)</p>
+		<pre><code class="sql">CREATE TABLE subscriptions (custno INT, pnr INT,
+valid_from DATE, valid_until DATE,
+PERIOD FOR term(valid_from, valid_until),
+FOREIGN KEY(pnr, PERIOD term)
+REFERENCES products(pnr, PERIOD date_period),
+PRIMARY KEY(custno, pnr, term WITHOUT OVERLAPS));</code></pre>
+
+<div class="columns">
+	<div>
+		<p class="small"><b>subscriptions</b></p>
+		<span data-sql-query="SELECT * FROM subscriptions;"></span></div>
+	<div>
+		<p class="small"><b>products</b></p>
+		<span data-sql-query="SELECT price, valid_from, valid_until FROM products;"></span></div>
+</div>
+<aside class="notes">Another table, subscriptions, is also an application-time period table. It stores, that customer 1 has a subscription from April to the end of September and wants to receive a chocolate bar every month. The foreign key ensures referential integrity so that for each subscription, there must be product data which is valid for the full period. For example, we could not insert a subscription from the year 2020.</aside>
+	</section>
+
+	<section>
+		<h3>Temporal Joins</h3>
+		<div class="columns">
+			<div>
+				<p class="small"><b>subscriptions</b></p>
+				<span data-sql-query="SELECT * FROM subscriptions;"></span></div>
+			<div>
+				<p class="small"><b>products</b></p>
+				<span data-sql-query="SELECT price, valid_from, valid_until FROM products;"></span></div>
+		</div>
+
+		<pre style="width: 98%;"><code class="sql">SELECT S.custno, P.*
+FROM subscriptions S, products P
+WHERE S.pnr = P.pnr AND S.S.term OVERLAPS P.date_period;</code></pre>
+
+<span data-sql-query="SELECT S.custno, P.* FROM subscriptions S, products P
+WHERE S.pnr = P.pnr
+AND S.valid_from <= P.valid_until
+AND S.valid_until > P.valid_from"></span>
+	</section>
+
+	<section>
+		<h3>System-versioned Tables</h3>
+		<p class="small">(Only) the DBMS provides start and end time for periods.<br>All operations within a transaction should use the same timestamp.</p>
+
+		<pre style="width: 98%;"><code class="sql">CREATE TABLE customers(
+ custno INT PRIMARY KEY, email VARCHAR(100),
+ sys_start TIMESTAMP(6) GENERATED ALWAYS AS ROW START,
+ sys_end TIMESTAMP(6) GENERATED ALWAYS AS ROW END,
+ PERIOD FOR SYSTEM_TIME(sys_start, sys_end)
+) WITH SYSTEM VERSIONING;</code></pre>
+
+<p class="small">MariaDB also supports a simplified syntax:</p>
+
+<pre style="width: 98%;"><code class="sql">CREATE TABLE customers(custno INT PRIMARY KEY, email VARCHAR(100)) 
+WITH SYSTEM VERSIONING;</code></pre>
+
+<aside class="notes">When using MariaDB's short syntax for creating system-versioned tables, the start-time and end-time columns are hidden from the user.</aside>
+	</section>
+
+	<section>
+		<h3>System-versioned Tables</h3>
+		<p class="small" style="width: 30cm;">Each modification results in an additional tuple representing the previous row state.</p>
+		<h4><code>INSERT</code></h4>
+		<p class="small" style="margin-top: -5mm;">Start timestamp: current timestamp; end timestamp: max. TIMESTAMP value</p>
+		<pre style="width: 100%;"><code class="sql">INSERT INTO customers (custno, email) VALUES (5, 'peter@example.org');</code></pre>
+		<table style="font-size:0.7em"><thead>
+			<tr><th style="padding-top:0px;">custno</th><th style="padding-top:0px;">email</th><th style="padding-top:0px;">sys_start</th><th style="padding-top:0px;">sys_end</th></tr></thead>
+			<tr><td>1</td><td>peter@example.com</td><td>2021-05-01 14:00:00</td><td>9999-12-31 23:59:59</td></tr>
+		</table>
+
+		<h4><code>UPDATE</code> / <code>DELETE</code></h4>
+		<p class="small" style="margin-top: -5mm;">Operate on current row and insert historical system row.</p>
+		<pre style="width: 100%;"><code class="sql">UPDATE customers SET email = 'peter@example.com' WHERE custno = 5;</code></pre>
+		<pre style="width: 100%;"><code class="sql">DELETE FROM customers WHERE custno = 5;</code></pre>
+		<aside class="notes">INSERT, UPDATE, DELETE work in the same way as for normal tables. The historical states are automatically saved in the background.</aside>
+	</section>
+
+	<section>
+		<h3>System-versioned Tables</h3>
+		<h4><code>SELECT</code></h4>
+		<p class="small" style="margin-top: -3mm;">By default: only retrieve the current rows.</p>
+		<pre style="width: 98%; margin-top: -3mm;"><code class="sql">SELECT * FROM customers;  -- empty result; we deleted the customer</code></pre>
+
+		<div class="fragment">
+		<p class="small">Historical query with <code>FOR SYSTEM TIME</code> clause:</p>
+		<pre style="width: 98%; margin-top: -3mm;""><code class="sql">SELECT * FROM customers FOR SYSTEM_TIME AS OF '2021-06-01 14:00:00';</code></pre>
+		<table style="font-size:0.7em;  margin-top: -3mm;"><thead>
+			<tr><th style="padding-top:0px;">custno</th><th style="padding-top:0px;">email</th><th style="padding-top:0px;">sys_start</th><th style="padding-top:0px;">sys_end</th></tr></thead>
+			<tr><td>1</td><td>peter@example.com</td><td>2021-05-20 11:00:00</td><td>2021-06-01 15:00:00</td></tr>
+		</table>
+	</div>
+
+	<div class="fragment">
+		<pre style="width: 98%;"><code class="sql">SELECT * FROM customers FOR SYSTEM_TIME 
+FROM '2021-01-01 00:00:00' TO '2021-06-01 14:00:00';</code></pre>
+		<table style="font-size:0.7em; margin-top: -3mm;""><thead>
+			<tr><th style="padding-top:0px;">custno</th><th style="padding-top:0px;">email</th><th style="padding-top:0px;">sys_start</th><th style="padding-top:0px;">sys_end</th></tr></thead>
+			<tr><td>1</td><td>peter@example.org</td><td>2021-05-01 14:00:00</td><td>2021-05-01 11:00:00</td></tr>
+			<tr><td>1</td><td>peter@example.com</td><td>2021-05-20 11:00:00</td><td>2021-06-01 15:00:00</td></tr>
+		</table>
+	</div>
+	</section>
+
+	<section>
+		<h3>Bitemporal Tables</h3>
+		<p class="small">Application time + system-versioned tables combined.</p>
+		<pre style="width: 98%;"><code class="sql">CREATE TABLE products (pnr INT, description VARCHAR(100), 
+ price DECIMAL(18,2), valid_from DATE, valid_until DATE,
+ PERIOD FOR date_period(valid_from, valid_until),
+ UNIQUE(pnr, date_period WITHOUT OVERLAPS),
+ sys_start TIMESTAMP(6) GENERATED ALWAYS AS ROW START,
+ sys_end TIMESTAMP(6) GENERATED ALWAYS AS ROW END,
+ PERIOD FOR SYSTEM_TIME(sys_start, sys_end))
+WITH SYSTEM VERSIONING;</code></pre>
+
+<p class="fragment small" data-fragment-index="2">What was on February 1st the price the chocolate bar will have on February 15th?</p>
+<div class="fragment" data-fragment-index="1">
+<pre style="width: 98%;"><code class="sql">SELECT * FROM products FOR SYSTEM_TIME AS OF '2021-02-01 14:00:00'
+WHERE pnr = 17
+AND '2021-02-15' >= valid_from AND '2021-02-15' < valid_until;</code></pre>
+</div>
+	</section>
+
+	<section>
+		<h2>Summary</h2>
+		<ul class="small">
+			<li>SQL:2011/Temporal</li>
+			<li>time Periods: <code>PERIOD FOR ...(t1, t2)</code></li>
+			<li>operators on time periods: contains, overlaps, ...</li>
+			<li>application-time period tables: UPDATE, DELETE, Temporal Joins</li>
+			<li>system-versioned tables: <code>WITH SYSTEM VERSIONING</code></li>
+			<li>Historical queries: <code>FOR SYSTEM_TIME ...</code></li>
+			<li>Bitemporal tables</li>
+		</ul>
+	</section>
+
+	
+
+		<script src="reveal.js/dist/reveal.js"></script>
+		<script src="reveal.js/plugin/markdown/markdown.js"></script>
+		<script src="reveal.js/plugin/highlight/highlight.js"></script>
+		<script src="reveal.js/plugin/zoom/zoom.js"></script>
+		<script src="reveal.js/plugin/math/math.js"></script>
+		<script src="reveal.js/plugin/notes/notes.js"></script>
+		<script src="reveal.js/plugin/search/search.js"></script>
+        <script src="lib/jquery.js"></script>
+        <script src="lib/lodash.js"></script>
+        <script src="lib/backbone.js"></script>
+        <script src="lib/joint.min.js"></script>
+				<script src="lib/deflate.js"></script>
+
+		<script src="src/init_reveal.js"></script>
+
+        <script>
+        if(window.location.search.match( /print-pdf/gi )) {
+                document.getElementById('header').style="display:none";
+                document.getElementById('footer').style="display:none";
+        }
+        </script>
+
+<script>
+	db = openDatabase("SQL", "1", "SQL", 5*1024*1024);
+	
+	db.transaction(function(tx) {
+		tx.executeSql("DROP TABLE IF EXISTS products;");
+		tx.executeSql("create table products (pnr INT, description VARCHAR(100),  price DECIMAL(18,2), valid_from DATE, valid_until DATE);");
+		tx.executeSql("insert into products values (17, 'chocolate bar', 0.89, '2021-01-01', '2021-07-01');");
+		tx.executeSql("insert into products values (17, 'chocolate bar', 0.99, '2021-07-01', '9999-12-31');");
+		
+		tx.executeSql("DROP TABLE IF EXISTS subscriptions;");
+		tx.executeSql("create table subscriptions (custno INT, pnr INT, valid_from DATE, valid_until DATE);");
+		tx.executeSql("insert into subscriptions values (1, 17, '2021-04-01', '2021-10-01');");
+		tx.executeSql("insert into subscriptions values (2, 17, '2021-09-01', '2021-10-01');");
+
+		tx.executeSql("DROP TABLE IF EXISTS products2;");
+		tx.executeSql("create table products2 (pnr INT, description VARCHAR(100),  price DECIMAL(18,2), valid_from DATE, valid_until DATE);");
+		tx.executeSql("insert into products2 values (17, 'chocolate bar', 0.89, '2021-01-01', '2021-02-01');");
+		tx.executeSql("insert into products2 values (17, 'chocolate bar', 0.50, '2021-02-01', '2021-03-01');");
+		tx.executeSql("insert into products2 values (17, 'chocolate bar', 0.89, '2021-03-01', '2021-07-01');");
+		tx.executeSql("insert into products2 values (17, 'chocolate bar', 0.99, '2021-07-01', '9999-12-31');");
+	});
+
+	set_current_date = event => {
+		var pad = function(num) { return ('00'+num).slice(-2) };
+		var date;
+		date = new Date();
+		date = date.getUTCFullYear()         + '-' +
+						pad(date.getUTCMonth() + 1)  + '-' +
+						pad(date.getUTCDate())       + ' ' +
+						pad(date.getUTCHours())      + ':' +
+						pad(date.getUTCMinutes())    + ':' +
+						pad(date.getUTCSeconds());
+		document.getElementsByClassName("current_timestamp").forEach(e => e.innerHTML = date);
+	};
+
+	Reveal.on( 'ready', set_current_date);
+	Reveal.on( 'slidechanged', set_current_date);
+	
+	</script>
+	</body>
+</html>
