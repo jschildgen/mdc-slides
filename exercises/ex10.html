@@ -31,7 +31,7 @@
             <code>emp(emp_no, name, salary, dept_no, valid_from, valid_until);</code><br>
             <code>dept(dept_no, department, manager, valid_from, valid_until);</code><br><br>
             
-            For both tables, define a date period over the latter two columns.<br><br>
+            For both tables, define a date period over the latter two columns and include it in a unique constraint to avoid overlapping intervals for one employee/department.<br><br>
 
             emp(dept_no) is a foreign key to dept(dept_no),<br>
             dept(manager) is a foreign key to emp(emp_no).<br>
@@ -44,7 +44,8 @@
         <li>How many days (including today) was Mary the manager of the Finance department?</li>
         <li>Add system-versioned support to the two tables.</li>
         <li>Insert another department, the Developers department. It will start operating on 01.01.2030. Peter will be working in this department from that day on and he then will be its manager.</li>
-        <li>Show the state of the department table before the Developers department was inserted.</li>
+        <li>The plans changed: Even if he will be the manager then, Peter will start working in the Developers department on 01.02.2030</li>
+        <li>Find out the original date Peter should start working for the Developers department.</li>
     </ol> 
 
     </section>

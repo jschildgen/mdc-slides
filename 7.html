@@ -79,7 +79,7 @@ WHERE current_time >= valid_from AND current_time < valid_until;</code></pre>
 					<li>How to avoid overlapping time intervals?</li>
 					<li>How to add real temporal support on top of the DBMS?<br>&Rightarrow; Triggers, stored procedures, constraints.</li>
 				</ul>
-				<aside class="notes">In the table shown here, we do not have a primary key. (pnr, valid_from) would be okay as a primary key but it would be better if we could somehow avoid that the time periods overlap. </aside>
+				<aside class="notes">The table shown here does not have a primary key. (pnr, valid_from) would be better than nothing but it would be desirable if we could somehow avoid that the time periods overlap. </aside>
 			</section>
 			
 	<section>
@@ -104,7 +104,7 @@ WHERE current_time >= valid_from AND current_time < valid_until;</code></pre>
 		<div class="fragment">
 			<h4>Bitemporal tables</h4>
 		</div>
-		<aside class="notes">Time periods are defined by a closed-open interval. The start time is included in the interval, the end-time is not. Bitemporal tables are both system-versioned and application-time period tables.</aside>
+		<aside class="notes">Time periods are defined by a closed-open interval. The start-col is included in the interval, the end-col is not. Bitemporal tables are system-versioned and application-time period tables in combination.</aside>
 	</section>
 
 	<section>
@@ -415,7 +415,7 @@ FROM '2021-01-01 00:00:00' TO '2021-06-01 14:00:00';</code></pre>
  PERIOD FOR SYSTEM_TIME(sys_start, sys_end))
 WITH SYSTEM VERSIONING;</code></pre>
 
-<p class="fragment small" data-fragment-index="2">What was on February 1st the price the chocolate bar will have on February 15th?</p>
+<p class="fragment small" data-fragment-index="2">What was on February 1st the planned price that the chocolate bar will have on February 15th?</p>
 <div class="fragment" data-fragment-index="1">
 <pre style="width: 98%;"><code class="sql">SELECT * FROM products FOR SYSTEM_TIME AS OF '2021-02-01 14:00:00'
 WHERE pnr = 17

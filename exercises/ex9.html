@@ -40,7 +40,7 @@
         <li>Create the airports table and use DBeaver's import feature (rightclick on the table in the database browser, import) to import the airports from the file airports.dat which you can download from the URL above. The column geo should be NULL for all rows. Check whether the airports were imported successfully.</li>
         <li>Use an <code>UPDATE</code> command to store an ST_POINT into the geo column with the airports' longitude and latitude coordinates. You can use DBeaver's Map Panel to inspect whether the geometry data is correct.</li>
         <li>Compute the distance between airport 340 (Frankfurt am Main Airport) airport 507 (London Heathrow Airport) in kilometers.</li>
-        <li>Which SRID provides a more accurate distance? 7519 (WGS 84 / Pseudo-Mercator) or 31466 (Gauß-Krüger Zone 2)?</li>
+        <li>Which SRID provides a more accurate distance? 3857 (WGS 84 / Pseudo-Mercator) or 31466 (Gauß-Krüger Zone 2)?</li>
         <li>Find all airports within a radius of 100km around airport 340 (Frankfurt am Main Airport). Do not use ST_DISTANCE here!</li>
       </ol>
 
